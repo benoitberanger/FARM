@@ -6,7 +6,7 @@ clc
 assert( ~isempty(which('ft_preprocessing')), 'FieldTrip library not detected. Check your MATLAB paths, or get : https://github.com/fieldtrip/fieldtrip' )
 
 sampledata_path = fullfile(farm_rootdir, 'sample_dataset');
-fname     = 'flex_ext_lr';
+fname     = 'me3mb3_tr1600_sl54';
 fname_eeg = fullfile(sampledata_path, [fname '.eeg' ]);
 fname_hdr = fullfile(sampledata_path, [fname '.vhdr']);
 fname_mrk = fullfile(sampledata_path, [fname '.vmrk']);
@@ -39,21 +39,23 @@ volume_event       = ft_filter_event(raw_event,'value',volume_marker_name);
 fmri_volume_event  = volume_event(1:sequence.nVol); % We know our fmri sequeunce is 300 volumes, and is the first to generate markers.
 
 % Define a "trial" (see fieldtrip) which corresponds to the fMRI run
-nSample_per_TR = raw_header.Fs * sequence.TR;                  % number of sample (datapoints) per TR
+nSample_per_TR = raw_header.Fs * sequence.TR;                         % number of sample (datapoints) per TR
 sample_begin   = fmri_volume_event(1  ).sample - 30 * nSample_per_TR; % begin = first TR minus a bunch of seconds
 sample_end     = fmri_volume_event(end).sample +  3 * nSample_per_TR; % begin = last  TR plus  a bunch of seconds
 
 % Load data
-cfg.trl = [sample_begin sample_end 0]; % only load the samples surrounding the fmri run
-data    = ft_preprocessing(cfg);       % load data
+cfg.trl         = [sample_begin sample_end 0]; % only load the samples surrounding the fmri run
+data            = ft_preprocessing(cfg);       % load data
+data.sampleinfo = [1 sample_end-sample_begin+1];
 
 % Keep interesting events
 fmri_event     = ft_filter_event(raw_event, 'minsample', sample_begin, 'maxsample', sample_end, 'value', volume_marker_name);
-fmri_event     = arrayfun(@(s) setfield(s,'value', 'V'), fmri_event);
+fmri_event     = farm_change_marker_value( fmri_event, volume_marker_name, 'V' ); % replace marker name by 'V' for volume
+fmri_event     = farm_offset_marker(fmri_event, -sample_begin);
 data.cfg.event = fmri_event;
 
 % Plot
-% ft_databrowser(fmri_data.cfg, fmri_data)
+% ft_databrowser(data.cfg, data)
 
 
 %% FARM
@@ -65,8 +67,9 @@ data.cfg.event = fmri_event;
 farm_check_data    ( data     )
 farm_check_sequence( sequence )
 
+
 %% Step 1 : Add slice markers
 
-farm_add_slice_markers( data, sequence )
-
+data = farm_add_slice_marker( data, sequence, 'V');
+ft_databrowser(data.cfg, data)
 

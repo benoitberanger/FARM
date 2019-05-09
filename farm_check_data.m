@@ -19,7 +19,7 @@ function farm_check_data( data )
 % ans = 
 %   struct with fields:
 % 
-%               dataset: '/matlab/FARM/sample_dataset/flex_ext_lr.vhdr'
+%               dataset: '/matlab/FARM/sample_dataset/me3mb3_tr1600_sl54.vhdr'
 %                   trl: [2112506 4768506 0]
 %                   [...]
 %                   [...]
