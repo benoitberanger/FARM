@@ -69,12 +69,11 @@ dtime_possibility = 0 : dtime_max;
 
 % sdur is the slice-segement duration
 sdur_possibility = (nSample_per_TR - dtime_possibility) / nSlice;
-sdur_possibility = unique(round(sdur_possibility));               % keep only integer numbers, sdur is a number a datapoints
 
 
 %% Routine : compute optimal sdur for each volume, then add slice markers
 
-optimal_sdur = zeros(nVol,1);
+sdur_v = zeros(nVol,1);
 
 fprintf('[%s]: Preparing initial estimate of sdur & dtime... ', mfilename)
 
@@ -87,12 +86,12 @@ for iVol = 1 : nVol
     for idx_sdur = 1 : length(sdur_possibility)
         
         sdur             = sdur_possibility(idx_sdur); % current sdur
-        slice_datapoints = zeros(nSlice,sdur);         % slice-segement for all slcies, according to the current sdur
+        slice_datapoints = zeros(nSlice,round(sdur));         % slice-segement for all slcies, according to the current sdur
         
         for iSlice = 1 : nSlice
             
-            slice_onset                = volum_onset + (iSlice-1) * sdur;
-            slice_datapoints(iSlice,:) = hpf_target_channel( slice_onset : slice_onset + sdur - 1 );
+            slice_onset                = volum_onset + round( (iSlice-1) * sdur );
+            slice_datapoints(iSlice,:) = hpf_target_channel( slice_onset : slice_onset + round(sdur) - 1 );
             
         end % iSlice
         
@@ -104,14 +103,14 @@ for iVol = 1 : nVol
     %% Get the optimal sdur
     
     [ ~, idx_optimal_sdur ] = min(std_possibility);    % optimal sdur corresponds to the minimum of SV
-    optimal_sdur(iVol)      = sdur_possibility(idx_optimal_sdur);
+    sdur_v(iVol)    = sdur_possibility(idx_optimal_sdur);
     
     
     %% Add slice markers
     
     for iSlice = 1 : nSlice
         
-        optimal_slice_onset = volum_onset + (iSlice-1) * optimal_sdur(iVol);
+        optimal_slice_onset = volum_onset + round( (iSlice-1) * sdur_v(iVol) );
         
         evt          = struct;
         evt.type     = 'Response';
@@ -129,8 +128,11 @@ end % iVol
 
 fprintf('done \n')
 
-fprintf('[%s]: mean(optimal_sdur) = %g \n', mfilename, mean(optimal_sdur))
-fprintf('[%s]: std (optimal_sdur) = %g \n', mfilename, std (optimal_sdur))
+fprintf('[%s]: mean(sdur_v) = %g samples \n', mfilename, mean(sdur_v))
+fprintf('[%s]: std (sdur_v) = %g samples \n', mfilename, std (sdur_v))
+
+data.sdur_v  = sdur_v;
+data.dtime_v = nSample_per_TR - sdur_v * nSlice;
 
 
 end % function
