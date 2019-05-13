@@ -1,4 +1,4 @@
-function data = farm_pick_slice_for_template( data )
+function data = farm_pick_slice_for_template( data, WindowLength )
 % FARM_PICK_SLICE_FOR_TEMPLATE will prepare the slice index used for the
 % later slice artifact correction using slice-templates
 %
@@ -9,10 +9,16 @@ function data = farm_pick_slice_for_template( data )
 % - cannot pick the last  slice of a volume : too close from volume artifact
 % - must   pick slices from your surroundings
 % - must   pick exactly N = WindowLength slices
-
-WindowLength = 50;
+%
+% default WindowLength is 50
+%
 
 if nargin==0, help(mfilename); return; end
+
+if nargin < 2
+    WindowLength = 50;
+end
+assert( round(WindowLength)==WindowLength & WindowLength>0, 'WindowLength must be positive integer' )
 
 
 %% Preparations
@@ -50,12 +56,15 @@ fprintf('[%s]: Preparing slices available as template for the slice-correction..
 
 slice_idx_for_template = nan( length(good_slice_idx), WindowLength );
 
+% It's a bit trick here when iSlice < WindowLength.
+% That's why I have this procedure that looks weird
 for iSlice = 1 : length(good_slice_idx)
     
     distance_to_slice                = abs( good_slice_idx - good_slice_idx(iSlice) );
-    [~,slice_sorted]                 = sort(distance_to_slice);
-    slice_in_window_sorted_idx       = slice_sorted(2:WindowLength+1);
-    slice_in_window                  = sort( good_slice_idx(slice_in_window_sorted_idx) );
+    [~,distance_to_slice_sorted_idx] = sort(distance_to_slice);                            % sort the distance, keep index. WARNING : here we work with index of sorted ditances
+    slice_in_window_sorted_idx       = distance_to_slice_sorted_idx(2:end);                % slice_sorted_idx(1) is current slice itself : the rule is don't pick yourself
+    slice_in_window_sorted_idx       = slice_in_window_sorted_idx(1:WindowLength);         % and pick N=WindowLength, also a rule.
+    slice_in_window                  = sort( good_slice_idx(slice_in_window_sorted_idx) ); % get the corresponding slice index (not anymore sorted distance slice index)
     slice_idx_for_template(iSlice,:) = slice_in_window;
     
 end
@@ -63,17 +72,17 @@ end
 
 %% Save useful info
 
-data.slice_info                        = struct;
-data.slice_info.marker_vector          = marker_vector;
-data.slice_info.islastslice            = islastslice;
-data.slice_info.isvolume               = isvolume;
-data.slice_info.isfirstslice           = isfirstslice;
-data.slice_info.lastslice_idx          = marker_vector(islastslice);
-data.slice_info.volume_idx             = marker_vector(isvolume);
-data.slice_info.firstslice_idx         = marker_vector(isfirstslice);
-data.slice_info.good_slice             = good_slice;
-data.slice_info.good_slice_idx         = good_slice_idx;
-data.slice_info.slice_idx_for_template = slice_idx_for_template;
+data. slice_info                         = struct;
+data. slice_info. marker_vector          = marker_vector;
+data. slice_info. islastslice            = islastslice;
+data. slice_info. isvolume               = isvolume;
+data. slice_info. isfirstslice           = isfirstslice;
+data. slice_info. lastslice_idx          = marker_vector(islastslice);
+data. slice_info. volume_idx             = marker_vector(isvolume);
+data. slice_info. firstslice_idx         = marker_vector(isfirstslice);
+data. slice_info. good_slice             = good_slice;
+data. slice_info. good_slice_idx         = good_slice_idx;
+data. slice_info. slice_idx_for_template = slice_idx_for_template;
 
 fprintf('done \n')
 
