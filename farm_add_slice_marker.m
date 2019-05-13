@@ -1,6 +1,6 @@
-function data = farm_add_slice_marker( data, sequence, marker_name )
+function data = farm_add_slice_marker( data )
 % FARM_ADD_SLICE_MARKERS will generate slice markers using the volume markers
-% 
+%
 % Strategy : For each volume marker, we have nSlice. Slice onsets are
 % seperated by sdur(v) where v is the volume index. Also, the dead time
 % before the next volume marker is writen dtime(v).
@@ -20,16 +20,14 @@ if nargin==0, help(mfilename); return; end
 
 %% Check input arguments
 
-narginchk(3,3)
+narginchk(1,1)
 
 % data
 farm_check_data( data )
 
-% sequence
-farm_check_sequence( sequence )
-
-% marker_name
-assert( ischar(marker_name), '[%s]: marker_name must be a char ', mfilename )
+% Shortcuts
+sequence           = data.sequence;
+volume_marker_name = data.volume_marker_name;
 
 
 %% Detect the channel with higher "amplitude"
@@ -45,9 +43,9 @@ hpf_target_channel = ft_preproc_highpassfilter(...
 %% Prepare some paramters
 
 % nVol
-volume_event = ft_filter_event(data.cfg.event,'value',marker_name);
-assert( numel(volume_event)>0 , '%s is not a valid marker', marker_name )
-if isfield(sequence,'nVol') && ~isnan(sequence.nVol)
+volume_event = ft_filter_event(data.cfg.event,'value',volume_marker_name);
+assert( numel(volume_event)>0 , '%s is not a valid marker', volume_marker_name )
+if isfield(sequence,'nVol') && ~isempty(sequence.nVol)
     nVol = sequence.nVol;
     volume_event = volume_event(1:nVol);
 else
@@ -76,6 +74,10 @@ sdur_possibility = unique(round(sdur_possibility));               % keep only in
 
 %% Routine : compute optimal sdur for each volume, then add slice markers
 
+optimal_sdur = zeros(nVol,1);
+
+fprintf('[%s]: Preparing initial estimate of sdur & dtime... ', mfilename)
+
 for iVol = 1 : nVol
     %% Evaluate the likelihood of each sdur to be the right one
     
@@ -102,16 +104,14 @@ for iVol = 1 : nVol
     %% Get the optimal sdur
     
     [ ~, idx_optimal_sdur ] = min(std_possibility);    % optimal sdur corresponds to the minimum of SV
-    optimal_sdur = sdur_possibility(idx_optimal_sdur);
-    
-    fprintf('[%s]: optimal sdur = %d samples @ volume %d \n', mfilename, optimal_sdur, iVol)
+    optimal_sdur(iVol)      = sdur_possibility(idx_optimal_sdur);
     
     
     %% Add slice markers
     
     for iSlice = 1 : nSlice
         
-        optimal_slice_onset = volum_onset + (iSlice-1) * optimal_sdur;
+        optimal_slice_onset = volum_onset + (iSlice-1) * optimal_sdur(iVol);
         
         evt          = struct;
         evt.type     = 'Response';
@@ -126,6 +126,11 @@ for iVol = 1 : nVol
     
     
 end % iVol
+
+fprintf('done \n')
+
+fprintf('[%s]: mean(optimal_sdur) = %g \n', mfilename, mean(optimal_sdur))
+fprintf('[%s]: std (optimal_sdur) = %g \n', mfilename, std (optimal_sdur))
 
 
 end % function

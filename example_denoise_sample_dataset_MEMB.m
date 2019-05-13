@@ -52,7 +52,10 @@ data.sampleinfo = [1 sample_end-sample_begin+1];
 fmri_event     = ft_filter_event(raw_event, 'minsample', sample_begin, 'maxsample', sample_end, 'value', volume_marker_name);
 fmri_event     = farm_change_marker_value( fmri_event, volume_marker_name, 'V' ); % replace marker name by 'V' for volume
 fmri_event     = farm_offset_marker(fmri_event, -sample_begin);
-data.cfg.event = fmri_event;
+
+data.cfg.event          = fmri_event;                 % store events
+data.sequence           = sequence;              % store sequence parameters
+data.volume_marker_name = 'V';                   % name of the volume event in data.cfg.event
 
 % Plot
 % ft_databrowser(data.cfg, data)
@@ -64,12 +67,16 @@ data.cfg.event = fmri_event;
 
 %% Step 0 : Check input data
 
-farm_check_data    ( data     )
-farm_check_sequence( sequence )
+farm_check_data( data )
 
 
 %% Step 1 : Add slice markers
 
-data = farm_add_slice_marker( data, sequence, 'V');
-ft_databrowser(data.cfg, data)
+data = farm_add_slice_marker( data);
+% ft_databrowser(data.cfg, data)
+
+
+%% Step 2 : Prepare which slices to use for template used in the slice-correcton
+
+data = farm_pick_slice_for_template( data );
 

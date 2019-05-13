@@ -13,8 +13,8 @@ fname_mrk = fullfile(sampledata_path, [fname '.vmrk']);
 
 sequence.TR     = 1.000; % in seconds
 sequence.nSlice = 72;
-sequence.MB     = 6;   % multiband factor
-sequence.nVol   = NaN; % integer or NaN
+sequence.MB     = 6;     % multiband factor
+sequence.nVol   = [];    % integer or []
 
 
 %% Load data
@@ -31,8 +31,10 @@ raw_event   = ft_read_event (fname_mrk);
 event       = farm_change_marker_value(raw_event, 'R  1', 'V');
 
 % Load data
-data           = ft_preprocessing(cfg);       % load data
-data.cfg.event = event;
+data                    = ft_preprocessing(cfg); % load data
+data.cfg.event          = event;                 % store events
+data.sequence           = sequence;              % store sequence parameters
+data.volume_marker_name = 'V';                   % name of the volume event in data.cfg.event
 
 % Plot
 % ft_databrowser(data.cfg, data)
@@ -44,12 +46,16 @@ data.cfg.event = event;
 
 %% Step 0 : Check input data
 
-farm_check_data    ( data     )
-farm_check_sequence( sequence )
+farm_check_data( data )
 
 
 %% Step 1 : Add slice markers
 
-data = farm_add_slice_marker( data, sequence, 'V');
-ft_databrowser(data.cfg, data);
+data = farm_add_slice_marker( data );
+% ft_databrowser(data.cfg, data);
+
+
+%% Step 2 : Prepare which slices to use for template used in the slice-correcton
+
+data = farm_pick_slice_for_template( data );
 
