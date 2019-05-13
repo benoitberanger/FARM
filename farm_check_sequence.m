@@ -1,5 +1,5 @@
 function farm_check_sequence( sequence )
-%FARM_CHECK_SEQUENCE will check if the input 'sequence' is what the pipeline expects
+% FARM_CHECK_SEQUENCE will check if the input 'sequence' is what the pipeline expects
 % "sequence" must be a structure such as :
 %
 % sequence        = struct;

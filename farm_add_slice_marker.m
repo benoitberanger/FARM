@@ -1,5 +1,13 @@
 function data = farm_add_slice_marker( data, sequence, marker_name )
-%FARM_ADD_SLICE_MARKERS
+% FARM_ADD_SLICE_MARKERS will generate slice markers using the volume markers
+% 
+% Strategy : For each volume marker, we have nSlice. Slice onsets are
+% seperated by sdur(v) where v is the volume index. Also, the dead time
+% before the next volume marker is writen dtime(v).
+% Slice markers will be equaly spaced at using diffrent sdur(v), and the
+% best sdur(v) will be evaluated using "cost function" called Sum of
+% Variance (SV). Optimal sdur(v) will be given when SV will be at the
+% global minimum.
 %
 % Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
 %       Robust EMG–fMRI artifact reduction for motion (FARM).

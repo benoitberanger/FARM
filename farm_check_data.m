@@ -1,5 +1,5 @@
 function farm_check_data( data )
-%FARM_CHECK_DATA will check if the input 'data' is what the pipeline expects
+% FARM_CHECK_DATA will check if the input 'data' is what the pipeline expects
 % "data" must be ft_preprocessing output, with events stored in data.cfg.event
 % 
 % example : 
