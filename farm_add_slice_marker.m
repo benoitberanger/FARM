@@ -32,12 +32,13 @@ volume_marker_name = data.volume_marker_name;
 
 %% Detect the channel with higher "amplitude"
 
-max_all_channels = max( abs(data.trial{1}), [], 2 );
-[ ~, target_channel ] = max(max_all_channels);
-hpf_target_channel = ft_preproc_highpassfilter(...
-    data.trial{1}(target_channel,:), ...
-    data.fsample                   , ...
-    100                            ); % remove low frequencies, we only need the gradients to compute slice markers
+data = farm_detect_channel_with_greater_artifact( data ); % simple routine, defines data.target_channel
+
+% Remove low frequencies, including EMG, we only need the gradients to compute slice markers
+hpf_target_channel = ft_preproc_highpassfilter( ...
+    data.trial{1}(data.target_channel,:)      , ...
+    data.fsample                              , ...
+    250                                       );
 
 
 %% Prepare some paramters

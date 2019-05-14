@@ -65,18 +65,18 @@ data.volume_marker_name = 'V';                   % name of the volume event in d
 % Main FARM functions are below.
 
 
-%% Step 0 : Check input data
+%% Step 0 - Check input data
 
 farm_check_data( data )
 
 
-%% Step 1 : Add slice markers
+%% Step 1 - Add slice markers
 
 data = farm_add_slice_marker( data);
 % ft_databrowser(data.cfg, data)
 
 
-%% Step 2 : Prepare which slices to use for template used in the slice-correcton
+%% Step 2 - Prepare which slices to use for template used in the slice-correcton
 
 data = farm_pick_slice_for_template( data );
 
