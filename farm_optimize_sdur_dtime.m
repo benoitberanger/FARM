@@ -81,17 +81,19 @@ else
 end
 const.isvolume           = data.slice_info.isvolume;
 const.good_slice_idx     = data.slice_info.good_slice_idx;
-const.init_param         = init_param;
 
 options = optimset('Display','iter-detailed');
 
-% fminsearch
+% fminsearch : unconstrained nonlinear optimization
+% Here I want to optimize only sdur (or dtime) because there is a direct relashonship between them.
+fprintf('[%s]: Starting sdur optimization \n', mfilename)
+
 tic
-[x,fval,exitflag,output] = fminsearch( @(param) cost_function(param, const), init_param, options );
+final_param = fminsearch( @(param) cost_function(param, const), init_param, options );
 toc
 
-fprintf('initial sdur | dtime : %fms %fms \n', init_param(1)*1000, init_param(2)*1000 )
-fprintf('final   sdur | dtime : %fms %fms \n',          x(1)*1000,          x(2)*1000 )
+fprintf('initial sdur | dtime : %fµs %fµs \n',  init_param(1)*1e6,  init_param(2)*1e6 )
+fprintf('final   sdur | dtime : %fµs %fµs \n', final_param(1)*1e6, final_param(2)*1e6 )
 
 
 end % function
@@ -110,6 +112,7 @@ function cost = cost_function( current_param, const )
 % the mismatch between slice-artifacts and artifact-templates
 
 
+
 %% Parameters
 
 % Shortucts
@@ -124,6 +127,7 @@ good_slice_idx     = const.good_slice_idx;
 % Get new estimated paramters
 sdur  = current_param(1);
 dtime = current_param(2);
+% dtime = TR - nSlice*sdur;
 
 
 %% Build new slice onsets & rounding error
@@ -179,10 +183,10 @@ cost = sum(std(slice_segement) / nVol);
 end % function
 
 function out = phase_shift( in, delta_t )
-% I don't understand why implemntation works, and not the one described in
+% I don't understand why this implemntation works, and not the one described in
 % https://stackoverflow.com/questions/31586803/delay-a-signal-in-time-domain-with-a-phase-change-in-the-frequency-domain-after
 
-Y = fft(in);
+Y = fft(in,[],2);
 
 adjustment = zeros(1,size(in,2));
 n          = floor(length(adjustment)/2);
@@ -193,7 +197,7 @@ if ~rem(size(in,2),2)
     adjustment(length(adjustment)/2 + 1) = 0;
 end
 
-out = real( ifft( Y .* exp( 1i*2*pi* delta_t .* adjustment ) ) );
+out = real( ifft( Y .* exp( 1i*2*pi* delta_t .* adjustment ) , [], 2 ) );
 
 end % function
 
