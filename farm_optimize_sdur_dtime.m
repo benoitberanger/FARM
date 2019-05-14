@@ -81,6 +81,7 @@ else
 end
 const.isvolume           = data.slice_info.isvolume;
 const.good_slice_idx     = data.slice_info.good_slice_idx;
+const.init_param         = init_param;
 
 options = optimset('Display','iter-detailed');
 
@@ -88,6 +89,10 @@ options = optimset('Display','iter-detailed');
 tic
 [x,fval,exitflag,output] = fminsearch( @(param) cost_function(param, const), init_param, options );
 toc
+
+fprintf('initial sdur | dtime : %fms %fms \n', init_param(1)*1000, init_param(2)*1000 )
+fprintf('final   sdur | dtime : %fms %fms \n',          x(1)*1000,          x(2)*1000 )
+
 
 end % function
 
@@ -120,8 +125,6 @@ good_slice_idx     = const.good_slice_idx;
 sdur  = current_param(1);
 dtime = current_param(2);
 
-fprintf('%.6f ms %.6f ms \n', sdur*1000, dtime*1000)
-
 
 %% Build new slice onsets & rounding error
 % based on eq(3) in the article
@@ -140,39 +143,38 @@ for iSlice = 1 : nSlice * nVol
 end
 
 
-%% Adjust slice onset with phase-shift using FFT
-
-% For the phase-shifting, we pad the slice-segement data with some extrapoints
-% The phase shift is supposed to be half a sample, so we don't need to add a lot of padding
-padding = 10; % samples
-
-for iSlice = 1 : nSlice * nVol
-    
-    in      = signal( slice_onset(iSlice)-padding/2 : slice_onset(iSlice)+round(sdur * fsample)+padding/2 );
-    delta_t = round_error(iSlice) / sdur / fsample ;
-    out     = phase_shift( in, delta_t );
-    
-    signal( slice_onset(iSlice) : slice_onset(iSlice)+round(sdur * fsample) ) = out( 1+padding/2 : end-padding/2 );
-    
-end
-
-
-%% Prepare the slice-segment for the computation of Sum of Variance
+%% Prepare slice-segment with some padding for the phase-shifting
 % Here, we only take into account the "good" slices that will be used for
 % the slice-correction
 
-slice_segements = zeros(length(good_slice_idx),round(sdur * fsample));
+% For the phase-shifting, we need pad the slice-segement data with some extra points.
+% The phase-shift is supposed to be half a sample, so we don't need to add a lot of padding
+
+padding = 10; % samples
+
+slice_segement = zeros( length(good_slice_idx), round(sdur * fsample) + padding );
 
 for iSlice = 1 : length(good_slice_idx)
-    slice_segements(iSlice,:) = signal( slice_onset(good_slice_idx(iSlice)) : slice_onset(good_slice_idx(iSlice)) + round(sdur * fsample) - 1 );
+    slice_segement(iSlice,:) = signal( slice_onset(good_slice_idx(iSlice)) - padding/2 : slice_onset(good_slice_idx(iSlice)) + round(sdur * fsample) - 1 + padding/2 );
 end
 
 
-%% Sum of Variance
-% Sum of Variance == cost
+%% Adjust slice onset with phase-shift using FFT
 
-SV   = sum(std(slice_segements));
-cost = SV ^ 2; % for faster convergence
+delta_t = round_error(good_slice_idx) / sdur / fsample;
+
+slice_segement = phase_shift( slice_segement , delta_t );
+
+
+%% Remove padding
+
+slice_segement = slice_segement(:,1+padding/2 : end-padding/2);
+
+
+%% Sum of Variance == cost
+
+cost = sum(std(slice_segement) / nVol);
+
 
 end % function
 
@@ -182,16 +184,16 @@ function out = phase_shift( in, delta_t )
 
 Y = fft(in);
 
-adjustment = zeros(1,length(in));
+adjustment = zeros(1,size(in,2));
 n          = floor(length(adjustment)/2);
 
 adjustment(2:n+1)          = 1:n;
 adjustment(end:-1:end-n+1) = -(1:n);
-if ~rem(length(in),2)
+if ~rem(size(in,2),2)
     adjustment(length(adjustment)/2 + 1) = 0;
 end
 
-out = ifft( Y .* exp( 1i*2*pi* delta_t * adjustment ) );
+out = real( ifft( Y .* exp( 1i*2*pi* delta_t .* adjustment ) ) );
 
 end % function
 

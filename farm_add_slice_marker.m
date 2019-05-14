@@ -76,7 +76,7 @@ sdur_possibility = (nSample_per_TR - dtime_possibility) / nSlice;
 
 sdur_v = zeros(nVol,1);
 
-fprintf('[%s]: Preparing initial estimate of sdur & dtime... ', mfilename)
+fprintf('[%s]: Initial estimate of sdur & dtime... ', mfilename)
 
 for iVol = 1 : nVol
     %% Evaluate the likelihood of each sdur to be the right one
