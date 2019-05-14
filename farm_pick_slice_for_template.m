@@ -12,8 +12,16 @@ function data = farm_pick_slice_for_template( data, WindowLength )
 %
 % default WindowLength is 50
 %
+% Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
+%       Robust EMG–fMRI artifact reduction for motion (FARM).
+%       Clinical Neurophysiology, 121(5), 766–776.
+%       https://doi.org/10.1016/j.clinph.2009.12.035
+%
 
 if nargin==0, help(mfilename); return; end
+
+
+%% Parameters
 
 if nargin < 2
     WindowLength = 50;
@@ -26,7 +34,12 @@ assert( round(WindowLength)==WindowLength & WindowLength>0, 'WindowLength must b
 slice_event  = ft_filter_event( data.cfg.event, 'value', 's' );
 
 nMarker = length(slice_event);
-nSlice  = data.sequence.nSlice;
+% nSlice
+if isfield(data.sequence,'MB')
+    nSlice = data.sequence.nSlice / data.sequence.MB;
+else
+    nSlice = data.sequence.nSlice;
+end
 
 marker_vector = 1 : nMarker;
 
