@@ -67,13 +67,13 @@ good_slice_idx  = find(good_slice);
 
 fprintf('[%s]: Preparing slices available as template for the slice-correction... ', mfilename)
 
-slice_idx_for_template = nan( length(good_slice_idx), WindowLength );
+slice_idx_for_template = nan( nMarker, WindowLength );
 
 % It's a bit trick here when iSlice < WindowLength.
 % That's why I have this procedure that looks weird
-for iSlice = 1 : length(good_slice_idx)
+for iSlice = 1 : nMarker
     
-    distance_to_slice                = abs( good_slice_idx - good_slice_idx(iSlice) );
+    distance_to_slice                = abs( good_slice_idx - iSlice );
     [~,distance_to_slice_sorted_idx] = sort(distance_to_slice);                            % sort the distance, keep index. WARNING : here we work with index of sorted ditances
     slice_in_window_sorted_idx       = distance_to_slice_sorted_idx(2:end);                % slice_sorted_idx(1) is current slice itself : the rule is don't pick yourself
     slice_in_window_sorted_idx       = slice_in_window_sorted_idx(1:WindowLength);         % and pick N=WindowLength, also a rule.
