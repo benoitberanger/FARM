@@ -41,7 +41,7 @@ round_error = zeros( nSlice * nVol, 1 );
 
 for iSlice = 1 : nSlice * nVol
     
-    iVolume   = sum( isvolume(1:iSlice) );
+    iVolume = sum( isvolume(1:iSlice) );
     
     slice_onset(iSlice) = onset_first_volume + ( ( iSlice - 1 ) * sdur + (iVolume - 1) * dtime ) * fsample;
     round_error(iSlice) = slice_onset(iSlice) - round(slice_onset(iSlice));

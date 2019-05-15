@@ -14,7 +14,6 @@ if nargin==0, help(mfilename); return; end
 
 hpf          = 250; % hertz
 interpfactor = 10;  % interpolation factor : upsampling
-
 % Shortcuts
 sequence           = data.sequence;
 volume_marker_name = data.volume_marker_name;
@@ -93,7 +92,7 @@ fprintf('[%s]: Starting sdur & dtime optimization \n', mfilename)
 % and the algorithm will look and around this triangle, and update it's position & dimension
 % I choose to start with points that are a few µs next to sdur (and follow the rule dtime = TR - nSlice x sdur)
 sdur = init_param(1);
-x_init = [ 
+x_init = [
     sdur      , sequence.TR-const.nSlice*(sdur     ) % initial sdur
     sdur+1e-5 , sequence.TR-const.nSlice*(sdur+1e-5) % sdur + 1ms
     sdur-1e-5 , sequence.TR-const.nSlice*(sdur-1e-5) % sdur - 1ms
@@ -113,10 +112,34 @@ fprintf('variation sdur | dtime : %fµs %fµs \n', (final_param(1)-init_param(1)
 sdur  = final_param(1);
 dtime = final_param(2);
 
+data.sdur  = sdur;
+data.dtime = dtime;
 
-%% Add new slice markers
 
+%% Store new slice onsets, using original fsample
+% Note : they are stored as float
 
+nVol     = const.nVol;
+nSlice   = const.nSlice;
+isvolume = const.isvolume;
+fsample  = const.fsample;
+
+slice_onset = zeros( nSlice * nVol, 1 );
+round_error = zeros( nSlice * nVol, 1 );
+
+for iSlice = 1 : nSlice * nVol
+    
+    iVolume = sum( isvolume(1:iSlice) );
+    
+    slice_onset(iSlice) = onset_first_volume + ( ( iSlice - 1 ) * sdur + (iVolume - 1) * dtime ) * fsample;
+    round_error(iSlice) = slice_onset(iSlice) - round(slice_onset(iSlice));
+    
+end
+
+data.slice_onset = slice_onset;
+data.round_error = round_error;
+
+data.interpfactor = interpfactor;
 
 
 end % function
