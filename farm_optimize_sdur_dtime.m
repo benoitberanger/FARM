@@ -82,24 +82,39 @@ end
 const.isvolume           = data.slice_info.isvolume;
 const.good_slice_idx     = data.slice_info.good_slice_idx;
 
-options = optimset('Display','iter-detailed');
+% Unconstrained nonlinear optimization using Nelder-Mead algorithm
+fprintf('[%s]: Starting sdur & dtime optimization \n', mfilename)
 
-% fminsearch : unconstrained nonlinear optimization
-% Here I want to optimize only sdur (or dtime) because there is a direct relashonship between them.
-fprintf('[%s]: Starting sdur optimization \n', mfilename)
 
+% Initializiation points
+%-----------------------
+% In our case, we have a vector of 2 paramters x0 = [ sdur dtime ],
+% but for the algorithm, we need to create 3 starting point (a simplex, in our case a triangle),
+% and the algorithm will look and around this triangle, and update it's position & dimension
+% I choose to start with points that are a few µs next to sdur (and follow the rule dtime = TR - nSlice x sdur)
+sdur = init_param(1);
+x_init = [ 
+    sdur      , sequence.TR-const.nSlice*(sdur     ) % initial sdur
+    sdur+1e-5 , sequence.TR-const.nSlice*(sdur+1e-5) % sdur + 1ms
+    sdur-1e-5 , sequence.TR-const.nSlice*(sdur-1e-5) % sdur - 1ms
+    
+    ]; % reminder : in seconds
+
+% Go !
 tic
-final_param = fminsearch( @(param) cost_function(param, const), init_param, options );
+x_opt = farm_nelder_mead ( x_init,  @(param,speed) cost_function(param, speed, const) );
 toc
+final_param = x_opt;
 
-fprintf('initial sdur | dtime : %fµs %fµs \n',  init_param(1)*1e6,  init_param(2)*1e6 )
-fprintf('final   sdur | dtime : %fµs %fµs \n', final_param(1)*1e6, final_param(2)*1e6 )
+fprintf('initial   sdur | dtime : %fµs %fµs - initial TR : %fs \n',  init_param(1)*1e6,  init_param(2)*1e6, const.nSlice*init_param (1) + init_param (2) )
+fprintf('final     sdur | dtime : %fµs %fµs - final   TR : %fs \n', final_param(1)*1e6, final_param(2)*1e6, const.nSlice*final_param(1) + final_param(2))
+fprintf('variation sdur | dtime : %fµs %fµs \n', (final_param(1)-init_param(1))*1e6, (final_param(2)-init_param(2))*1e6)
 
 
 end % function
 
 
-function cost = cost_function( current_param, const )
+function cost = cost_function( current_param, speed, const )
 % Optimization cost function
 %
 % This function will use eq(3) from the article to build the new slice onsets,
@@ -111,7 +126,9 @@ function cost = cost_function( current_param, const )
 % This rounding error correction is inside the optimization process to reduce even further
 % the mismatch between slice-artifacts and artifact-templates
 
-
+if isempty(speed)
+    speed = 1;
+end
 
 %% Parameters
 
@@ -124,10 +141,12 @@ nSlice             = const.nSlice;
 isvolume           = const.isvolume;
 good_slice_idx     = const.good_slice_idx;
 
+% Speed managment : higher speed, less slice-segement used for cost computation
+good_slice_idx     = good_slice_idx(1:speed:end) ;
+    
 % Get new estimated paramters
 sdur  = current_param(1);
 dtime = current_param(2);
-% dtime = TR - nSlice*sdur;
 
 
 %% Build new slice onsets & rounding error
@@ -165,8 +184,7 @@ end
 
 %% Adjust slice onset with phase-shift using FFT
 
-delta_t = round_error(good_slice_idx) / sdur / fsample;
-
+delta_t        = round_error(good_slice_idx) / sdur / fsample;
 slice_segement = phase_shift( slice_segement , delta_t );
 
 
@@ -174,10 +192,32 @@ slice_segement = phase_shift( slice_segement , delta_t );
 
 slice_segement = slice_segement(:,1+padding/2 : end-padding/2);
 
+% If you want to "see" the effect of sdur & dtime optimization, uncomment the lines bellow.
+% *************************************************************************
+% figPtr = findall(0,'Tag',mfilename); % Is the figure already open ?
+% if ~isempty(figPtr) % Figure exists so brings it to the focus
+%     figure(figPtr);
+% else % Create the figure
+%     
+%     % Create a figure
+%     figure( ...
+%         'Name'            , mfilename                , ...
+%         'NumberTitle'     , 'off'                    , ...
+%         'Tag'             , mfilename                );
+% end
+% % image(slice_segement,'CDataMapping','scaled'), colormap(gray(256));
+% plot(std(slice_segement))
+% drawnow
+% *************************************************************************
+
 
 %% Sum of Variance == cost
 
-cost = sum(std(slice_segement) / nVol);
+slice_segement = ft_preproc_standardize(slice_segement); % z-transform, to normalize the amplitudes
+cost           = mean( std(slice_segement) );            % use mean() instead of sum() to normalize alose
+
+fprintf('current sdur | dtime : %fµs %fµs - TR : %fs - cost : %f - speed : %d \n', ...
+    current_param(1)*1e6, current_param(2)*1e6, const.nSlice*current_param(1) + current_param(2), cost, speed)
 
 
 end % function
@@ -191,7 +231,7 @@ Y = fft(in,[],2);
 adjustment = zeros(1,size(in,2));
 n          = floor(length(adjustment)/2);
 
-adjustment(2:n+1)          = 1:n;
+adjustment(2:n+1)          =  (1:n);
 adjustment(end:-1:end-n+1) = -(1:n);
 if ~rem(size(in,2),2)
     adjustment(length(adjustment)/2 + 1) = 0;

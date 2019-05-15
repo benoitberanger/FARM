@@ -80,3 +80,8 @@ data = farm_add_slice_marker( data);
 
 data = farm_pick_slice_for_template( data );
 
+
+%% Step 3 - Optimize slice markers : optimize sdur & dtime
+
+data = farm_optimize_sdur_dtime( data );
+
