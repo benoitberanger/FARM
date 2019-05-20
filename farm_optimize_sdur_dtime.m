@@ -26,12 +26,12 @@ volume_marker_name = data.volume_marker_name;
 sdur_v  = data.sdur_v;
 dtime_v = data.dtime_v;
 
+
 %% Define some other variables
 
 volume_event = ft_filter_event(data.cfg.event,'value',volume_marker_name);
 
 onset_first_volume = volume_event(1).sample;
-% onset_last_volume  = volume_event(end).sample + data.fsample*sequence.TR + round(mean(sdur_v)); % last marker onset + 1 TR + 1 sdur
 
 
 %% Prepare time serie we will be working on
@@ -44,10 +44,7 @@ hpf_target_channel = ft_preproc_highpassfilter(...
     data.fsample                   , ...
     hpf                            );
 
-% hpf_target_channel = hpf_target_channel(onset_first_volume : onset_last_volume);
-% new_data_time      = data.time{1}(onset_first_volume) : 1/(data.fsample*interpfactor) : data.time{1}(onset_last_volume);
-new_data_time      = data.time{1}(1) : 1/(data.fsample*interpfactor) : data.time{1}(end);
-
+new_data_time = data.time{1}(1) : 1/(data.fsample*interpfactor) : data.time{1}(end);
 
 % Upsample, using matlab builtin function 'interp1'. 'pchip' = shape-preserving piecewise cubic interpolation
 % Note : ft_resampledata uses the same function 'interp1'
@@ -89,9 +86,9 @@ fprintf('[%s]: Starting sdur & dtime optimization \n', mfilename)
 % Initializiation points
 %-----------------------
 % In our case, we have a vector of 2 paramters x0 = [ sdur dtime ],
-% but for the algorithm, we need to create 3 starting point (a simplex, in our case a triangle),
-% and the algorithm will look and around this triangle, and update it's position & dimension
-% I choose to start with points that are a few µs next to sdur (and follow the rule dtime = TR - nSlice x sdur)
+% but for the algorithm, we need to create 3 starting point [sdur1 dtime1; sdur2 dtime2; sdur3 dtime3],
+% and the algorithm will start to look around this values.
+% I choose to start with points that are a few ms next to sdur (and follow the rule dtime = TR - nSlice x sdur)
 sdur = init_param(1);
 x_init = [
     sdur      , sequence.TR-const.nSlice*(sdur     ) % initial sdur
@@ -106,7 +103,7 @@ x_opt = farm_nelder_mead ( x_init,  @(param,speed) farm_cost_function(param, spe
 toc
 final_param = x_opt;
 
-fprintf('initial   sdur | dtime : %fµs %fµs - initial TR : %fs \n',  init_param(1)*1e6,  init_param(2)*1e6, const.nSlice*init_param (1) + init_param (2) )
+fprintf('initial   sdur | dtime : %fµs %fµs - initial TR : %fs \n',  init_param(1)*1e6,  init_param(2)*1e6, const.nSlice* init_param(1) +  init_param(2) )
 fprintf('final     sdur | dtime : %fµs %fµs - final   TR : %fs \n', final_param(1)*1e6, final_param(2)*1e6, const.nSlice*final_param(1) + final_param(2))
 fprintf('variation sdur | dtime : %fµs %fµs \n', (final_param(1)-init_param(1))*1e6, (final_param(2)-init_param(2))*1e6)
 
@@ -125,8 +122,8 @@ nSlice   = const.nSlice;
 isvolume = const.isvolume;
 fsample  = const.fsample;
 
-slice_onset = zeros( nSlice * nVol, 1 );
-round_error = zeros( nSlice * nVol, 1 );
+slice_onset = zeros( nSlice * nVol, 1 ); % this a float, not an integer
+round_error = zeros( nSlice * nVol, 1 ); %  -0.5 < round_error < +0.5 sample
 
 for iSlice = 1 : nSlice * nVol
     

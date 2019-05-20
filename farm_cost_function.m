@@ -99,7 +99,7 @@ slice_segement = slice_segement(:,1+padding/2 : end-padding/2);
 %% Sum of Variance == cost
 
 slice_segement = ft_preproc_standardize(slice_segement); % z-transform, to normalize the amplitudes
-cost           = mean( std(slice_segement) );            % use mean() instead of sum() to normalize alose
+cost           = mean( std(slice_segement) );            % use mean() instead of sum() to normalize also
 
 fprintf('current sdur | dtime : %fµs %fµs - TR : %fs - cost : %f - speed : %d \n', ...
     current_param(1)*1e6, current_param(2)*1e6, const.nSlice*current_param(1) + current_param(2), cost, speed)

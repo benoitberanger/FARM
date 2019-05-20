@@ -87,14 +87,18 @@ end
 
 data. slice_info                         = struct;
 data. slice_info. marker_vector          = marker_vector;
+
 data. slice_info. islastslice            = islastslice;
 data. slice_info. isvolume               = isvolume;
 data. slice_info. isfirstslice           = isfirstslice;
-data. slice_info. lastslice_idx          = marker_vector(islastslice);
-data. slice_info. volume_idx             = marker_vector(isvolume);
+
+data. slice_info.  lastslice_idx         = marker_vector(islastslice );
+data. slice_info.     volume_idx         = marker_vector(isvolume    );
 data. slice_info. firstslice_idx         = marker_vector(isfirstslice);
+
 data. slice_info. good_slice             = good_slice;
 data. slice_info. good_slice_idx         = good_slice_idx;
+
 data. slice_info. slice_idx_for_template = slice_idx_for_template;
 
 fprintf('done \n')
