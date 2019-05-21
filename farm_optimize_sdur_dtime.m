@@ -44,12 +44,10 @@ hpf_target_channel = ft_preproc_highpassfilter(...
     data.fsample                   , ...
     hpf                            );
 
-new_data_time = data.time{1}(1) : 1/(data.fsample*interpfactor) : data.time{1}(end);
+[ ~, signal ] = farm_upsample( data.time{1}, hpf_target_channel, data.fsample, interpfactor );
 
-% Upsample, using matlab builtin function 'interp1'. 'pchip' = shape-preserving piecewise cubic interpolation
-% Note : ft_resampledata uses the same function 'interp1'
-signal = interp1( data.time{1}, hpf_target_channel, new_data_time, 'pchip' );
-signal = [ signal zeros(1, length(signal)) ]; % padding
+% To be sure to have enough points when optimization sdur & dtime, we need a longer input
+signal = [ signal zeros(1, length(signal)) ]; % double the length, like a padding
 
 % 'signal' is now an upsmapled time serie, containing only the gradients artifacts, no EMG
 % We will use this 'signal' to optimize the sdur and dtime paramters
@@ -89,12 +87,13 @@ fprintf('[%s]: Starting sdur & dtime optimization \n', mfilename)
 % but for the algorithm, we need to create 3 starting point [sdur1 dtime1; sdur2 dtime2; sdur3 dtime3],
 % and the algorithm will start to look around this values.
 % I choose to start with points that are a few ms next to sdur (and follow the rule dtime = TR - nSlice x sdur)
-sdur = init_param(1);
+sdur  = init_param(1);
+dtime = init_param(2);
+
 x_init = [
-    sdur      , sequence.TR-const.nSlice*(sdur     ) % initial sdur
-    sdur+1e-5 , sequence.TR-const.nSlice*(sdur+1e-5) % sdur + 1ms
-    sdur-1e-5 , sequence.TR-const.nSlice*(sdur-1e-5) % sdur - 1ms
-    
+    sdur      , dtime      % initial sdur & dtime
+    sdur+1e-3 , dtime+1e-3 % sdur & dtime + 1ms
+    sdur-1e-3 , dtime-1e-3 % sdur & dtime - 1ms
     ]; % reminder : in seconds
 
 % Go !
@@ -120,7 +119,7 @@ data.dtime = dtime;
 nVol     = const.nVol;
 nSlice   = const.nSlice;
 isvolume = const.isvolume;
-fsample  = const.fsample;
+fsample  = data.fsample;   % original fsample
 
 slice_onset = zeros( nSlice * nVol, 1 ); % this a float, not an integer
 round_error = zeros( nSlice * nVol, 1 ); %  -0.5 < round_error < +0.5 sample

@@ -63,7 +63,7 @@ padding = 10; % samples
 slice_segement = zeros( length(good_slice_idx), round(sdur * fsample) + padding );
 
 for iSlice = 1 : length(good_slice_idx)
-    slice_segement(iSlice,:) = signal( slice_onset(good_slice_idx(iSlice)) - padding/2 : slice_onset(good_slice_idx(iSlice)) + round(sdur * fsample) - 1 + padding/2 );
+    slice_segement(iSlice,:) = signal( slice_onset(good_slice_idx(iSlice)) - padding/2 : slice_onset(good_slice_idx(iSlice)) + round(sdur * fsample) -1 + padding/2 );
 end
 
 
@@ -90,8 +90,8 @@ slice_segement = slice_segement(:,1+padding/2 : end-padding/2);
 %         'NumberTitle'     , 'off'                    , ...
 %         'Tag'             , mfilename                );
 % end
-% % image(slice_segement,'CDataMapping','scaled'), colormap(gray(256));
-% plot(std(slice_segement))
+% image(slice_segement,'CDataMapping','scaled'), colormap(gray(256));
+% % plot(std(slice_segement))
 % drawnow
 % *************************************************************************
 
