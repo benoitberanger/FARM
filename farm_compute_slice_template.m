@@ -1,7 +1,7 @@
-function data = farm_slice_correction( data )
-% FARM_SLICE_CORRECTION will use the slices index prepared by farm_pick_slice_for_template,
+function data = farm_compute_slice_template( data )
+% FARM_COMPUTE_SLICE_TEMPLATE will use the slices index prepared by farm_pick_slice_for_template,
 % and select, for each slice, the surrounding slices with the highest correlation.
-% When the selection is done, prepare the template and perform the substraction.
+% When the selection is done, prepare the template.
 %
 % Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
 %       Robust EMG–fMRI artifact reduction for motion (FARM).
@@ -60,7 +60,6 @@ for iChannel = 1 : nChannel
     delta_t        = round_error(slice_list) / sdur / (fsample*interpfactor);
     slice_segement = farm_phase_shift( slice_segement, delta_t );
     
-    
     % Visualization : uncomment bellow
     % figure('Name','slice_segement','NumberTitle','off'); image(slice_segement,'CDataMapping','scaled'), colormap(gray(256));
     
@@ -71,7 +70,7 @@ for iChannel = 1 : nChannel
     
     slice_template = zeros( size(slice_segement) );
     
-    fprintf('[%s]: Preparing slice template for substraction @ channel %d/%d ... \n', mfilename, iChannel, nChannel)
+    fprintf('[%s]: Preparing slice template @ channel %d/%d ... \n', mfilename, iChannel, nChannel)
     
     for iSlice = 1 : length(slice_list)
         slice_target_data        = slice_segement(iSlice,:);                                    % this is the slice we want to correct
@@ -85,36 +84,27 @@ for iChannel = 1 : nChannel
     end
     
     
-    %% Substract template
+    %% Save the tempalte data
     
-    slice_correction = slice_segement - slice_template;
-    
-    
-    %% Save the substracted data
-    
-    fprintf('[%s]:    Saving slice template for substraction @ channel %d/%d ... \n', mfilename, iChannel, nChannel)
+    fprintf('[%s]:    Saving slice template @ channel %d/%d ... \n', mfilename, iChannel, nChannel)
     
     % Apply phase-shift to conpensate the rounding error
     delta_t          = -round_error(slice_list) / sdur / (fsample*interpfactor);
-    slice_correction = farm_phase_shift( slice_correction, delta_t );
-    slice_template   = farm_phase_shift( slice_template, delta_t );
+    slice_template   = farm_phase_shift( slice_template  , delta_t );
     
     % Remove padding
-    slice_correction = slice_correction(:, 1+padding/2 : end-padding/2);
-    slice_template   = slice_template  (:, 1+padding/2 : end-padding/2);
+    slice_template   = slice_template(:, 1+padding/2 : end-padding/2);
     
-    substracted_channel = upsampled_channel;
-    artifact_channel    = upsampled_channel;
+    % Pre-allocation
+    artifact_channel = upsampled_channel;
     
     % Change back from ( slice x sample(slice) ) to (1 x sample) timeserie
     for iSlice = 1 : length(slice_list)
-        substracted_channel( slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + round(sdur * fsample * interpfactor) -1 ) = slice_correction(iSlice,:);
-        artifact_channel   ( slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + round(sdur * fsample * interpfactor) -1 ) = slice_template  (iSlice,:);
+        artifact_channel( slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + round(sdur * fsample * interpfactor) -1 ) = slice_template(iSlice,:);
     end
     
     % Downsample and save
-    [ ~, data.         trial{1}(iChannel, :) ] = farm_resample( upsampled_time, substracted_channel, fsample * interpfactor, 1/interpfactor );
-    [ ~, data.artifact_tempalte(iChannel, :) ] = farm_resample( upsampled_time, artifact_channel   , fsample * interpfactor, 1/interpfactor );
+    [ ~, data.artifact_template(iChannel, :) ] = farm_resample( upsampled_time, artifact_channel, fsample * interpfactor, 1/interpfactor );
     
     
 end % iChannel
