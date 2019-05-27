@@ -50,7 +50,7 @@ for iChannel = 1 : nChannel
     input_channel = data.trial{current_trial}(iChannel, :);
     
     % Upsample
-    [ ~, upsampled_channel ] = farm_upsample( data.time{1}, input_channel, fsample, interpfactor );
+    [ ~, upsampled_channel ] = farm_resample( data.time{1}, input_channel, fsample, interpfactor );
     
     
     %% Prepare good slice-segement
@@ -208,96 +208,98 @@ for iChannel = 1 : nChannel
    plot(diff)
    
    
-%     %% Determine where is the preparation-segment + overlap with slice-segment
-%     % We could determine the preparation segement using dtime, but it would not take
-%     % into account the overlap with slice-segment.
-%     % Here is a method to automaticly determine the preparation-segment + overlap with slice-segment
-%     
-%     mean_around_slice_segement     = mean(around_slice_segement);
-%     mean_consecutive_good_segement = mean(consecutive_good_segement);
-%     
-%     % Start of preparation segement
-%     %----------------------------------------------------------------------
-%     
-%     % First pass, find where the substracted_mean start to diverge
-%     start_prepseg_window_rough = round( (sdur - dtime) * fsample * interpfactor ) : round( (sdur + dtime) * fsample * interpfactor );
-%     substracted_mean_start = mean_around_slice_segement(start_prepseg_window_rough) - mean_consecutive_good_segement(start_prepseg_window_rough);
-%     substracted_mean_start = abs(substracted_mean_start);
-%     substracted_mean_start = substracted_mean_start / max(substracted_mean_start);
-%     start_prepseg_rightlimit = start_prepseg_window_rough(1) + find( abs(substracted_mean_start) > 0.1, 1, 'first' );
-%         
-%     % Second pass, find where the mean is closer from 0 and left of 'start_prepseg_rightlimit'
-%     start_prepseg_window_focused = round( (sdur - dtime) * fsample * interpfactor ) : start_prepseg_rightlimit;
-%     prepseg_close_close_from_zero_and_upperlimit = mean_around_slice_segement(start_prepseg_window_focused);
-%     prepseg_close_close_from_zero_and_upperlimit = abs(prepseg_close_close_from_zero_and_upperlimit);
-%     % The loop below will find where is the closest point to 0 and left of start_prepseg_upperlimit
-%     prev_value = Inf;
-%     for i = length(prepseg_close_close_from_zero_and_upperlimit) : -1 : 1
-%         current_value = prepseg_close_close_from_zero_and_upperlimit(i);
-%         if current_value > prev_value
-%             break
-%         else
-%             prev_value = current_value;
-%         end
-%         assert( i ~= 1, 'oh...' )
-%     end
-%     start_prepseg = i-1;
-%     start_prepseg = start_prepseg_window_focused(1) + start_prepseg;
-%     
-%     % Visualize the strat_prepseg : uncomment bellow
-%     %**********************************************************************
-%         figure
-%         hold on
-%         plot(mean_around_slice_segement    ,'DisplayName','mean_around_slice_segement'    )
-%         plot(mean_consecutive_good_segement,'DisplayName','mean_consecutive_good_segement')
-%         plot([start_prepseg start_prepseg], [min(mean_around_slice_segement) max(mean_around_slice_segement)], 'black', 'LineWidth',2, 'DisplayName','start_prepseg_zero')
-%         lgd = legend;
-%         set(lgd,'Interpreter','none');
-%     %**********************************************************************
+    %% Determine where is the preparation-segment + overlap with slice-segment
+    % We could determine the preparation segement using dtime, but it would not take
+    % into account the overlap with slice-segment.
+    % Here is a method to automaticly determine the preparation-segment + overlap with slice-segment
     
-%     % End of preparation segement
-%     %----------------------------------------------------------------------
-%     mean_around_slice_segement     = fliplr(mean_around_slice_segement);
-%     mean_consecutive_good_segement = fliplr(mean_consecutive_good_segement);
-%     close all
-%     % First pass, find where the substracted_mean end to diverge
-%     end_prepseg_window_rough = round( (sdur - dtime*0.1) * fsample * interpfactor ) : round( (sdur + dtime) * fsample * interpfactor );
-%     substracted_mean_end = mean_around_slice_segement(end_prepseg_window_rough) - mean_consecutive_good_segement(end_prepseg_window_rough);
-%     hold on
-%     plot(mean_around_slice_segement(end_prepseg_window_rough))
-%     plot(mean_consecutive_good_segement(end_prepseg_window_rough))
-%     plot(substracted_mean_end)
-%     substracted_mean_end = abs(substracted_mean_end);
-%     substracted_mean_end = substracted_mean_end / max(substracted_mean_end);
-%     end_prepseg_rightlimit = end_prepseg_window_rough(1) + find( abs(substracted_mean_end) > 0.1, 1, 'first' );
-%     
-%     % Second pass, find where the mean is closer from 0 and left of 'end_prepseg_rightlimit'
-%     end_prepseg_window_focused = round( (sdur - dtime) * fsample * interpfactor ) : end_prepseg_rightlimit;
-%     prepseg_close_close_from_zero_and_upperlimit = mean_around_slice_segement(end_prepseg_window_focused);
-%     prepseg_close_close_from_zero_and_upperlimit = abs(prepseg_close_close_from_zero_and_upperlimit);
-%     % The loop below will find where is the closest point to 0 and left of end_prepseg_upperlimit
-%     prev_value = Inf;
-%     for i = length(prepseg_close_close_from_zero_and_upperlimit) : -1 : 1
-%         current_value = prepseg_close_close_from_zero_and_upperlimit(i);
-%         if current_value > prev_value
-%             break
-%         else
-%             prev_value = current_value;
-%         end
-%         assert( i ~= 1, 'oh...' )
-%     end
-%     end_prepseg = i-1;
-%     end_prepseg = end_prepseg_window_focused(1) + end_prepseg;
-%     
-%     % Visualize the end_prepseg : uncomment bellow
-%     %**********************************************************************
-%     figure
-%     hold on
-%     plot(mean_around_slice_segement    ,'DisplayName','mean_around_slice_segement'    )
-%     plot(mean_consecutive_good_segement,'DisplayName','mean_consecutive_good_segement')
-%     % plot([end_prepseg end_prepseg], [min(mean_around_slice_segement) max(mean_around_slice_segement)], 'black', 'LineWidth',2, 'DisplayName','end_prepseg_zero')
-%     set(lgd,'Interpreter','none');
-%     %**********************************************************************
+    mean_around_slice_segement     = mean(around_slice_segement);
+    mean_consecutive_good_segement = mean(consecutive_good_segement);
+    
+    % Start of preparation segement
+    %----------------------------------------------------------------------
+    
+    % First pass, find where the substracted_mean start to diverge
+    start_prepseg_window_rough = round( (sdur - dtime) * fsample * interpfactor ) : round( (sdur + dtime) * fsample * interpfactor );
+    substracted_mean_start = mean_around_slice_segement(start_prepseg_window_rough) - mean_consecutive_good_segement(start_prepseg_window_rough);
+    substracted_mean_start = abs(substracted_mean_start);
+    substracted_mean_start = substracted_mean_start / max(substracted_mean_start);
+    start_prepseg_rightlimit = start_prepseg_window_rough(1) + find( abs(substracted_mean_start) > 0.1, 1, 'first' );
+        
+    % Second pass, find where the mean is closer from 0 and left of 'start_prepseg_rightlimit'
+    start_prepseg_window_focused = round( (sdur - dtime) * fsample * interpfactor ) : start_prepseg_rightlimit;
+    prepseg_close_close_from_zero_and_upperlimit = mean_around_slice_segement(start_prepseg_window_focused);
+    prepseg_close_close_from_zero_and_upperlimit = abs(prepseg_close_close_from_zero_and_upperlimit);
+    % The loop below will find where is the closest point to 0 and left of start_prepseg_upperlimit
+    prev_value = Inf;
+    for i = length(prepseg_close_close_from_zero_and_upperlimit) : -1 : 1
+        current_value = prepseg_close_close_from_zero_and_upperlimit(i);
+        if current_value > prev_value
+            break
+        else
+            prev_value = current_value;
+        end
+        assert( i ~= 1, 'oh...' )
+    end
+    start_prepseg = i-1;
+    start_prepseg = start_prepseg_window_focused(1) + start_prepseg;
+    
+    % Visualize the strat_prepseg : uncomment bellow
+    %**********************************************************************
+        figure
+        hold on
+        plot(mean_around_slice_segement    ,'DisplayName','mean_around_slice_segement'    )
+        plot(mean_consecutive_good_segement,'DisplayName','mean_consecutive_good_segement')
+        plot([start_prepseg start_prepseg], [min(mean_around_slice_segement) max(mean_around_slice_segement)], 'black', 'LineWidth',2, 'DisplayName','start_prepseg_zero')
+        lgd = legend;
+        set(lgd,'Interpreter','none');
+    %**********************************************************************
+    
+    %%
+    
+    % End of preparation segement
+    %----------------------------------------------------------------------
+    mean_around_slice_segement     = fliplr(mean_around_slice_segement);
+    mean_consecutive_good_segement = fliplr(mean_consecutive_good_segement);
+    close all
+    % First pass, find where the substracted_mean end to diverge
+    end_prepseg_window_rough = round( (sdur - dtime*0.1) * fsample * interpfactor ) : round( (sdur + dtime) * fsample * interpfactor );
+    substracted_mean_end = mean_around_slice_segement(end_prepseg_window_rough) - mean_consecutive_good_segement(end_prepseg_window_rough);
+    hold on
+    plot(mean_around_slice_segement(end_prepseg_window_rough))
+    plot(mean_consecutive_good_segement(end_prepseg_window_rough))
+    plot(substracted_mean_end)
+    substracted_mean_end = abs(substracted_mean_end);
+    substracted_mean_end = substracted_mean_end / max(substracted_mean_end);
+    end_prepseg_rightlimit = end_prepseg_window_rough(1) + find( abs(substracted_mean_end) > 0.1, 1, 'first' );
+    
+    % Second pass, find where the mean is closer from 0 and left of 'end_prepseg_rightlimit'
+    end_prepseg_window_focused = round( (sdur - dtime) * fsample * interpfactor ) : end_prepseg_rightlimit;
+    prepseg_close_close_from_zero_and_upperlimit = mean_around_slice_segement(end_prepseg_window_focused);
+    prepseg_close_close_from_zero_and_upperlimit = abs(prepseg_close_close_from_zero_and_upperlimit);
+    % The loop below will find where is the closest point to 0 and left of end_prepseg_upperlimit
+    prev_value = Inf;
+    for i = length(prepseg_close_close_from_zero_and_upperlimit) : -1 : 1
+        current_value = prepseg_close_close_from_zero_and_upperlimit(i);
+        if current_value > prev_value
+            break
+        else
+            prev_value = current_value;
+        end
+        assert( i ~= 1, 'oh...' )
+    end
+    end_prepseg = i-1;
+    end_prepseg = end_prepseg_window_focused(1) + end_prepseg;
+    
+    % Visualize the end_prepseg : uncomment bellow
+    %**********************************************************************
+    figure
+    hold on
+    plot(mean_around_slice_segement    ,'DisplayName','mean_around_slice_segement'    )
+    plot(mean_consecutive_good_segement,'DisplayName','mean_consecutive_good_segement')
+    plot([end_prepseg end_prepseg], [min(mean_around_slice_segement) max(mean_around_slice_segement)], 'black', 'LineWidth',2, 'DisplayName','end_prepseg_zero')
+    set(lgd,'Interpreter','none');
+    %**********************************************************************
     
 end % iChannel
 
