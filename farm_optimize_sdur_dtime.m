@@ -44,7 +44,7 @@ hpf_target_channel = ft_preproc_highpassfilter(...
     data.fsample                   , ...
     hpf                            );
 
-[ ~, signal ] = farm_upsample( data.time{1}, hpf_target_channel, data.fsample, interpfactor );
+[ ~, signal ] = farm_resample( data.time{1}, hpf_target_channel, data.fsample, interpfactor );
 
 % To be sure to have enough points when optimization sdur & dtime, we need a longer input
 signal = [ signal zeros(1, length(signal)) ]; % double the length, like a padding
@@ -94,7 +94,7 @@ x_init = [
     sdur+1e-3 , dtime+1e-3 % sdur & dtime + 1ms
     sdur-1e-3 , dtime-1e-3 % sdur & dtime - 1ms
     sdur+1e-3 , dtime-1e-3 % sdur & dtime +-1ms
-    ]; % 
+    ];
 
 % Go !
 tic
