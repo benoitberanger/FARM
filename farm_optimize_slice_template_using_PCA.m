@@ -83,7 +83,7 @@ for iChannel = 1 : nChannel
     
     % Remove padding
     artifact_segement = artifact_segement(:, 1+padding/2 : end-padding/2);
-
+    
     
     %% Substract raw data with the slice templates, ready for PCA
     
@@ -109,7 +109,6 @@ for iChannel = 1 : nChannel
     fprintf('[%s]: Computing PCA on channel %d/%d using matlab built-in svd() function... (it can take a while) \n', mfilename, iChannel, nChannel)
     tic, [~, Eload, EVal] = farm_pca_calc(substracted_segement); toc
     vairance_explained = 100*EVal/sum(EVal); % in percent (%)
-    clear EVal % free memory
     
     % Visualization : uncomment bellow
     % figure('Name','first 50 PCs','NumberTitle','off'); image(Eload(:,1:50),'CDataMapping','scaled'), colormap(gray(256));
@@ -123,7 +122,6 @@ for iChannel = 1 : nChannel
     %% Scale components to data before substraction
     
     PC = Eload(:,1:nComponent);
-    clear Eload % free memory
     
     % Scale all PCs so all of them have the same [min max]
     PeakToPeak = max(PC) - min(PC);

@@ -15,6 +15,7 @@ if nargin==0, help(mfilename); return; end
 
 hpf          = 250; % hertz
 interpfactor = 10;  % interpolation factor : upsampling
+
 % Shortcuts
 sequence           = data.sequence;
 volume_marker_name = data.volume_marker_name;
