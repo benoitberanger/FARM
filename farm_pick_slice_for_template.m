@@ -71,14 +71,12 @@ slice_idx_for_template = nan( nMarker, WindowLength );
 % It's a bit trick here when iSlice < WindowLength.
 % That's why I have this procedure that looks weird
 for iSlice = 1 : nMarker
-    
-    distance_to_slice                = abs( good_slice_idx - iSlice );
-    [~,distance_to_slice_sorted_idx] = sort(distance_to_slice);                            % sort the distance, keep index. WARNING : here we work with index of sorted ditances
-    slice_in_window_sorted_idx       = distance_to_slice_sorted_idx(2:end);                % slice_sorted_idx(1) is current slice itself : the rule is don't pick yourself
-    slice_in_window_sorted_idx       = slice_in_window_sorted_idx(1:WindowLength);         % and pick N=WindowLength, also a rule.
-    slice_in_window                  = sort( good_slice_idx(slice_in_window_sorted_idx) ); % get the corresponding slice index (not anymore sorted distance slice index)
+    good_slice_idx_notSelf           = good_slice_idx(good_slice_idx ~= iSlice);                   % not self
+    distance_to_slice                = abs( good_slice_idx_notSelf - iSlice );
+    [~,distance_to_slice_sorted_idx] = sort(distance_to_slice);                                    % sort the distance, keep index. WARNING : here we work with index of sorted ditances
+    slice_in_window_sorted_idx       = distance_to_slice_sorted_idx(1:WindowLength);               % and pick N=WindowLength, also a rule.
+    slice_in_window                  = sort( good_slice_idx_notSelf(slice_in_window_sorted_idx) ); % get the corresponding slice index (not anymore sorted distance slice index)
     slice_idx_for_template(iSlice,:) = slice_in_window;
-    
 end
 
 
