@@ -72,16 +72,23 @@ for iChannel = 1 : nChannel
     
     fprintf('[%s]: Preparing slice template @ channel %d/%d ... \n', mfilename, iChannel, nChannel)
     
+    % Here the indexes of samples are a bit complicated : the input 'slice_segement' is padded with some extra samples,
+    % but only the inner part (when you remove padding) has to be used for the correlation & scaling.
+    
     for iSlice = 1 : length(slice_list)
-        slice_target_data        = slice_segement(iSlice,:);                                    % this is the slice we want to correct
-        slice_candidate_idx      = data.slice_info.slice_idx_for_template(iSlice,:);            % index of slices candidate
-        slice_candidate_data     = slice_segement(slice_candidate_idx,:);                       % data  of slices candidate
-        correlation              = farm_correlation(slice_target_data, slice_candidate_data);   % correlation between target slice and all the candidates
-        [~, order]               = sort(correlation,'descend');                                 % sort the candidates correlation
-        template                 = mean(slice_segement(slice_candidate_idx(order(1:nKeep)),:)); % keep the bests, and average them : this is our template
-        scaling                  = slice_target_data*template'/(template*template');            % use the "power" ratio as scaling factor [ R.K. Niazy et al. (2005) ]
-        slice_template(iSlice,:) = scaling * template;                                          % scale the template so it fits more the target
+        slice_target_data        = slice_segement(iSlice,1+padding/2 : end-padding/2);              % this is the slice we want to correct
+        slice_candidate_idx      = data.slice_info.slice_idx_for_template(iSlice,:);                % index of slices candidate
+        slice_candidate_data     = slice_segement(slice_candidate_idx,1+padding/2 : end-padding/2); % data  of slices candidate
+        correlation              = farm_correlation(slice_target_data, slice_candidate_data);       % correlation between target slice and all the candidates
+        [~, order]               = sort(correlation,'descend');                                     % sort the candidates correlation
+        template                 = mean(slice_segement(slice_candidate_idx(order(1:nKeep)),:));     % keep the bests, and average them : this is our template
+        scaling                  = slice_target_data*template(1+padding/2 : end-padding/2)'/...
+            (template(1+padding/2 : end-padding/2)*template(1+padding/2 : end-padding/2)');         % use the "power" ratio as scaling factor [ R.K. Niazy et al. (2005) ]
+        slice_template(iSlice,:) = scaling * template;                                              % scale the template so it fits more the target
     end
+    
+    % Visualization : uncomment bellow
+    % figure('Name','slice_template','NumberTitle','off'); image(slice_template,'CDataMapping','scaled'), colormap(gray(256));
     
     
     %% Save the tempalte data

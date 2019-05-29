@@ -89,6 +89,8 @@ for iChannel = 1 : nChannel
     
     substracted_segement = slice_segement - artifact_segement;
     
+%     substracted_segement = ft_preproc_highpassfilter( substracted_segement, fsample*interpfactor, 60 );
+    
     % Visualization : uncomment bellow
     % figure('Name','substracted_segement = slice_segement - artifact_segement','NumberTitle','off'); image(substracted_segement,'CDataMapping','scaled'), colormap(gray(256));
     
@@ -116,7 +118,7 @@ for iChannel = 1 : nChannel
     fprintf('[%s]: Variance explained for the first 20 PCs (%%) : %s \n', mfilename, num2str(vairance_explained(1:20)','%.1f, ') )
     
     nComponent = sum(vairance_explained > 5);
-    fprintf('[%s]: Selecting components with more than 5%% of variance : nComponent=%d \n', mfilename, nComponent)
+    fprintf('[%s]: Selecting components with more than 5%% of variance : nComponent = %d \n', mfilename, nComponent)
     
     
     %% Scale components to data before substraction
