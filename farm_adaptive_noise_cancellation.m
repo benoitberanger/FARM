@@ -5,7 +5,7 @@ function data = farm_adaptive_noise_cancellation( data )
 
 %% Parameters
 
-hpf = 250; % Hertz
+lpf = 250; % Hertz
 
 
 %% Retrive some variables already computed
@@ -38,13 +38,13 @@ for iChannel = 1 : nChannel
     input_channel = data.trial{1}(iChannel, start_onset:stop_onset);
     input_noise   = data.noise   (iChannel, start_onset:stop_onset);
     
-    lpf_channel = ft_preproc_lowpassfilter( input_channel, fsample, hpf );
-    lpf_noise   = ft_preproc_lowpassfilter( input_noise  , fsample, hpf );
+    lpf_channel = ft_preproc_lowpassfilter( input_channel, fsample, lpf );
+    lpf_noise   = ft_preproc_lowpassfilter( input_noise  , fsample, lpf );
     
-    hpf_lph_channel = ft_preproc_highpassfilter( lpf_channel, fsample, nSlice/(TR*2) );
+    hpf_lpf_channel = ft_preproc_highpassfilter( lpf_channel, fsample, nSlice/(TR*2) );
     
-    d           = hpf_lph_channel';
-    refs        = lpf_noise';
+    d    = hpf_lpf_channel';
+    refs = lpf_noise';
     
     % Adapt noise amplitude
     alpha = sum(d .* refs) / sum( refs .* refs );
