@@ -100,6 +100,7 @@ for iChannel = 1 : nChannel
     slice_template   = farm_phase_shift( slice_template  , delta_t );
     
     % Remove padding
+    slice_segement   = slice_segement(:, 1+padding/2 : end-padding/2); %#ok<NASGU>
     slice_template   = slice_template(:, 1+padding/2 : end-padding/2);
     
     % Pre-allocation

@@ -56,7 +56,6 @@ function [ x_opt, n_feval ] = farm_nelder_mead ( x, function_handle )
 
 %% Define algorithm constants
 
-
 tolerance = 1.0E-06; % WARNING : tolrance is an ABSOLUTE value, and depends on the scale of the cost
 
 rho = 1;    % rho > 0
@@ -67,6 +66,7 @@ sig = 0.5;  % 0 < sig < 1
 max_feval = 250;
 
 speed = 100;
+
 
 %%  Initialization
 

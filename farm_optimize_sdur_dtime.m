@@ -75,7 +75,7 @@ if isfield(sequence,'MB')
 else
     const.nSlice         = sequence.nSlice;
 end
-const.isvolume           = data.slice_info.isvolume;
+const.isvolume           = data.slice_info.isfirstslice;
 const.good_slice_idx     = data.slice_info.good_slice_idx;
 
 % Unconstrained nonlinear optimization using Nelder-Mead algorithm
@@ -92,9 +92,9 @@ sdur  = init_param(1);
 dtime = init_param(2);
 
 x_init = [
-    sdur+1e-3 , dtime+1e-3 % sdur & dtime + 1ms
-    sdur-1e-3 , dtime-1e-3 % sdur & dtime - 1ms
-    sdur+1e-3 , dtime-1e-3 % sdur & dtime +-1ms
+    sdur+1e-4 , sequence.TR-const.nSlice*(sdur+1e-4) % sdur & dtime + 0.1ms
+    sdur-1e-4 , sequence.TR-const.nSlice*(sdur-1e-4) % sdur & dtime - 0.1ms
+    sdur+1e-4 , sequence.TR-const.nSlice*(sdur-1e-4) % sdur & dtime +-0.1ms
     ];
 
 % Go !

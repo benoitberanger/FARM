@@ -47,10 +47,9 @@ marker_vector = 1 : nMarker;
 %% Forbidden slices
 
 islastslice  = rem(marker_vector, nSlice) == 0;
-isvolume     = circshift(islastslice, +1);
-isfirstslice = circshift(isvolume   , +1);
+isfirstslice = circshift(islastslice, +1);
 
-forbidden_slice = islastslice | isvolume | isfirstslice;
+forbidden_slice = islastslice | isfirstslice;
 
 % WARNING : we still need to follow the rule 'cannot pick yourself'
 
@@ -89,11 +88,9 @@ data. slice_info                         = struct;
 data. slice_info. marker_vector          = marker_vector;
 
 data. slice_info. islastslice            = islastslice;
-data. slice_info. isvolume               = isvolume;
 data. slice_info. isfirstslice           = isfirstslice;
 
 data. slice_info.  lastslice_idx         = marker_vector(islastslice );
-data. slice_info.     volume_idx         = marker_vector(isvolume    );
 data. slice_info. firstslice_idx         = marker_vector(isfirstslice);
 
 data. slice_info. good_slice             = good_slice;
