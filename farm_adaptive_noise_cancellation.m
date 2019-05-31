@@ -58,6 +58,8 @@ for iChannel = 1 : nChannel
     clean_channel = lpf_channel - y';
     
     % Store
+    data.anc_clean = data.pca_clean;
+    data.anc_noise = data.pca_noise;
     data.anc_clean(iChannel, start_onset:stop_onset) = clean_channel;
     data.anc_noise(iChannel, start_onset:stop_onset) = y;
     
