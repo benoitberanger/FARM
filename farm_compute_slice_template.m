@@ -41,7 +41,7 @@ for iChannel = 1 : nChannel
     input_channel = data.trial{1}(iChannel, :);
     
     % Upsample
-    [ upsampled_time, upsampled_channel ] = farm_resample( data.time{1}, input_channel, fsample, interpfactor );
+    [ upsampled_channel, upsampled_time ] = farm_resample( input_channel, data.time{1}, fsample, interpfactor );
     
     
     %% Prepare slice-segement
@@ -112,7 +112,7 @@ for iChannel = 1 : nChannel
     end
     
     % Downsample and save
-    [ ~, data.artifact_template(iChannel, :) ] = farm_resample( upsampled_time, artifact_channel, fsample * interpfactor, 1/interpfactor );
+    data.artifact_template(iChannel, :) = farm_resample( artifact_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
     
     
 end % iChannel

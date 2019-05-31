@@ -50,7 +50,7 @@ for iChannel = 1 : nChannel
     input_channel = data.trial{current_trial}(iChannel, :);
     
     % Upsample
-    [ ~, upsampled_channel ] = farm_resample( data.time{1}, input_channel, fsample, interpfactor );
+    upsampled_channel = farm_resample( input_channel, data.time{1}, fsample, interpfactor );
     
     
     %% Prepare good slice-segement

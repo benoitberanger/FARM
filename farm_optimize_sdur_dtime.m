@@ -45,7 +45,7 @@ hpf_target_channel = ft_preproc_highpassfilter(...
     data.fsample                   , ...
     hpf                            );
 
-[ ~, signal ] = farm_resample( data.time{1}, hpf_target_channel, data.fsample, interpfactor );
+signal = farm_resample( hpf_target_channel, data.time{1}, data.fsample, interpfactor );
 
 % To be sure to have enough points when optimization sdur & dtime, we need a longer input
 signal = [ signal zeros(1, length(signal)) ]; % double the length, like a padding
@@ -89,7 +89,7 @@ fprintf('[%s]: Starting sdur & dtime optimization \n', mfilename)
 % and the algorithm will start to look around this values.
 % I choose to start with points that are a few ms next to sdur (and follow the rule dtime = TR - nSlice x sdur)
 sdur  = init_param(1);
-dtime = init_param(2);
+% dtime = init_param(2);
 
 x_init = [
     sdur+1e-4 , sequence.TR-const.nSlice*(sdur+1e-4) % sdur & dtime + 0.1ms

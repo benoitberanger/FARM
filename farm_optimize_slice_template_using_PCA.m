@@ -64,7 +64,7 @@ for iChannel = 1 : nChannel
     input_channel = data.trial{1}(iChannel, :);
     
     % Upsample
-    [ upsampled_time, upsampled_channel ] = farm_resample( data.time{1}, input_channel, fsample, interpfactor );
+    [ upsampled_channel, upsampled_time ] = farm_resample( input_channel, data.time{1}, fsample, interpfactor );
     
     
     % Upsample : artifact_segement
@@ -74,7 +74,7 @@ for iChannel = 1 : nChannel
     artifact_channel = data.artifact_template(iChannel, :);
     
     % Upsample
-    [ ~, upsampled_artifact ] = farm_resample( data.time{1}, artifact_channel, fsample, interpfactor );
+    upsampled_artifact = farm_resample( artifact_channel, data.time{1}, fsample, interpfactor );
     
     % Output: sections of this vector will replaced
     clean_channel = upsampled_channel;
@@ -195,8 +195,8 @@ for iChannel = 1 : nChannel
     fprintf('[%s]: Saving data & noise \n', mfilename)
     
     % Downsample and save
-    [ ~, data.pca_clean(iChannel, :) ] = farm_resample( upsampled_time, clean_channel, fsample * interpfactor, 1/interpfactor );
-    [ ~, data.pca_noise(iChannel, :) ] = farm_resample( upsampled_time, noise_channel, fsample * interpfactor, 1/interpfactor );
+    data.pca_clean(iChannel, :) = farm_resample( clean_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
+    data.pca_noise(iChannel, :) = farm_resample( noise_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
     
     
 end % iChannel
