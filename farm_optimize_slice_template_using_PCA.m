@@ -137,7 +137,7 @@ for iChannel = 1 : nChannel
         
         mean_artifact = mean(substracted_segement,2);
         
-        % center data (remove mean) for each slice segement, for PCA using SVD
+        % center data (remove mean) for each slice segement, for PCA
         substracted_segement = substracted_segement - mean(substracted_segement);
         
         
@@ -163,8 +163,6 @@ for iChannel = 1 : nChannel
         PeakToPeak = max(PC) - min(PC);
         PC         = PC ./ PeakToPeak * PeakToPeak(1); % scaled to the first (1) component
         
-        PC = [PC ones(round(sdur * fsample * interpfactor),1)];
-        
         fitted_residual = zeros(size(substracted_segement));
         
         for iSlice = 1 : length(slice_list)
@@ -177,13 +175,14 @@ for iChannel = 1 : nChannel
         
         %% Substraction
         
-        % Use orientation (variables x samples)
-%         substracted_segement = substracted_segement';
-        
         % Change back from ( slice x sample(slice) ) to (1 x sample) timeserie
         for iSlice = 1 : length(slice_list)
-            clean_channel( slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + round(sdur * fsample * interpfactor) -1 ) = slice_segement(iSlice,:) - artifact_segement(iSlice,:) - fitted_residual(:,iSlice)'; - mean_artifact';
-            noise_channel( slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + round(sdur * fsample * interpfactor) -1 ) =                            artifact_segement(iSlice,:) + fitted_residual(:,iSlice)'; + mean_artifact';
+            
+            window = slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + round(sdur * fsample * interpfactor) -1;
+            
+            clean_channel( window ) = slice_segement(iSlice,:) - artifact_segement(iSlice,:) - fitted_residual(:,iSlice)' - mean_artifact';
+            noise_channel( window ) =                            artifact_segement(iSlice,:) + fitted_residual(:,iSlice)' + mean_artifact';
+            
         end
         
         
