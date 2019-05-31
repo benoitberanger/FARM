@@ -195,8 +195,8 @@ for iChannel = 1 : nChannel
     fprintf('[%s]: Saving data & noise \n', mfilename)
     
     % Downsample and save
-    [ ~, data.trial{1}(iChannel, :) ] = farm_resample( upsampled_time, clean_channel, fsample * interpfactor, 1/interpfactor );
-    [ ~, data.   noise(iChannel, :) ] = farm_resample( upsampled_time, noise_channel, fsample * interpfactor, 1/interpfactor );
+    [ ~, data.pca_clean(iChannel, :) ] = farm_resample( upsampled_time, clean_channel, fsample * interpfactor, 1/interpfactor );
+    [ ~, data.pca_noise(iChannel, :) ] = farm_resample( upsampled_time, noise_channel, fsample * interpfactor, 1/interpfactor );
     
     
 end % iChannel

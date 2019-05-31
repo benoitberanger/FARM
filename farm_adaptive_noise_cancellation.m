@@ -35,8 +35,8 @@ for iChannel = 1 : nChannel
     stop_onset  = round(slice_onset(end) + 1*sdur*fsample);
     
     % Get data
-    input_channel = data.trial{1}(iChannel, start_onset:stop_onset);
-    input_noise   = data.noise   (iChannel, start_onset:stop_onset);
+    input_channel = data.pca_clean(iChannel, start_onset:stop_onset);
+    input_noise   = data.pca_noise(iChannel, start_onset:stop_onset);
     
     lpf_channel = ft_preproc_lowpassfilter( input_channel, fsample, lpf );
     lpf_noise   = ft_preproc_lowpassfilter( input_noise  , fsample, lpf );
@@ -58,8 +58,8 @@ for iChannel = 1 : nChannel
     clean_channel = lpf_channel - y';
     
     % Store
-    data.trial{1}(iChannel, start_onset:stop_onset) = clean_channel;
-    data.anc     (iChannel, start_onset:stop_onset) = y;
+    data.anc_clean(iChannel, start_onset:stop_onset) = clean_channel;
+    data.anc_noise(iChannel, start_onset:stop_onset) = y;
     
 end % iChannel
 
