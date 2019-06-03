@@ -26,6 +26,10 @@ TR             = sequence.TR;
 
 nChannel = length(data.cfg.channel);
 
+% Pre-allocation of output
+data.anc_clean = data.pca_clean;
+data.anc_noise = data.pca_noise;
+
 for iChannel = 1 : nChannel
     
     fprintf('[%s]: ANC on channel %d/%d \n', mfilename, iChannel, nChannel)
@@ -55,13 +59,9 @@ for iChannel = 1 : nChannel
     
     [~,y]=fastranc(refs,d,N,mu);
     
-    clean_channel = lpf_channel - y';
-    
     % Store
-    data.anc_clean = data.pca_clean;
-    data.anc_noise = data.pca_noise;
-    data.anc_clean(iChannel, start_onset:stop_onset) = clean_channel;
-    data.anc_noise(iChannel, start_onset:stop_onset) = y;
+    data.anc_clean(iChannel, start_onset:stop_onset) = lpf_channel - y';
+    data.anc_noise(iChannel, start_onset:stop_onset) =               y';
     
 end % iChannel
 

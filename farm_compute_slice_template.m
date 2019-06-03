@@ -26,11 +26,15 @@ nKeep = 12; % number of best candidates to keep
 interpfactor   = data.interpfactor;
 fsample        = data.fsample;
 sdur           = data.sdur;
+dtime          = data.dtime;
 slice_onset    = round(data.slice_onset * interpfactor); % phase-shift will be applied to conpensate the rounding error
 round_error    = data.round_error;
 
 
 %% Main
+
+sdur_sample  = round(sdur  * fsample * interpfactor);
+dtime_sample = round(dtime * fsample * interpfactor);
 
 nChannel = length(data.cfg.channel);
 
@@ -51,9 +55,10 @@ for iChannel = 1 : nChannel
     slice_list = data.slice_info.marker_vector;
     
     % Get segment
-    slice_segement = zeros( length(slice_list), round(sdur * fsample * interpfactor) + padding );
+    slice_segement = zeros( length(slice_list), sdur_sample + padding );
     for iSlice = 1 : length(slice_list)
-        slice_segement(iSlice,:) = upsampled_channel( slice_onset(slice_list(iSlice)) - padding/2 : slice_onset(slice_list(iSlice)) + round(sdur * fsample * interpfactor) - 1 + padding/2 );
+        window = slice_onset(slice_list(iSlice)) - padding/2 : slice_onset(slice_list(iSlice)) + sdur_sample - 1 + padding/2;
+        slice_segement(iSlice,:) = upsampled_channel( window );
     end
     
     % Apply phase-shift to conpensate the rounding error
@@ -75,16 +80,25 @@ for iChannel = 1 : nChannel
     % Here the indexes of samples are a bit complicated : the input 'slice_segement' is padded with some extra samples,
     % but only the inner part (when you remove padding) has to be used for the correlation & scaling.
     
+    
+    
     for iSlice = 1 : length(slice_list)
-        slice_target_data        = slice_segement(iSlice,1+padding/2 : end-padding/2);              % this is the slice we want to correct
-        slice_candidate_idx      = data.slice_info.slice_idx_for_template(iSlice,:);                % index of slices candidate
-        slice_candidate_data     = slice_segement(slice_candidate_idx,1+padding/2 : end-padding/2); % data  of slices candidate
-        correlation              = farm_correlation(slice_target_data, slice_candidate_data);       % correlation between target slice and all the candidates
-        [~, order]               = sort(correlation,'descend');                                     % sort the candidates correlation
-        template                 = mean(slice_segement(slice_candidate_idx(order(1:nKeep)),:));     % keep the bests, and average them : this is our template
-        scaling                  = slice_target_data*template(1+padding/2 : end-padding/2)'/...
-            (template(1+padding/2 : end-padding/2)*template(1+padding/2 : end-padding/2)');         % use the "power" ratio as scaling factor [ R.K. Niazy et al. (2005) ]
-        slice_template(iSlice,:) = scaling * template;                                              % scale the template so it fits more the target
+        is_last_slice = any(iSlice == data.slice_info.lastslice_idx); % flag
+        if is_last_slice % where the volume-segment is
+            % on the last slice polluted by the volume-segement, the correlation is no computed on the whole segement
+            % and the scaling is also computed on reduced segement
+            window = 1+padding/2 : sdur_sample-padding/2-dtime_sample;
+        else
+            window = 1+padding/2 : sdur_sample-padding/2;
+        end
+        slice_target_data        = slice_segement(iSlice,:);                                                         % this is the slice we want to correct
+        slice_candidate_idx      = data.slice_info.slice_idx_for_template(iSlice,:);                                 % index of slices candidate
+        slice_candidate_data     = slice_segement(slice_candidate_idx,:);                                            % data  of slices candidate
+        correlation              = farm_correlation(slice_target_data(window), slice_candidate_data(:,window));      % correlation between target slice and all the candidates
+        [~, order]               = sort(correlation,'descend');                                                      % sort the candidates correlation
+        template                 = mean(slice_segement(slice_candidate_idx(order(1:nKeep)),:));                      % keep the bests, and average them : this is our template
+        scaling                  = slice_target_data(window)*template(window)'/(template(window)*template(window)'); % use the "power" ratio as scaling factor [ R.K. Niazy et al. (2005) ]
+        slice_template(iSlice,:) = scaling * template;                                                               % scale the template so it fits more the target
     end
     
     % Visualization : uncomment bellow
@@ -108,7 +122,8 @@ for iChannel = 1 : nChannel
     
     % Change back from ( slice x sample(slice) ) to (1 x sample) timeserie
     for iSlice = 1 : length(slice_list)
-        artifact_channel( slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + round(sdur * fsample * interpfactor) -1 ) = slice_template(iSlice,:);
+        window = slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + round(sdur * fsample * interpfactor) -1;
+        artifact_channel( window ) = slice_template(iSlice,:);
     end
     
     % Downsample and save
