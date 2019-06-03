@@ -52,6 +52,10 @@ end
 
 %% Main
 
+% Which points to get ?
+start_onset = round(slice_onset(1  )                 );
+stop_onset  = round(slice_onset(end) + 1*sdur*fsample);
+
 sdur_sample = round(sdur * fsample * interpfactor);
 
 nChannel = length(data.cfg.channel);
@@ -134,12 +138,15 @@ for iChannel = 1 : nChannel
     end
     
     % Output: sections of this vector will replaced
-    clean_channel = substracted_channel;
+    clean_channel = upsampled_channel;
     noise_channel = upsampled_artifact;
+    
+    % Do not perform substraction on data outside the volume parkers
+    % This will keep the data outside the fMRI scan intact
+    clean_channel(start_onset:stop_onset) = substracted_channel(start_onset:stop_onset);
     
     
     for iSection = 1 : nSection
-        
         
         % Get slice list in this section
         slice_list = slice_section{iSection};

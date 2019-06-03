@@ -12,8 +12,6 @@ if nargin==0, help(mfilename); return; end
 
 %% Paramters
 
-overlap = [0.10 0.10]; % ratio of dtime [left right] that will be also interpolated
-
 padding = 10; % samples, only useful for the phase-shift
 
 
