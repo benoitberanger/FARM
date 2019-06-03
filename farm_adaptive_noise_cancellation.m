@@ -60,8 +60,12 @@ for iChannel = 1 : nChannel
     [~,y]=fastranc(refs,d,N,mu);
     
     % Store
-    data.anc_clean(iChannel, start_onset:stop_onset) = lpf_channel - y';
-    data.anc_noise(iChannel, start_onset:stop_onset) =               y';
+    if max(y) > 1e6 % works better than isinf
+        fprintf('[%s]:ANC Failed for channel %d. Skipping ANC. \n',mfilename,iChannel);
+    else
+        data.anc_clean(iChannel, start_onset:stop_onset) = lpf_channel - y';
+        data.anc_noise(iChannel, start_onset:stop_onset) =               y';
+    end
     
 end % iChannel
 
