@@ -78,7 +78,7 @@ nSample_per_TR = volume_onset(2) - volume_onset(1);
 dtime_max         = round( nSample_per_TR / nSlice / 2 );
 dtime_possibility = 0 : dtime_max;
 
-% sdur is the slice-segement duration
+% sdur is the slice-segment duration
 sdur_possibility = (nSample_per_TR - dtime_possibility) / nSlice;
 
 
@@ -97,7 +97,7 @@ for iVol = 1 : nVol
     for idx_sdur = 1 : length(sdur_possibility)
         
         sdur             = sdur_possibility(idx_sdur); % current sdur
-        slice_datapoints = zeros(nSlice,round(sdur));         % slice-segement for all slcies, according to the current sdur
+        slice_datapoints = zeros(nSlice,round(sdur));         % slice-segment for all slcies, according to the current sdur
         
         for iSlice = 1 : nSlice
             

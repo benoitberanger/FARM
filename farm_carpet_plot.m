@@ -44,17 +44,17 @@ volume_event = ft_filter_event( data.cfg.event, 'value', data.volume_marker_name
 
 %% Prepare the carpet
 
-volume_segement = zeros(length(volume_event), data.sequence.TR * data.fsample);
+volume_segment = zeros(length(volume_event), data.sequence.TR * data.fsample);
 
 for iVol = 1 : length(volume_event)
-    volume_segement( iVol, : ) = channel( volume_event(iVol).sample : volume_event(iVol).sample + data.sequence.TR * data.fsample -1 );
+    volume_segment( iVol, : ) = channel( volume_event(iVol).sample : volume_event(iVol).sample + data.sequence.TR * data.fsample -1 );
 end
 
 
 %% Plot
 
 figure('Name',sprintf('Carpet plot @ channel %d',data.target_channel),'NumberTitle','off');
-image(volume_segement,'CDataMapping','scaled')
+image(volume_segment,'CDataMapping','scaled')
 colormap(gray(256))
 colorbar
 xlabel('samples in TR')

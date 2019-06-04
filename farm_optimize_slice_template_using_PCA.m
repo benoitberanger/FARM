@@ -66,7 +66,7 @@ for iChannel = 1 : nChannel
     
     slice_list = data.slice_info.marker_vector;
     
-    % Upsample : slice_segement (raw data)
+    % Upsample : slice_segment (raw data)
     %----------------------------------------------------------------------
     
     % Get raw data
@@ -76,27 +76,27 @@ for iChannel = 1 : nChannel
     [ upsampled_channel, upsampled_time ] = farm_resample( input_channel, data.time{1}, fsample, interpfactor );
     
     % Get segment
-    slice_segement = zeros( length(slice_list), sdur_sample + padding );
+    slice_segment = zeros( length(slice_list), sdur_sample + padding );
     for iSlice = 1 : length(slice_list)
         window = slice_onset(slice_list(iSlice)) - padding/2 : slice_onset(slice_list(iSlice)) + sdur_sample - 1 + padding/2;
-        slice_segement(iSlice,:) = upsampled_channel( window );
+        slice_segment(iSlice,:) = upsampled_channel( window );
     end
     
     % Apply phase-shift to conpensate the rounding error
     delta_t        = round_error(slice_list) / sdur / (fsample*interpfactor);
-    slice_segement = farm_phase_shift( slice_segement, delta_t );
+    slice_segment = farm_phase_shift( slice_segment, delta_t );
     
     % Remove padding
-    slice_segement = slice_segement(:, 1+padding/2 : end-padding/2);
+    slice_segment = slice_segment(:, 1+padding/2 : end-padding/2);
     
     % Go back to (1 x sample), it's mandatory for volume artifact substraction
     for iSlice = 1 : length(slice_list)
         window = slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + sdur_sample - 1;
-        upsampled_channel( window ) = slice_segement(iSlice,:);
+        upsampled_channel( window ) = slice_segment(iSlice,:);
     end
     
     
-    % Upsample : artifact_segement
+    % Upsample : artifact_segment
     %----------------------------------------------------------------------
     
     % Get raw data
@@ -106,23 +106,23 @@ for iChannel = 1 : nChannel
     upsampled_artifact = farm_resample( artifact_channel, data.time{1}, fsample, interpfactor );
     
     % Get segment
-    artifact_segement = zeros( length(slice_list), sdur_sample + padding );
+    artifact_segment = zeros( length(slice_list), sdur_sample + padding );
     for iSlice = 1 : length(slice_list)
         window = slice_onset(slice_list(iSlice)) - padding/2 : slice_onset(slice_list(iSlice)) + sdur_sample - 1 + padding/2;
-        artifact_segement(iSlice,:) = upsampled_artifact( window );
+        artifact_segment(iSlice,:) = upsampled_artifact( window );
     end
     
     % Apply phase-shift to conpensate the rounding error
     delta_t           = round_error(slice_list) / sdur / (fsample*interpfactor);
-    artifact_segement = farm_phase_shift( artifact_segement, delta_t );
+    artifact_segment = farm_phase_shift( artifact_segment, delta_t );
     
     % Remove padding
-    artifact_segement = artifact_segement(:, 1+padding/2 : end-padding/2);
+    artifact_segment = artifact_segment(:, 1+padding/2 : end-padding/2);
     
     % Go back to (1 x sample), it's mandatory for volume artifact substraction
     for iSlice = 1 : length(slice_list)
         window = slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + sdur_sample - 1;
-        upsampled_artifact( window ) = artifact_segement(iSlice,:);
+        upsampled_artifact( window ) = artifact_segment(iSlice,:);
     end
     
     % Substract raw data with the slice templates
@@ -131,10 +131,10 @@ for iChannel = 1 : nChannel
     substracted_channel = upsampled_channel - upsampled_artifact;
     
     % Now reshape to (iSlice x sample)
-    substracted_segement = zeros(size(slice_segement));
+    substracted_segment = zeros(size(slice_segment));
     for iSlice = 1 : length(slice_list)
         window = slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + sdur_sample - 1;
-        substracted_segement( iSlice, : ) = substracted_channel(window);
+        substracted_segment( iSlice, : ) = substracted_channel(window);
     end
     
     % Output: sections of this vector will replaced
@@ -154,28 +154,28 @@ for iChannel = 1 : nChannel
         
         %% Prepare residuals for PCA, section by section
         
-        substracted_segement_section = substracted_segement(slice_list,:);
+        substracted_segment_section = substracted_segment(slice_list,:);
         
-        substracted_segement_section = ft_preproc_highpassfilter( substracted_segement_section, fsample*interpfactor, 70 ); % from fastr
+        substracted_segment_section = ft_preproc_highpassfilter( substracted_segment_section, fsample*interpfactor, 70 ); % from fastr
         
         % Visualization : uncomment bellow
-        % figure('Name','substracted_segement_section','NumberTitle','off'); image(substracted_segement_section,'CDataMapping','scaled'), colormap(gray(256));
+        % figure('Name','substracted_segment_section','NumberTitle','off'); image(substracted_segment_section,'CDataMapping','scaled'), colormap(gray(256));
         
         
         %% Prepare PCA
         
         % Use orientation (samples x variables) for matlab built'in functions
-        substracted_segement_section = substracted_segement_section';
+        substracted_segment_section = substracted_segment_section';
         
-        mean_artifact = mean(substracted_segement_section,2);
+        mean_artifact = mean(substracted_segment_section,2);
         
-        % center data (remove mean) for each slice segement, for PCA
-        substracted_segement_section = substracted_segement_section - mean(substracted_segement_section);
+        % center data (remove mean) for each slice segment, for PCA
+        substracted_segment_section = substracted_segment_section - mean(substracted_segment_section);
         
         
         %% PCA
         
-        [~, Eload, EVal] = farm_pca_calc(substracted_segement_section);
+        [~, Eload, EVal] = farm_pca_calc(substracted_segment_section);
         vairance_explained = 100*EVal/sum(EVal); % in percent (%)
         
         % Visualization : uncomment bellow
@@ -195,10 +195,10 @@ for iChannel = 1 : nChannel
         PeakToPeak = max(PC) - min(PC);
         PC         = PC ./ PeakToPeak * PeakToPeak(1); % scaled to the first (1) component
         
-        fitted_residual = zeros(size(substracted_segement_section));
+        fitted_residual = zeros(size(substracted_segment_section));
         
         for iSlice = 1 : length(slice_list)
-            fitted_residual(:,iSlice) = PC * ( PC \ substracted_segement_section(:,iSlice) );
+            fitted_residual(:,iSlice) = PC * ( PC \ substracted_segment_section(:,iSlice) );
         end
         
         % Visualization : uncomment bellow
@@ -210,8 +210,8 @@ for iChannel = 1 : nChannel
         % Change back from ( slice x sample(slice) ) to (1 x sample) timeserie
         for iSlice = 1 : length(slice_list)
             window = slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + sdur_sample -1;
-            clean_channel( window ) = substracted_segement(slice_list(iSlice),:) - fitted_residual(:,iSlice)' - mean_artifact';
-            noise_channel( window ) =    artifact_segement(slice_list(iSlice),:) + fitted_residual(:,iSlice)' + mean_artifact';
+            clean_channel( window ) = substracted_segment(slice_list(iSlice),:) - fitted_residual(:,iSlice)' - mean_artifact';
+            noise_channel( window ) =    artifact_segment(slice_list(iSlice),:) + fitted_residual(:,iSlice)' + mean_artifact';
         end
         
         

@@ -78,7 +78,7 @@ data = farm_optimize_sdur_dtime( data );
 data = farm_compute_slice_template( data );
 
 
-%% Volume correction : replace volume-segement (dtime) by 0
+%% Volume correction : replace volume-segment (dtime) by 0
 % In the FARM article, this method is more advanced, and overwrite less points
 % But I didn't succed to code it properly
 

@@ -1,6 +1,6 @@
 function data = farm_volume_correction( data )
 % FARM_VOLUME_CORRECTION will replace the datapoints corresponding to dtime
-% with interpolated data from the neighboring slice-segements
+% with interpolated data from the neighboring slice-segments
 %
 % Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
 %       Robust EMG–fMRI artifact reduction for motion (FARM).
@@ -38,7 +38,7 @@ for iChannel = 1 : nChannel
     
     slice_list = data.slice_info.marker_vector;
     
-    % Upsample : slice_segement (raw data)
+    % Upsample : slice_segment (raw data)
     %----------------------------------------------------------------------
     
     % Get raw data
@@ -48,18 +48,18 @@ for iChannel = 1 : nChannel
     [ upsampled_channel, upsampled_time ] = farm_resample( input_channel, data.time{1}, fsample, interpfactor );
     
     % Get segment
-    slice_segement = zeros( length(slice_list), round(sdur * fsample * interpfactor) + padding );
+    slice_segment = zeros( length(slice_list), round(sdur * fsample * interpfactor) + padding );
     for iSlice = 1 : length(slice_list)
         window = slice_onset(slice_list(iSlice)) - padding/2 : slice_onset(slice_list(iSlice)) + sdur_sample - 1 + padding/2;
-        slice_segement(iSlice,:) = upsampled_channel( window );
+        slice_segment(iSlice,:) = upsampled_channel( window );
     end
     
     % Apply phase-shift to conpensate the rounding error
     delta_t        = round_error(slice_list) / sdur / (fsample*interpfactor);
-    slice_segement = farm_phase_shift( slice_segement, delta_t );
+    slice_segment = farm_phase_shift( slice_segment, delta_t );
     
     
-    % Upsample : artifact_segement
+    % Upsample : artifact_segment
     %----------------------------------------------------------------------
     
     % Get raw data
@@ -69,23 +69,23 @@ for iChannel = 1 : nChannel
     upsampled_artifact = farm_resample( artifact_channel, data.time{1}, fsample, interpfactor );
     
     % Get segment
-    artifact_segement = zeros( length(slice_list), round(sdur * fsample * interpfactor) + padding );
+    artifact_segment = zeros( length(slice_list), round(sdur * fsample * interpfactor) + padding );
     for iSlice = 1 : length(slice_list)
         window = slice_onset(slice_list(iSlice)) - padding/2 : slice_onset(slice_list(iSlice)) + sdur_sample - 1 + padding/2;
-        artifact_segement(iSlice,:) = upsampled_artifact( window );
+        artifact_segment(iSlice,:) = upsampled_artifact( window );
     end
     
     % Apply phase-shift to conpensate the rounding error
     delta_t           = round_error(slice_list) / sdur / (fsample*interpfactor);
-    artifact_segement = farm_phase_shift( artifact_segement, delta_t );
+    artifact_segment = farm_phase_shift( artifact_segment, delta_t );
     
     
-    %% Replace the volume-segement including some overlap by interpolated data
+    %% Replace the volume-segment including some overlap by interpolated data
     
     lastslice_list = data.slice_info.lastslice_idx;
     for iSlice = 1 : length(lastslice_list)
-        slice_segement   (lastslice_list(iSlice),sdur_sample-dtime_sample:end) = 0;
-        artifact_segement(lastslice_list(iSlice),sdur_sample-dtime_sample:end) = 0;
+        slice_segment   (lastslice_list(iSlice),sdur_sample-dtime_sample:end) = 0;
+        artifact_segment(lastslice_list(iSlice),sdur_sample-dtime_sample:end) = 0;
     end
     
     
@@ -95,12 +95,12 @@ for iChannel = 1 : nChannel
     
     % Apply phase-shift to conpensate the rounding error
     delta_t           = -round_error(slice_list) / sdur / (fsample*interpfactor);
-    slice_segement    = farm_phase_shift( slice_segement   , delta_t );
-    artifact_segement = farm_phase_shift( artifact_segement, delta_t );
+    slice_segment    = farm_phase_shift( slice_segment   , delta_t );
+    artifact_segment = farm_phase_shift( artifact_segment, delta_t );
     
     % Remove padding
-    slice_segement    = slice_segement   (:, 1+padding/2 : end-padding/2);
-    artifact_segement = artifact_segement(:, 1+padding/2 : end-padding/2);
+    slice_segment    = slice_segment   (:, 1+padding/2 : end-padding/2);
+    artifact_segment = artifact_segment(:, 1+padding/2 : end-padding/2);
     
     vol_clean  = upsampled_channel;
     vol_noise = upsampled_artifact;
@@ -108,8 +108,8 @@ for iChannel = 1 : nChannel
     % (iSlice x sample) -> (1 x sample)
     for iSlice = 1 : length(slice_list)
         window            = slice_onset(slice_list(iSlice)): slice_onset(slice_list(iSlice)) + sdur_sample - 1;
-        vol_clean(window) =    slice_segement(iSlice,:);
-        vol_noise(window) = artifact_segement(iSlice,:);
+        vol_clean(window) =    slice_segment(iSlice,:);
+        vol_noise(window) = artifact_segment(iSlice,:);
     end
     
     % Downsample

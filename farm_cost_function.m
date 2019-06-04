@@ -26,7 +26,7 @@ nSlice             = const.nSlice;
 isvolume           = const.isvolume;
 good_slice_idx     = const.good_slice_idx;
 
-% Speed managment : higher speed, less slice-segement used for cost computation
+% Speed managment : higher speed, less slice-segment used for cost computation
 good_slice_idx     = good_slice_idx(1:speed:end) ;
 
 % Get new estimated paramters
@@ -55,27 +55,27 @@ end
 % Here, we only take into account the "good" slices that will be used for
 % the slice-correction
 
-% For the phase-shifting, we need pad the slice-segement data with some extra points.
+% For the phase-shifting, we need pad the slice-segment data with some extra points.
 % The phase-shift is supposed to be half a sample, so we don't need to add a lot of padding
 
 padding = 10; % samples
 
-slice_segement = zeros( length(good_slice_idx), round(sdur * fsample) + padding );
+slice_segment = zeros( length(good_slice_idx), round(sdur * fsample) + padding );
 
 for iSlice = 1 : length(good_slice_idx)
-    slice_segement(iSlice,:) = signal( slice_onset(good_slice_idx(iSlice)) - padding/2 : slice_onset(good_slice_idx(iSlice)) + round(sdur * fsample) -1 + padding/2 );
+    slice_segment(iSlice,:) = signal( slice_onset(good_slice_idx(iSlice)) - padding/2 : slice_onset(good_slice_idx(iSlice)) + round(sdur * fsample) -1 + padding/2 );
 end
 
 
 %% Adjust slice onset with phase-shift using FFT
 
 delta_t        = round_error(good_slice_idx) / sdur / fsample;
-slice_segement = farm_phase_shift( slice_segement , delta_t );
+slice_segment = farm_phase_shift( slice_segment , delta_t );
 
 
 %% Remove padding
 
-slice_segement = slice_segement(:,1+padding/2 : end-padding/2);
+slice_segment = slice_segment(:,1+padding/2 : end-padding/2);
 
 % If you want to "see" the effect of sdur & dtime optimization, uncomment the lines bellow.
 % *************************************************************************
@@ -90,16 +90,16 @@ slice_segement = slice_segement(:,1+padding/2 : end-padding/2);
 %         'NumberTitle'     , 'off'                    , ...
 %         'Tag'             , mfilename                );
 % end
-% image(slice_segement,'CDataMapping','scaled'), colormap(gray(256));
-% % plot(std(slice_segement))
+% image(slice_segment,'CDataMapping','scaled'), colormap(gray(256));
+% % plot(std(slice_segment))
 % drawnow
 % *************************************************************************
 
 
 %% Sum of Variance == cost
 
-slice_segement = ft_preproc_standardize(slice_segement); % z-transform, to normalize the amplitudes
-cost           = mean( std(slice_segement) );            % use mean() instead of sum() to normalize also
+slice_segment = ft_preproc_standardize(slice_segment); % z-transform, to normalize the amplitudes
+cost           = mean( std(slice_segment) );            % use mean() instead of sum() to normalize also
 
 fprintf('current sdur | dtime : %fµs %fµs - TR : %fs - cost : %f - speed : %d \n', ...
     current_param(1)*1e6, current_param(2)*1e6, const.nSlice*current_param(1) + current_param(2), cost, speed)
