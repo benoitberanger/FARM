@@ -12,7 +12,6 @@ function channel = farm_filter(channel, fsample, filter)
 % filter = -[59 61] => band-stop filter @ [59  61] Hz
 %
 
-
 if nargin==0, help(mfilename); return; end
 
 
@@ -38,4 +37,4 @@ switch length(filter)
 end
 
 
-end % filter
+end % function
