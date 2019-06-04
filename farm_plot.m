@@ -44,6 +44,8 @@ channel      = channel(volume_event(1).sample : volume_event(end).sample);
 
 figure('Name',sprintf('Plot @ channel %d',data.target_channel),'NumberTitle','off');
 plot( (0:length(channel)-1)/data.fsample , channel )
+xlabel('time (s)')
+ylabel('Signal')
 
 
 end % function

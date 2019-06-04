@@ -1,9 +1,9 @@
-function farm_carpet_plot( data, filter )
-% FARM_CARPET_PLOT will plot the volume-segments of a channel
+function farm_plotFFT( data, filter )
+% FARM_PLOTFFT will plot (1) the data inside the volume markers (2) it's FFT
 % The volume markers will be 'data.volume_marker_name'
 % The channel will be detected by farm_detect_channel_with_greater_artifact
 %
-% Syntax : FARM_CARPET_PLOT( data, filter )
+% Syntax : FARM_PLOTFFT( data, filter )
 %
 % See also farm_filter
 
@@ -35,26 +35,37 @@ if nargin > 1
     channel = farm_filter(channel, data.fsample, filter);
 end
 
+
 volume_event = ft_filter_event( data.cfg.event, 'value', data.volume_marker_name );
-
-
-%% Prepare the carpet
-
-volume_segement = zeros(length(volume_event), data.sequence.TR * data.fsample);
-
-for iVol = 1 : length(volume_event)
-    volume_segement( iVol, : ) = channel( volume_event(iVol).sample : volume_event(iVol).sample + data.sequence.TR * data.fsample -1 );
-end
+channel      = channel(volume_event(1).sample : volume_event(end).sample);
 
 
 %% Plot
 
-figure('Name',sprintf('Carpet plot @ channel %d',data.target_channel),'NumberTitle','off');
-image(volume_segement,'CDataMapping','scaled')
-colormap(gray(256))
-colorbar
-xlabel('samples in TR')
-ylabel('TR index')
+figure('Name',sprintf('Plot @ channel %d',data.target_channel),'NumberTitle','off');
+
+if rem(length(channel),2)
+    channel(end) = []; % to avoid a warning
+end
+
+L = length(channel);
+
+subplot(2,1,1)
+plot( (0:(L-1))/data.fsample , channel )
+xlabel('time (s)')
+ylabel('Signal')
+
+Y = fft(channel);
+P2 = abs(Y/L);
+P1 = P2(1:L/2+1);
+P1(2:end-1) = 2*P1(2:end-1);
+f = data.fsample*(0:(L/2))/L;
+
+subplot(2,1,2)
+plot(f,P1)
+
+xlabel('Frequency (Hz)')
+ylabel('|Y(channel)|')
 
 
 end % function
