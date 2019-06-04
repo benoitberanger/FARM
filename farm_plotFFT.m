@@ -1,4 +1,4 @@
-function farm_plotFFT( data, filter )
+function farm_plotFFT( data, filter, order )
 % FARM_PLOTFFT will plot 
 % (1) the data inside the volume markers
 % (2) it's FFT
@@ -10,6 +10,10 @@ function farm_plotFFT( data, filter )
 % See also farm_filter
 
 if nargin==0, help(mfilename); return; end
+
+if nargin < 3
+    order = [];
+end
 
 
 %% Checks
@@ -34,7 +38,7 @@ end
 
 % Filter
 if nargin > 1
-    channel = farm_filter(channel, data.fsample, filter);
+    channel = farm_filter(channel, data.fsample, filter, order);
 end
 
 

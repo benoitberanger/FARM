@@ -1,4 +1,4 @@
-function channel = farm_filter(channel, fsample, filter)
+function channel = farm_filter(channel, fsample, filter, order)
 % FARM_FILTER uses ft_preproc_*filter
 %
 % 'channel' follow fieldtrip matrix orientation (Channel x Sample),
@@ -14,21 +14,25 @@ function channel = farm_filter(channel, fsample, filter)
 
 if nargin==0, help(mfilename); return; end
 
+if nargin < 4
+    order = [];
+end
+
 
 %% Main
 
 switch length(filter)
     case 1
         if filter > 0                                                              % filter = +100     => high-pass filter @ 100    Hz
-            channel = ft_preproc_highpassfilter( channel, fsample, +filter );
+            channel = ft_preproc_highpassfilter( channel, fsample, +filter, order );
         elseif filter < 0                                                          % filter = -30      =>  low-pass filter @  30    Hz
-            channel = ft_preproc_lowpassfilter ( channel, fsample, -filter );
+            channel = ft_preproc_lowpassfilter ( channel, fsample, -filter, order );
         end
     case 2
         if all(filter > 0)                                                         % filter = +[ 1 12] => band-pass filter @ [ 1 12] Hz
-            channel = ft_preproc_bandpassfilter( channel, fsample, +filter );
+            channel = ft_preproc_bandpassfilter( channel, fsample, +filter, order );
         elseif all(filter < 0)                                                     % filter = -[59 61] => band-stop filter @ [59 61] Hz
-            channel = ft_preproc_bandstopfilter( channel, fsample, -filter );
+            channel = ft_preproc_bandstopfilter( channel, fsample, -filter, order );
         end
     case 0
         % pass, no filter applied

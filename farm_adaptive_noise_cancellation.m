@@ -73,7 +73,7 @@ for iChannel = 1 : nChannel
     N  = round(sdur*fsample);    % filter weigths
     mu = 0.05 / (N * var(refs)); % filter step size
     
-    [~,y]=fast_fastranc(refs,d,N,mu);
+    [~,y]=farm_fastranc(refs,d,N,mu);
     
     % Store
     if max(y) > 1e6 % works better than isinf
