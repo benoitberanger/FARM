@@ -5,11 +5,7 @@ function farm_carpet_plot( data, filter )
 %
 % Syntax : FARM_CARPET_PLOT( data, filter )
 %
-% filter = -30      =>  low-pass filter @  30    Hz
-% filter = +100     => high-pass filter @ 100    Hz
-% filter = +[ 1 12] => band-pass filter @ [ 1 12] Hz
-% filter = -[59 61] => band-stop filter @ [59 61] Hz
-%
+% See also farm_filter
 
 if nargin==0, help(mfilename); return; end
 
@@ -25,25 +21,9 @@ data = farm_detect_channel_with_greater_artifact( data );
 
 channel = data.trial{1}(data.target_channel,:);
 
+% Filter
 if nargin > 1
-    
-    switch length(filter)
-        case 1
-            if filter > 0
-                channel = ft_preproc_highpassfilter( channel, data.fsample, +filter );
-            elseif filter < 0
-                channel = ft_preproc_lowpassfilter ( channel, data.fsample, -filter );
-            end
-        case 2
-            if all(filter > 0)
-                channel = ft_preproc_bandpassfilter( channel, data.fsample, +filter );
-            elseif all(filter < 0)
-                channel = ft_preproc_bandstopfilter( channel, data.fsample, -filter );
-            end
-        otherwise
-            error('')
-    end
-    
+    channel = farm_filter(channel, data.fsample, filter);
 end
 
 volume_event = ft_filter_event( data.cfg.event, 'value', data.volume_marker_name );
