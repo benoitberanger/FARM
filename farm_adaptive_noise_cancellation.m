@@ -1,6 +1,22 @@
 function data = farm_adaptive_noise_cancellation( data )
 % FARM_ADAPTIVE_NOISE_CANCELLATION
 %
+% Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
+%       Robust EMG–fMRI artifact reduction for motion (FARM).
+%       Clinical Neurophysiology, 121(5), 766–776.
+%       https://doi.org/10.1016/j.clinph.2009.12.035
+%
+%       R.K. Niazy, C.F. Beckmann, G.D. Iannetti, J.M. Brady, and S.M. Smith
+%       Removal of FMRI environment artifacts from EEG data using optimal basis sets
+%       NeuroImage 28 (2005) 720 – 737
+%       https://doi.org/10.1016/j.neuroimage.2005.06.067
+%
+%       P.J. Allen, O. Josephs, R. Turner
+%       A Method for Removing Imaging Artifact from Continuous EEG Recording during Functional MRI
+%       NeuroImage 12, 230-239 (2000).
+%       https://doi.org/10.1006/nimg.2000.0599
+%
+
 
 
 %% Parameters

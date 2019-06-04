@@ -14,6 +14,16 @@ function data = farm_add_slice_marker( data )
 %       Clinical Neurophysiology, 121(5), 766–776.
 %       https://doi.org/10.1016/j.clinph.2009.12.035
 %
+%       S.I. Gonçalves, P.J.W. Pouwels, J.P.A. Kuijer, R.M. Heethaar, J.C. de Munck
+%       Artifact removal in co-registered EEG/fMRI by selective average subtraction
+%       Clinical Neurophysiology 118 (2007) 2437–2450
+%       https://doi.org/10.1016/j.clinph.2007.08.017
+%
+%       R.K. Niazy, C.F. Beckmann, G.D. Iannetti, J.M. Brady, and S.M. Smith
+%       Removal of FMRI environment artifacts from EEG data using optimal basis sets
+%       NeuroImage 28 (2005) 720 – 737
+%       https://doi.org/10.1016/j.neuroimage.2005.06.067
+%
 
 if nargin==0, help(mfilename); return; end
 

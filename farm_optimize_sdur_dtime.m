@@ -7,6 +7,10 @@ function data = farm_optimize_sdur_dtime( data )
 %       Clinical Neurophysiology, 121(5), 766–776.
 %       https://doi.org/10.1016/j.clinph.2009.12.035
 %
+%       Jeffrey C. Lagarias, James A. Reeds, Margaret H. Wright, and Paul E Wright
+%       Convergence Properties of the Nelder--Mead Simplex Method in Low Dimensions
+%       December 1998 SIAM Journal on Optimization 9(1):112-147
+%       https://doi.org/10.1137/S1052623496303470
 
 if nargin==0, help(mfilename); return; end
 

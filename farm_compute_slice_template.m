@@ -80,12 +80,10 @@ for iChannel = 1 : nChannel
     % Here the indexes of samples are a bit complicated : the input 'slice_segement' is padded with some extra samples,
     % but only the inner part (when you remove padding) has to be used for the correlation & scaling.
     
-    
-    
     for iSlice = 1 : length(slice_list)
         is_last_slice = any(iSlice == data.slice_info.lastslice_idx); % flag
-        if is_last_slice % where the volume-segment is
-            % on the last slice polluted by the volume-segement, the correlation is no computed on the whole segement
+        if is_last_slice % where the volume-segment is on the last slice polluted by the volume-segement,
+            % the correlation is no computed on the whole segement
             % and the scaling is also computed on reduced segement
             window = 1+padding/2 : sdur_sample-padding/2-dtime_sample;
         else
