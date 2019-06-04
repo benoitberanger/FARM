@@ -2,7 +2,7 @@
 This repository is a MATLAB implementation of FARM toolbox, for removing MRI artifacts from EMG recordings
 
 # Requirements
-- MATLAB : https://fr.mathworks.com/. Tested version : R2017b
+- MATLAB : https://www.mathworks.com/. Tested version : R2017b
 - FieldTrip, a MATLAB tooblox : https://github.com/fieldtrip/fieldtrip
 - **no specific MATLAB toolbox** => if you encounter a compatibility problem, please open an issue.
 
