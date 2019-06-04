@@ -1,5 +1,7 @@
 function farm_plotFFT( data, filter )
-% FARM_PLOTFFT will plot (1) the data inside the volume markers (2) it's FFT
+% FARM_PLOTFFT will plot 
+% (1) the data inside the volume markers
+% (2) it's FFT
 % The volume markers will be 'data.volume_marker_name'
 % The channel will be detected by farm_detect_channel_with_greater_artifact
 %
