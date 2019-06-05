@@ -1,17 +1,37 @@
-function farm_plotFFT( data, filter, order )
+function farm_plotFFT( data, channel_description, processing_stage, filter, order )
 % FARM_PLOTFFT will plot 
 % (1) the data inside the volume markers
 % (2) it's FFT
 % The volume markers will be 'data.volume_marker_name'
-% The channel will be detected by farm.detect_channel_with_greater_artifact
 %
-% Syntax : FARM_PLOTFFT( data, filter )
+% Syntax : FARM_PLOTFFT( data, channel_description, processing_stage, filter, order )
 %
-% See also farm_filter
+% Inputs :
+% - data : classic data for most
+% - channel_description : can be channel index [1 2 ...] or a regex for data.label
+% - processing_stage : regex for field in data, exept for 'raw' which means data.trial{1}
+% - filter & order : see < help farm.filter > 
+%
+% See also farm.filter
 
 if nargin==0, help(mfilename); return; end
 
-if nargin < 3
+
+%% Input parsing
+
+if ~exist('channel_description','var')
+    channel_description = [];
+end
+
+if ~exist('processing_stage','var')
+    processing_stage = [];
+end
+
+if ~exist('filter','var')
+    filter = [];
+end
+
+if ~exist('order','var')
     order = [];
 end
 
@@ -25,46 +45,36 @@ data = farm.detect_channel_with_greater_artifact( data );
 
 %% Prepare data
 
-% Fetch all *_clean fields name
-field_name = fieldnames( data );
-clean_idx  = find(~cellfun(@isempty, strfind(field_name,'_clean'))); %#ok<STRCLFH>
-
-% Use the last *_clean field
-if ~isempty(clean_idx)
-    channel = data.(field_name{clean_idx(end)})(data.target_channel,:);
-else
-    channel = data.trial{1}(data.target_channel,:);
-end
+[ datapoints, channel_idx, channel_name, stage ] = farm.plot.get_datapoints( data, channel_description, processing_stage );
 
 % Filter
 if nargin > 1
-    channel = farm.filter(channel, data.fsample, filter, order);
+    datapoints = farm.filter(datapoints, data.fsample, filter, order);
 end
 
-
-volume_event = ft_filter_event( data.cfg.event, 'value', data.volume_marker_name );
-if isfield(data.sequence,'nVol') && ~isempty(data.sequence.nVol)
-    volume_event = volume_event(1:data.sequence.nVol);
-end
-channel      = channel(volume_event(1).sample : volume_event(end).sample);
+volume_event = farm.sequence.get_volume_event( data );
+nVol         = farm.sequence.get_nVol        ( data );
+volume_event = volume_event(1:nVol);
+datapoints = datapoints(volume_event(1).sample : volume_event(end).sample);
 
 
 %% Plot
 
-figure('Name',sprintf('Plot @ channel %d',data.target_channel),'NumberTitle','off');
+fig_name = sprintf('Plot ''%s'' @ channel %d / %s', stage,channel_idx, channel_name);
+figure('Name',fig_name,'NumberTitle','off');
 
-if rem(length(channel),2)
-    channel(end) = []; % to avoid a warning
+if rem(length(datapoints),2)
+    datapoints(end) = []; % to avoid a warning
 end
 
-L = length(channel);
+L = length(datapoints);
 
 subplot(2,1,1)
-plot( (0:(L-1))/data.fsample , channel )
+plot( (0:(L-1))/data.fsample , datapoints )
 xlabel('time (s)')
 ylabel('Signal')
 
-Y = fft(channel);
+Y = fft(datapoints);
 P2 = abs(Y/L);
 P1 = P2(1:L/2+1);
 P1(2:end-1) = 2*P1(2:end-1);

@@ -1,5 +1,5 @@
 function channel = filter(channel, fsample, filter, order)
-% FARM_FILTER uses ft_preproc_*filter
+% FILTER uses ft_preproc_*filter
 %
 % 'channel' follow fieldtrip matrix orientation (Channel x Sample),
 % each line is a channel, and the columns are the samples
