@@ -40,7 +40,9 @@ if nargin > 1
 end
 
 volume_event = ft_filter_event( data.cfg.event, 'value', data.volume_marker_name );
-
+if isfield(data.sequence,'nVol') && ~isempty(data.sequence.nVol)
+    volume_event = volume_event(1:data.sequence.nVol);
+end
 
 %% Prepare the carpet
 

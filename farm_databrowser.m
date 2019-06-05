@@ -1,6 +1,8 @@
 function farm_databrowser( data, filter )
 % FARM_DATABROWSER will use ft_databrowser on the most recent *_clean field
 %
+% Syntax : FARM_DATABROWSER( data, filter )
+%
 % See also ft_databrowser farm_filter
 
 if nargin==0, help(mfilename); return; end

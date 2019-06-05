@@ -73,7 +73,11 @@ const                    = struct;
 const.onset_first_volume = onset_first_volume*interpfactor;
 const.signal             = signal;
 const.fsample            = data.fsample*interpfactor;
-const.nVol               = length(volume_event);
+if isfield(sequence,'nVol') && ~isempty(sequence.nVol)
+    const.nVol = sequence.nVol;
+else
+    const.nVol = length(volume_event);
+end
 if isfield(sequence,'MB')
     const.nSlice         = sequence.nSlice / sequence.MB;
 else
