@@ -128,13 +128,14 @@ for iChannel = 1 : nChannel
     % Substract raw data with the slice templates
     %----------------------------------------------------------------------
     
-    substracted_channel = upsampled_channel - upsampled_artifact;
+    substracted_channel     = upsampled_channel - upsampled_artifact;
+    lpf_substracted_channel = ft_preproc_highpassfilter( substracted_channel, fsample*interpfactor, 70 );
     
     % Now reshape to (iSlice x sample)
     substracted_segment = zeros(size(slice_segment));
     for iSlice = 1 : length(slice_list)
         window = slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + sdur_sample - 1;
-        substracted_segment( iSlice, : ) = substracted_channel(window);
+        substracted_segment( iSlice, : ) = lpf_substracted_channel(window);
     end
     
     % Output: sections of this vector will replaced
@@ -155,8 +156,6 @@ for iChannel = 1 : nChannel
         %% Prepare residuals for PCA, section by section
         
         substracted_segment_section = substracted_segment(slice_list,:);
-        
-        substracted_segment_section = ft_preproc_highpassfilter( substracted_segment_section, fsample*interpfactor, 70 ); % from fastr
         
         % Visualization : uncomment bellow
         % figure('Name','substracted_segment_section','NumberTitle','off'); image(substracted_segment_section,'CDataMapping','scaled'), colormap(gray(256));
@@ -218,13 +217,38 @@ for iChannel = 1 : nChannel
     end % iSection
     
     
+    slice_list = data.slice_info.marker_vector;
+    
+    substracted_segment_save = zeros( length(slice_list), sdur_sample + padding );
+    for iSlice = 1 : length(slice_list)
+        window = slice_onset(slice_list(iSlice)) - padding/2 : slice_onset(slice_list(iSlice)) + sdur_sample - 1 + padding/2;
+        substracted_segment_save( iSlice, : ) = substracted_channel(window);
+    end
+    
+    % Apply phase-shift to conpensate the rounding error
+    delta_t                  = -round_error(slice_list) / sdur / (fsample*interpfactor);
+    substracted_segment_save = farm.phase_shift( substracted_segment_save, delta_t );
+    
+    % Remove padding
+    substracted_segment_save = substracted_segment_save(:, 1+padding/2 : end-padding/2);
+    
+    upsampled_substracted = substracted_channel;
+    
+    % Go back to (1 x sample), it's mandatory for volume artifact substraction
+    for iSlice = 1 : length(slice_list)
+        window = slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + sdur_sample - 1;
+        upsampled_substracted( window ) = substracted_segment_save(iSlice,:);
+    end
+    
+    
     %% Substraction
     
     fprintf('[%s]: Saving data & noise \n', mfilename)
     
     % Downsample and save
-    data.pca_clean(iChannel, :) = farm.resample( clean_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
-    data.pca_noise(iChannel, :) = farm.resample( noise_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
+    data.sub_template(iChannel, :) = farm.resample( upsampled_substracted, upsampled_time, fsample * interpfactor, 1/interpfactor );
+    data.pca_clean   (iChannel, :) = farm.resample( clean_channel        , upsampled_time, fsample * interpfactor, 1/interpfactor );
+    data.pca_noise   (iChannel, :) = farm.resample( noise_channel        , upsampled_time, fsample * interpfactor, 1/interpfactor );
     
     
 end % iChannel

@@ -54,7 +54,7 @@ data.volume_marker_name = 'V';                   % name of the volume event in d
 % I have to test/develop to check if FARM actual pipeline is feasable for EEG
 
 farm_check_data( data )
-data.trial{1} = farm_filter(data.trial{1}, data.fsample, +30); % instead of default=6 because unstable
+data.trial{1} = farm.filter(data.trial{1}, data.fsample, +30); % instead of default=6 because unstable
 
 
 %% Add slice markers : initialize sdur & dtime
@@ -110,4 +110,4 @@ data = farm_remove_slice_marker( data );
 
 %% Plot
 
-farm_plotFFT(data, +[30 250])
+farm_plotFFT(data, 1, 'pca_clean', +[30 250])

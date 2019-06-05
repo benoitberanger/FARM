@@ -112,8 +112,8 @@ for iChannel = 1 : nChannel
     slice_template   = farm.phase_shift( slice_template  , delta_t );
     
     % Remove padding
-    slice_segment   = slice_segment(:, 1+padding/2 : end-padding/2); %#ok<NASGU>
-    slice_template   = slice_template(:, 1+padding/2 : end-padding/2);
+    slice_segment   =  slice_segment(:, 1+padding/2 : end-padding/2); %#ok<NASGU>
+    slice_template  = slice_template(:, 1+padding/2 : end-padding/2);
     
     % Pre-allocation
     artifact_channel = upsampled_channel;

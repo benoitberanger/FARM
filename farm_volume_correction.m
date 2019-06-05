@@ -55,9 +55,17 @@ for iChannel = 1 : nChannel
     end
     
     % Apply phase-shift to conpensate the rounding error
-    delta_t        = round_error(slice_list) / sdur / (fsample*interpfactor);
+    delta_t       = round_error(slice_list) / sdur / (fsample*interpfactor);
     slice_segment = farm.phase_shift( slice_segment, delta_t );
     
+    % Remove padding
+    slice_segment = slice_segment(:, 1+padding/2 : end-padding/2);
+    
+    % Go back to (1 x sample)
+    for iSlice = 1 : length(slice_list)
+        window = slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + sdur_sample - 1;
+        upsampled_channel( window ) = slice_segment(iSlice,:);
+    end
     
     % Upsample : artifact_segment
     %----------------------------------------------------------------------
@@ -76,16 +84,45 @@ for iChannel = 1 : nChannel
     end
     
     % Apply phase-shift to conpensate the rounding error
-    delta_t           = round_error(slice_list) / sdur / (fsample*interpfactor);
+    delta_t          = round_error(slice_list) / sdur / (fsample*interpfactor);
     artifact_segment = farm.phase_shift( artifact_segment, delta_t );
+    
+    % Remove padding
+    artifact_segment = artifact_segment(:, 1+padding/2 : end-padding/2);
+    
+    % Go back to (1 x sample)
+    for iSlice = 1 : length(slice_list)
+        window = slice_onset(slice_list(iSlice)) : slice_onset(slice_list(iSlice)) + sdur_sample - 1;
+        upsampled_artifact( window ) = artifact_segment(iSlice,:);
+    end
     
     
     %% Replace the volume-segment including some overlap by interpolated data
     
     lastslice_list = data.slice_info.lastslice_idx;
     for iSlice = 1 : length(lastslice_list)
-        slice_segment   (lastslice_list(iSlice),sdur_sample-dtime_sample:end) = 0;
-        artifact_segment(lastslice_list(iSlice),sdur_sample-dtime_sample:end) = 0;
+        window = slice_onset(lastslice_list(iSlice)) + sdur_sample-dtime_sample : slice_onset(lastslice_list(iSlice)) + sdur_sample+dtime_sample;
+        upsampled_channel ( window ) = 0;
+        upsampled_artifact( window ) = 0;
+    end
+    
+    
+    %% Go to (nSlice x nSample)
+    
+    slice_list = data.slice_info.marker_vector;
+    
+    % Get segment
+    slice_segment = zeros( length(slice_list), round(sdur * fsample * interpfactor) + padding );
+    for iSlice = 1 : length(slice_list)
+        window = slice_onset(slice_list(iSlice)) - padding/2 : slice_onset(slice_list(iSlice)) + sdur_sample - 1 + padding/2;
+        slice_segment(iSlice,:) = upsampled_channel( window );
+    end
+    
+    % Get segment
+    artifact_segment = zeros( length(slice_list), round(sdur * fsample * interpfactor) + padding );
+    for iSlice = 1 : length(slice_list)
+        window = slice_onset(slice_list(iSlice)) - padding/2 : slice_onset(slice_list(iSlice)) + sdur_sample - 1 + padding/2;
+        artifact_segment(iSlice,:) = upsampled_artifact( window );
     end
     
     
@@ -102,7 +139,7 @@ for iChannel = 1 : nChannel
     slice_segment    = slice_segment   (:, 1+padding/2 : end-padding/2);
     artifact_segment = artifact_segment(:, 1+padding/2 : end-padding/2);
     
-    vol_clean  = upsampled_channel;
+    vol_clean = upsampled_channel;
     vol_noise = upsampled_artifact;
     
     % (iSlice x sample) -> (1 x sample)
