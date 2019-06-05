@@ -1,7 +1,7 @@
 function farm_carpet_plot( data, filter, order )
 % FARM_CARPET_PLOT will plot the volume-segments of a channel
 % The volume markers will be 'data.volume_marker_name'
-% The channel will be detected by farm_detect_channel_with_greater_artifact
+% The channel will be detected by farm.detect_channel_with_greater_artifact
 %
 % Syntax : FARM_CARPET_PLOT( data, filter )
 %
@@ -18,7 +18,7 @@ end
 
 farm_check_data( data )
 
-data = farm_detect_channel_with_greater_artifact( data );
+data = farm.detect_channel_with_greater_artifact( data );
 
 
 %% Prepare data
@@ -39,10 +39,10 @@ if nargin > 1
     channel = farm_filter(channel, data.fsample, filter, order);
 end
 
-volume_event = ft_filter_event( data.cfg.event, 'value', data.volume_marker_name );
-if isfield(data.sequence,'nVol') && ~isempty(data.sequence.nVol)
-    volume_event = volume_event(1:data.sequence.nVol);
-end
+volume_event = farm.sequence.get_volume_event( data );
+nVol         = farm.sequence.get_nVol        ( data );
+volume_event = volume_event(1:nVol);
+
 
 %% Prepare the carpet
 

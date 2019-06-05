@@ -1,4 +1,4 @@
-function [EVec, Eload, EVal] = farm_pca_calc(vecs)
+function [EVec, Eload, EVal] = pca_calc(vecs)
 %
 %  PCA_CALC   Principal Component Analysis
 %

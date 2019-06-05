@@ -31,16 +31,9 @@ assert( round(WindowLength)==WindowLength & WindowLength>0, 'WindowLength must b
 
 %% Preparations
 
-slice_event  = ft_filter_event( data.cfg.event, 'value', 's' );
-
-nMarker = length(slice_event);
-% nSlice
-if isfield(data.sequence,'MB')
-    nSlice = data.sequence.nSlice / data.sequence.MB;
-else
-    nSlice = data.sequence.nSlice;
-end
-
+slice_event   = ft_filter_event( data.cfg.event, 'value', 's' );
+nMarker       = length(slice_event);
+nSlice        = farm.sequence.get_nSlice( data );
 marker_vector = 1 : nMarker;
 
 

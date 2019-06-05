@@ -1,5 +1,5 @@
-function correlation = farm_correlation( vector , matrix )
-% FARM_CORRELATION
+function correlation = correlation( vector , matrix )
+% CORRELATION
 %
 % maths : correlation(x,y) = covariance(x,y) / (var(x) * var(y))
 %

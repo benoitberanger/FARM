@@ -1,4 +1,4 @@
-function cost = farm_cost_function( current_param, speed, const )
+function cost = cost_function( current_param, speed, const )
 % Optimization cost function
 %
 % This function will use eq(3) from the article to build the new slice onsets,
@@ -70,7 +70,7 @@ end
 %% Adjust slice onset with phase-shift using FFT
 
 delta_t        = round_error(good_slice_idx) / sdur / fsample;
-slice_segment = farm_phase_shift( slice_segment , delta_t );
+slice_segment = farm.phase_shift( slice_segment , delta_t );
 
 
 %% Remove padding

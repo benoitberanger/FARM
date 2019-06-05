@@ -1,4 +1,4 @@
-function out = farm_phase_shift( in, delta_t )
+function out = phase_shift( in, delta_t )
 % 'in' is (Nchans X Ntime)
 % 'delta_t' is (Nchans X 1)
 %

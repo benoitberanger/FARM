@@ -22,7 +22,6 @@ interpfactor = 10;  % interpolation factor : upsampling
 
 % Shortcuts
 sequence           = data.sequence;
-volume_marker_name = data.volume_marker_name;
 
 
 %% Retrive some variables already computed
@@ -34,22 +33,22 @@ dtime_v = data.dtime_v;
 
 %% Define some other variables
 
-volume_event = ft_filter_event(data.cfg.event,'value',volume_marker_name);
+volume_event = farm.sequence.get_volume_event( data );
 
 onset_first_volume = volume_event(1).sample;
 
 
 %% Prepare time serie we will be working on
 
-data = farm_detect_channel_with_greater_artifact( data ); % simple routine, defines data.target_channel
+data = farm.detect_channel_with_greater_artifact( data ); % simple routine, defines data.target_channel
 
 % Remove low frequencies, including EMG, we only need the gradients
 hpf_target_channel = ft_preproc_highpassfilter(...
-    data.trial{1}(data.target_channel,:), ...
-    data.fsample                   , ...
-    hpf                            );
+    data.trial{1}(data.target_channel,:)     , ...
+    data.fsample                             , ...
+    hpf                                       );
 
-signal = farm_resample( hpf_target_channel, data.time{1}, data.fsample, interpfactor );
+signal = farm.resample( hpf_target_channel, data.time{1}, data.fsample, interpfactor );
 
 % To be sure to have enough points when optimization sdur & dtime, we need a longer input
 signal = [ signal zeros(1, length(signal)) ]; % double the length, like a padding
@@ -73,16 +72,8 @@ const                    = struct;
 const.onset_first_volume = onset_first_volume*interpfactor;
 const.signal             = signal;
 const.fsample            = data.fsample*interpfactor;
-if isfield(sequence,'nVol') && ~isempty(sequence.nVol)
-    const.nVol = sequence.nVol;
-else
-    const.nVol = length(volume_event);
-end
-if isfield(sequence,'MB')
-    const.nSlice         = sequence.nSlice / sequence.MB;
-else
-    const.nSlice         = sequence.nSlice;
-end
+const.nVol               = farm.sequence.get_nVol  ( data );
+const.nSlice             = farm.sequence.get_nSlice( data );
 const.isvolume           = data.slice_info.isfirstslice;
 const.good_slice_idx     = data.slice_info.good_slice_idx;
 
@@ -107,7 +98,7 @@ x_init = [
 
 % Go !
 tic
-x_opt = farm_nelder_mead ( x_init,  @(param,speed) farm_cost_function(param, speed, const) );
+x_opt = farm.optimization.nelder_mead ( x_init,  @(param,speed) farm.optimization.cost_function(param, speed, const) );
 toc
 final_param = x_opt;
 

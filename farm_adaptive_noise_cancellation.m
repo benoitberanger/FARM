@@ -30,11 +30,7 @@ fsample        = data.fsample;
 sdur           = data.sdur;
 slice_onset    = data.slice_onset; % keep non integer
 sequence       = data.sequence;
-if isfield(sequence,'MB')
-    nSlice     = sequence.nSlice / sequence.MB;
-else
-    nSlice     = sequence.nSlice;
-end
+nSlice         = farm.sequence.get_nSlice( data );
 TR             = sequence.TR;
 
 
@@ -73,7 +69,7 @@ for iChannel = 1 : nChannel
     N  = round(sdur*fsample);    % filter weigths
     mu = 0.05 / (N * var(refs)); % filter step size
     
-    [~,y]=farm_fastranc(refs,d,N,mu);
+    [~,y]=farm.anc.fastranc(refs,d,N,mu);
     
     % Store
     if max(y) > 1e6 % works better than isinf

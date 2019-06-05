@@ -32,17 +32,12 @@ if nargin==0, help(mfilename); return; end
 
 narginchk(1,1)
 
-% data
 farm_check_data( data )
-
-% Shortcuts
-sequence           = data.sequence;
-volume_marker_name = data.volume_marker_name;
 
 
 %% Detect the channel with higher "amplitude"
 
-data = farm_detect_channel_with_greater_artifact( data ); % simple routine, defines data.target_channel
+data = farm.detect_channel_with_greater_artifact( data ); % simple routine, defines data.target_channel
 
 % Remove low frequencies, including EMG, we only need the gradients to compute slice markers
 hpf_target_channel = ft_preproc_highpassfilter( ...
@@ -54,21 +49,12 @@ hpf_target_channel = ft_preproc_highpassfilter( ...
 %% Prepare some paramters
 
 % nVol
-volume_event = ft_filter_event(data.cfg.event,'value',volume_marker_name);
-assert( numel(volume_event)>0 , '%s is not a valid marker', volume_marker_name )
-if isfield(sequence,'nVol') && ~isempty(sequence.nVol)
-    nVol = sequence.nVol;
-    volume_event = volume_event(1:nVol);
-else
-    nVol = length(volume_event);
-end
+volume_event = farm.sequence.get_volume_event( data );
+nVol         = farm.sequence.get_nVol        ( data );
+volume_event = volume_event(1:nVol);
 
 % nSlice
-if isfield(sequence,'MB')
-    nSlice = sequence.nSlice / sequence.MB;
-else
-    nSlice = sequence.nSlice;
-end
+nSlice       = farm.sequence.get_nSlice      ( data );
 
 volume_onset   = [volume_event.sample];
 nSample_per_TR = volume_onset(2) - volume_onset(1);

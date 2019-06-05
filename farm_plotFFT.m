@@ -3,7 +3,7 @@ function farm_plotFFT( data, filter, order )
 % (1) the data inside the volume markers
 % (2) it's FFT
 % The volume markers will be 'data.volume_marker_name'
-% The channel will be detected by farm_detect_channel_with_greater_artifact
+% The channel will be detected by farm.detect_channel_with_greater_artifact
 %
 % Syntax : FARM_PLOTFFT( data, filter )
 %
@@ -20,7 +20,7 @@ end
 
 farm_check_data( data )
 
-data = farm_detect_channel_with_greater_artifact( data );
+data = farm.detect_channel_with_greater_artifact( data );
 
 
 %% Prepare data
@@ -38,7 +38,7 @@ end
 
 % Filter
 if nargin > 1
-    channel = farm_filter(channel, data.fsample, filter, order);
+    channel = farm.filter(channel, data.fsample, filter, order);
 end
 
 

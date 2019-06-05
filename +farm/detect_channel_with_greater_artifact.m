@@ -1,5 +1,5 @@
-function data = farm_detect_channel_with_greater_artifact( data )
-% FARM_DETECT_CHANNEL_WITH_GREATER_ARTIFACT will detect which channel has the biggest artifact,
+function data = detect_channel_with_greater_artifact( data )
+% DETECT_CHANNEL_WITH_GREATER_ARTIFACT will detect which channel has the biggest artifact,
 % and store the channel index for latter use.
 
 if nargin==0, help(mfilename); return; end

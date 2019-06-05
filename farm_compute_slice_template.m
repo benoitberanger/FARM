@@ -45,7 +45,7 @@ for iChannel = 1 : nChannel
     input_channel = data.trial{1}(iChannel, :);
     
     % Upsample
-    [ upsampled_channel, upsampled_time ] = farm_resample( input_channel, data.time{1}, fsample, interpfactor );
+    [ upsampled_channel, upsampled_time ] = farm.resample( input_channel, data.time{1}, fsample, interpfactor );
     
     
     %% Prepare slice-segment
@@ -63,7 +63,7 @@ for iChannel = 1 : nChannel
     
     % Apply phase-shift to conpensate the rounding error
     delta_t        = round_error(slice_list) / sdur / (fsample*interpfactor);
-    slice_segment = farm_phase_shift( slice_segment, delta_t );
+    slice_segment = farm.phase_shift( slice_segment, delta_t );
     
     % Visualization : uncomment bellow
     % figure('Name','slice_segment','NumberTitle','off'); image(slice_segment,'CDataMapping','scaled'), colormap(gray(256));
@@ -92,7 +92,7 @@ for iChannel = 1 : nChannel
         slice_target_data        = slice_segment(iSlice,:);                                                         % this is the slice we want to correct
         slice_candidate_idx      = data.slice_info.slice_idx_for_template(iSlice,:);                                 % index of slices candidate
         slice_candidate_data     = slice_segment(slice_candidate_idx,:);                                            % data  of slices candidate
-        correlation              = farm_correlation(slice_target_data(window), slice_candidate_data(:,window));      % correlation between target slice and all the candidates
+        correlation              = farm.correlation(slice_target_data(window), slice_candidate_data(:,window));      % correlation between target slice and all the candidates
         [~, order]               = sort(correlation,'descend');                                                      % sort the candidates correlation
         template                 = mean(slice_segment(slice_candidate_idx(order(1:nKeep)),:));                      % keep the bests, and average them : this is our template
         scaling                  = slice_target_data(window)*template(window)'/(template(window)*template(window)'); % use the "power" ratio as scaling factor [ R.K. Niazy et al. (2005) ]
@@ -109,7 +109,7 @@ for iChannel = 1 : nChannel
     
     % Apply phase-shift to conpensate the rounding error
     delta_t          = -round_error(slice_list) / sdur / (fsample*interpfactor);
-    slice_template   = farm_phase_shift( slice_template  , delta_t );
+    slice_template   = farm.phase_shift( slice_template  , delta_t );
     
     % Remove padding
     slice_segment   = slice_segment(:, 1+padding/2 : end-padding/2); %#ok<NASGU>
@@ -125,7 +125,7 @@ for iChannel = 1 : nChannel
     end
     
     % Downsample and save
-    data.artifact_template(iChannel, :) = farm_resample( artifact_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
+    data.artifact_template(iChannel, :) = farm.resample( artifact_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
     
     
 end % iChannel

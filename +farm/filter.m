@@ -1,10 +1,10 @@
-function channel = farm_filter(channel, fsample, filter, order)
+function channel = filter(channel, fsample, filter, order)
 % FARM_FILTER uses ft_preproc_*filter
 %
 % 'channel' follow fieldtrip matrix orientation (Channel x Sample),
 % each line is a channel, and the columns are the samples
 %
-% Syntax : channel = FARM_FILTER(channel, fsample, filter)
+% Syntax : channel = FILTER(channel, fsample, filter)
 %
 % filter = -30      =>  low-pass filter @ 30       Hz
 % filter = +100     => high-pass filter @ 100      Hz

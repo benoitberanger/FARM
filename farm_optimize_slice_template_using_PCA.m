@@ -73,7 +73,7 @@ for iChannel = 1 : nChannel
     input_channel = data.vol_clean(iChannel, :);
     
     % Upsample
-    [ upsampled_channel, upsampled_time ] = farm_resample( input_channel, data.time{1}, fsample, interpfactor );
+    [ upsampled_channel, upsampled_time ] = farm.resample( input_channel, data.time{1}, fsample, interpfactor );
     
     % Get segment
     slice_segment = zeros( length(slice_list), sdur_sample + padding );
@@ -84,7 +84,7 @@ for iChannel = 1 : nChannel
     
     % Apply phase-shift to conpensate the rounding error
     delta_t        = round_error(slice_list) / sdur / (fsample*interpfactor);
-    slice_segment = farm_phase_shift( slice_segment, delta_t );
+    slice_segment = farm.phase_shift( slice_segment, delta_t );
     
     % Remove padding
     slice_segment = slice_segment(:, 1+padding/2 : end-padding/2);
@@ -103,7 +103,7 @@ for iChannel = 1 : nChannel
     artifact_channel = data.vol_noise(iChannel, :);
     
     % Upsample
-    upsampled_artifact = farm_resample( artifact_channel, data.time{1}, fsample, interpfactor );
+    upsampled_artifact = farm.resample( artifact_channel, data.time{1}, fsample, interpfactor );
     
     % Get segment
     artifact_segment = zeros( length(slice_list), sdur_sample + padding );
@@ -114,7 +114,7 @@ for iChannel = 1 : nChannel
     
     % Apply phase-shift to conpensate the rounding error
     delta_t           = round_error(slice_list) / sdur / (fsample*interpfactor);
-    artifact_segment = farm_phase_shift( artifact_segment, delta_t );
+    artifact_segment = farm.phase_shift( artifact_segment, delta_t );
     
     % Remove padding
     artifact_segment = artifact_segment(:, 1+padding/2 : end-padding/2);
@@ -175,7 +175,7 @@ for iChannel = 1 : nChannel
         
         %% PCA
         
-        [~, Eload, EVal] = farm_pca_calc(substracted_segment_section);
+        [~, Eload, EVal] = farm.pca_calc(substracted_segment_section);
         vairance_explained = 100*EVal/sum(EVal); % in percent (%)
         
         % Visualization : uncomment bellow
@@ -223,8 +223,8 @@ for iChannel = 1 : nChannel
     fprintf('[%s]: Saving data & noise \n', mfilename)
     
     % Downsample and save
-    data.pca_clean(iChannel, :) = farm_resample( clean_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
-    data.pca_noise(iChannel, :) = farm_resample( noise_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
+    data.pca_clean(iChannel, :) = farm.resample( clean_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
+    data.pca_noise(iChannel, :) = farm.resample( noise_channel, upsampled_time, fsample * interpfactor, 1/interpfactor );
     
     
 end % iChannel

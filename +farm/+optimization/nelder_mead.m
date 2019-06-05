@@ -1,4 +1,4 @@
-function [ x_opt, n_feval ] = farm_nelder_mead ( x, function_handle )
+function [ x_opt, n_feval ] = nelder_mead ( x, function_handle )
 % SOURCE : https://people.sc.fsu.edu/~jburkardt/m_src/nelder_mead/nelder_mead.html
 %
 % Some help : https://en.wikipedia.org/wiki/Nelder-Mead_method

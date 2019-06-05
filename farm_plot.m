@@ -1,7 +1,7 @@
-function farm_plot( data, filter, order )
+function farm_plot( data, channel, stage, filter, order )
 % FARM_PLOT will plot the data inside the volume markers
 % The volume markers will be 'data.volume_marker_name'
-% The channel will be detected by farm_detect_channel_with_greater_artifact
+% The channel will be detected by farm.detect_channel_with_greater_artifact
 %
 % Syntax : FARM_PLOT( data, filter )
 %
@@ -9,7 +9,20 @@ function farm_plot( data, filter, order )
 
 if nargin==0, help(mfilename); return; end
 
-if nargin < 3
+
+
+
+%% Input parsing
+
+if ~exist('channel','var')
+    filter = [];
+end
+
+if ~exist('filter','var')
+    filter = [];
+end
+
+if ~exist('order','var')
     order = [];
 end
 
@@ -18,7 +31,7 @@ end
 
 farm_check_data( data )
 
-data = farm_detect_channel_with_greater_artifact( data );
+data = farm.detect_channel_with_greater_artifact( data );
 
 
 %% Prepare data
@@ -36,7 +49,7 @@ end
 
 % Filter
 if nargin > 1
-    channel = farm_filter(channel, data.fsample, filter, order);
+    channel = farm.filter(channel, data.fsample, filter, order);
 end
 
 

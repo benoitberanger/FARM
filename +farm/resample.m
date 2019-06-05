@@ -1,5 +1,5 @@
-function [ signal_out, time_out ] = farm_resample( signal_in, time_in, fsample, factor )
-% FARM_RESAMPLE will upsample/downsample 'signal_in' by 'factor'
+function [ signal_out, time_out ] = resample( signal_in, time_in, fsample, factor )
+% RESAMPLE will upsample/downsample 'signal_in' by 'factor'
 
 time_out = time_in(1) : 1/(fsample*factor) : time_in(end);
 

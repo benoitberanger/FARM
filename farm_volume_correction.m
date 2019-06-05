@@ -45,7 +45,7 @@ for iChannel = 1 : nChannel
     input_channel = data.trial{1}(iChannel, :);
     
     % Upsample
-    [ upsampled_channel, upsampled_time ] = farm_resample( input_channel, data.time{1}, fsample, interpfactor );
+    [ upsampled_channel, upsampled_time ] = farm.resample( input_channel, data.time{1}, fsample, interpfactor );
     
     % Get segment
     slice_segment = zeros( length(slice_list), round(sdur * fsample * interpfactor) + padding );
@@ -56,7 +56,7 @@ for iChannel = 1 : nChannel
     
     % Apply phase-shift to conpensate the rounding error
     delta_t        = round_error(slice_list) / sdur / (fsample*interpfactor);
-    slice_segment = farm_phase_shift( slice_segment, delta_t );
+    slice_segment = farm.phase_shift( slice_segment, delta_t );
     
     
     % Upsample : artifact_segment
@@ -66,7 +66,7 @@ for iChannel = 1 : nChannel
     artifact_channel = data.artifact_template(iChannel, :);
     
     % Upsample
-    upsampled_artifact = farm_resample( artifact_channel, data.time{1}, fsample, interpfactor );
+    upsampled_artifact = farm.resample( artifact_channel, data.time{1}, fsample, interpfactor );
     
     % Get segment
     artifact_segment = zeros( length(slice_list), round(sdur * fsample * interpfactor) + padding );
@@ -77,7 +77,7 @@ for iChannel = 1 : nChannel
     
     % Apply phase-shift to conpensate the rounding error
     delta_t           = round_error(slice_list) / sdur / (fsample*interpfactor);
-    artifact_segment = farm_phase_shift( artifact_segment, delta_t );
+    artifact_segment = farm.phase_shift( artifact_segment, delta_t );
     
     
     %% Replace the volume-segment including some overlap by interpolated data
@@ -95,8 +95,8 @@ for iChannel = 1 : nChannel
     
     % Apply phase-shift to conpensate the rounding error
     delta_t           = -round_error(slice_list) / sdur / (fsample*interpfactor);
-    slice_segment    = farm_phase_shift( slice_segment   , delta_t );
-    artifact_segment = farm_phase_shift( artifact_segment, delta_t );
+    slice_segment    = farm.phase_shift( slice_segment   , delta_t );
+    artifact_segment = farm.phase_shift( artifact_segment, delta_t );
     
     % Remove padding
     slice_segment    = slice_segment   (:, 1+padding/2 : end-padding/2);
@@ -113,8 +113,8 @@ for iChannel = 1 : nChannel
     end
     
     % Downsample
-    data.vol_clean(iChannel, :) = farm_resample( vol_clean, upsampled_time, fsample * interpfactor, 1/interpfactor );
-    data.vol_noise(iChannel, :) = farm_resample( vol_noise, upsampled_time, fsample * interpfactor, 1/interpfactor );
+    data.vol_clean(iChannel, :) = farm.resample( vol_clean, upsampled_time, fsample * interpfactor, 1/interpfactor );
+    data.vol_noise(iChannel, :) = farm.resample( vol_noise, upsampled_time, fsample * interpfactor, 1/interpfactor );
     
     
 end % iChannel
