@@ -5,7 +5,6 @@ function rootdir = farm_rootdir( )
 %       rootdir = FARM_ROOTDIR()
 %
 
-if nargin==0, help(mfilename('fullpath')); return; end
 
 %% Main
 
