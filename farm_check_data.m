@@ -1,13 +1,15 @@
 function farm_check_data( data )
 % FARM_CHECK_DATA will check if the input 'data' is what the pipeline expects
-% "data" must be ft_preprocessing output, with :
-% - events stored in data.cfg.event
-% - seqeunce parameters stored in data.sequence
-% - volume marker name stored in data.volume_marker_name
+%
+%   "data" must be ft_preprocessing output, with :
+%       - events              stored in data.cfg.event
+%       - sequence parameters stored in data.sequence
+%       - volume marker name  stored in data.volume_marker_name
 %
 % example :
 %
-% data =
+% >> data
+% ans =
 %   struct with fields:
 %
 %                    hdr: [1×1 struct]
@@ -43,7 +45,7 @@ function farm_check_data( data )
 %
 % See also ft_preprocessing ft_read_event ft_filter_event ft_databrowser
 
-if nargin==0, help(mfilename); return; end
+if nargin==0, help(mfilename('fullpath')); return; end
 
 
 %% Basics
@@ -71,22 +73,23 @@ assert( isfield(data.cfg,'event'), '[%s]: data.cfg must have a field "event"', m
 % data.sequence.MB     = 6;     % multiband factor
 % data.sequence.nTR    = [];    % integer or []
 
-assert( isfield(data,'sequence'), '[%s]: data must have a field "sequence"', mfilename)
+assert( isfield(data,'sequence'),    '[%s]: data must have a field "sequence"'                       , mfilename)
 sequence = data.sequence; % shortcut, for code reading.
 
-assert( isstruct(sequence),          '[%s]: "sequence" must be a structure '                 , mfilename)
+assert( isstruct(sequence),          '[%s]: "sequence" must be a structure '                         , mfilename)
 
 % TR
-assert( isfield(sequence,'TR'),      '[%s]: sequence have a field "TR"'                      , mfilename); TR     = sequence.TR;
-assert( isscalar(TR) &...
-    TR==abs(TR) ,                    '[%s]: sequence.TR must be positive scalar'             , mfilename)
+assert( isfield(sequence,'TR'),      '[%s]: sequence have a field "TR"'                              , mfilename); TR     = sequence.TR;
+assert( ...
+    isscalar (TR) &...
+    TR == abs(TR) ,                  '[%s]: sequence.TR must be positive scalar'                     , mfilename)
 
 % nSlice
-assert( isfield(sequence,'nSlice') , '[%s]: sequence have a field "nSlice"'                  , mfilename); nSlice = sequence.nSlice;
+assert( isfield(sequence,'nSlice') , '[%s]: sequence have a field "nSlice"'                          , mfilename); nSlice = sequence.nSlice;
 assert( ...
-    isscalar(nSlice)      &...
-    nSlice==abs(nSlice)   &...
-    nSlice==round(nSlice),           '[%s]: sequence.nSlice must be positive integer nSlice' , mfilename)
+    isscalar       (nSlice) &...
+    nSlice == abs  (nSlice) &...
+    nSlice == round(nSlice) ,        '[%s]: sequence.nSlice must be positive integer nSlice'         , mfilename)
 
 % MB
 if isfield(sequence, 'MB')
@@ -94,9 +97,9 @@ if isfield(sequence, 'MB')
     MB = sequence.MB;
     
     assert( ...
-        isscalar(MB)  &...
-        MB==abs(MB)   &...
-        MB==round(MB), '[%s]: sequence.MB must be positive integer MB', mfilename)
+        isscalar   (MB) &...
+        MB == abs  (MB) &...
+        MB == round(MB)  ,           '[%s]: sequence.MB must be positive integer MB'                 , mfilename)
     
 end
 
@@ -107,9 +110,9 @@ if isfield(sequence, 'nVol')
     
     if ~isempty(nVol)
         assert( ...
-            isscalar(nVol)  &...
+            isscalar(nVol)    &...
             nVol==abs(nVol)   &...
-            nVol==round(nVol), '[%s]: sequence.nVol must be positive integer nVol, or empty []', mfilename)
+            nVol==round(nVol),       '[%s]: sequence.nVol must be positive integer nVol, or empty []', mfilename)
     end
     
 end

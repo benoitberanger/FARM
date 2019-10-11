@@ -2,30 +2,42 @@ function data = farm_pick_slice_for_template( data, WindowLength )
 % FARM_PICK_SLICE_FOR_TEMPLATE will prepare the slice index used for the
 % later slice artifact correction using slice-templates
 %
-% Strategy : for a given slice marker, the slices used for the compuation
-% of the template will follow the following rules :
-% - cannot pick yourself : it means slice(i) won't be used for template(i)
-% - cannot pick the first slice of a volume : too close from volume artifact
-% - cannot pick the last  slice of a volume : too close from volume artifact
-% - must   pick slices from your surroundings
-% - must   pick exactly N = WindowLength slices
+% SYNTAX
+%       data = FARM_PICK_SLICE_FOR_TEMPLATE( data, WindowLength )
 %
-% default WindowLength is 50
+% INPUTS
+%       - data         : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%       - WindowLength : number of slices around the current slice that will be candidate for the PCA
 %
+% DEFAULTS
+%       - WindowLength : 50
+%
+% STRATEGY
+%       For a given slice marker, the slices used for the compuation
+%       of the template will follow the following rules :
+%       - cannot pick yourself : it means slice(i) won't be used for template(i)
+%       - cannot pick the first slice of a volume : too close from volume artifact
+%       - cannot pick the last  slice of a volume : too close from volume artifact
+%       - must   pick slices from your surroundings
+%       - must   pick exactly N = WindowLength slices
+%
+%
+%**************************************************************************
 % Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
 %       Robust EMG–fMRI artifact reduction for motion (FARM).
 %       Clinical Neurophysiology, 121(5), 766–776.
 %       https://doi.org/10.1016/j.clinph.2009.12.035
 %
 
-if nargin==0, help(mfilename); return; end
+if nargin==0, help(mfilename('fullpath')); return; end
 
 
 %% Parameters
 
-if nargin < 2
+if ~exist('WindowLength','var')
     WindowLength = 50;
 end
+
 assert( round(WindowLength)==WindowLength & WindowLength>0, 'WindowLength must be positive integer' )
 
 

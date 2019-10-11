@@ -1,8 +1,21 @@
-function data = farm_compute_slice_template( data )
+function data = farm_compute_slice_template( data, nKeep )
 % FARM_COMPUTE_SLICE_TEMPLATE will use the slices index prepared by farm_pick_slice_for_template,
 % and select, for each slice, the surrounding slices with the highest correlation.
 % When the selection is done, prepare the template.
 %
+% SYNTAX
+%       data = FARM_COMPUTE_SLICE_TEMPLATE( data, nkeep )
+%
+% INPUTS :
+%       - data  : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%       - nKeep : number of best slice candidates to keep
+%           the higher nKeep, the better template quality, but worse adaptability
+%           a balance between good template(high nKeep) and adaptability(low nKeep) is required
+%
+% DEFAULTS
+%       - nKeep : 12
+%
+%**************************************************************************
 % Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
 %       Robust EMG–fMRI artifact reduction for motion (FARM).
 %       Clinical Neurophysiology, 121(5), 766–776.
@@ -13,12 +26,15 @@ function data = farm_compute_slice_template( data )
 %       NeuroImage 28 (2005) 720 – 737
 %       https://doi.org/10.1016/j.neuroimage.2005.06.067
 %
-if nargin==0, help(mfilename); return; end
+
+if nargin==0, help(mfilename('fullpath')); return; end
 
 
 %% Paramters
 
-nKeep = 12; % number of best candidates to keep
+if ~exist('nKeep','var')
+    nKeep = 12; % number of best candidates to keep
+end
 
 
 %% Retrive some variables already computed
@@ -89,12 +105,12 @@ for iChannel = 1 : nChannel
         else
             window = 1+padding/2 : sdur_sample-padding/2;
         end
-        slice_target_data        = slice_segment(iSlice,:);                                                         % this is the slice we want to correct
+        slice_target_data        = slice_segment(iSlice,:);                                                          % this is the slice we want to correct
         slice_candidate_idx      = data.slice_info.slice_idx_for_template(iSlice,:);                                 % index of slices candidate
-        slice_candidate_data     = slice_segment(slice_candidate_idx,:);                                            % data  of slices candidate
+        slice_candidate_data     = slice_segment(slice_candidate_idx,:);                                             % data  of slices candidate
         correlation              = farm.correlation(slice_target_data(window), slice_candidate_data(:,window));      % correlation between target slice and all the candidates
         [~, order]               = sort(correlation,'descend');                                                      % sort the candidates correlation
-        template                 = mean(slice_segment(slice_candidate_idx(order(1:nKeep)),:));                      % keep the bests, and average them : this is our template
+        template                 = mean(slice_segment(slice_candidate_idx(order(1:nKeep)),:));                       % keep the bests, and average them : this is our template
         scaling                  = slice_target_data(window)*template(window)'/(template(window)*template(window)'); % use the "power" ratio as scaling factor [ R.K. Niazy et al. (2005) ]
         slice_template(iSlice,:) = scaling * template;                                                               % scale the template so it fits more the target
     end

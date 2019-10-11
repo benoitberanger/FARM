@@ -1,25 +1,34 @@
 function channel = filter(channel, fsample, filter, order)
 % FILTER uses ft_preproc_*filter
 %
-% 'channel' follow fieldtrip matrix orientation (Channel x Sample),
-% each line is a channel, and the columns are the samples
+% SYNTAX
+%       channel = FARM.FILTER(channel, fsample, filter, order)
 %
-% Syntax : channel = FILTER(channel, fsample, filter)
+% INPUTS
+%       - channel : follow fieldtrip matrix orientation (Channel x Sample),
+%                   each line is a channel, and the columns are the samples
+%       - filter  :
+%                   filter = -30      =>  low-pass filter @ 30       Hz
+%                   filter = +100     => high-pass filter @ 100      Hz
+%                   filter = +[ 1 12] => band-pass filter @ [ 1  12] Hz
+%                   filter = -[59 61] => band-stop filter @ [59  61] Hz
 %
-% filter = -30      =>  low-pass filter @ 30       Hz
-% filter = +100     => high-pass filter @ 100      Hz
-% filter = +[ 1 12] => band-pass filter @ [ 1  12] Hz
-% filter = -[59 61] => band-stop filter @ [59  61] Hz
+%       - order   : order can be [] or an integer
+%                   if left empty, the default filter order from ft_preproc_xxxxxfilter will be used.
+%                   default is order=6
 %
 
-if nargin==0, help(mfilename); return; end
+if nargin==0, help(mfilename('fullpath')); return; end
 
-if nargin < 4
+
+%% Input parsing
+
+if ~exist('order','var')
     order = [];
 end
 
 
-%% Main
+%% Filter
 
 switch length(filter)
     case 1

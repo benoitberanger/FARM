@@ -1,14 +1,23 @@
 function data = farm_add_slice_marker( data )
 % FARM_ADD_SLICE_MARKERS will generate slice markers using the volume markers
 %
-% Strategy : For each volume marker, we have nSlice. Slice onsets are
-% seperated by sdur(v) where v is the volume index. Also, the dead time
-% before the next volume marker is writen dtime(v).
-% Slice markers will be equaly spaced at using diffrent sdur(v), and the
-% best sdur(v) will be evaluated using "cost function" called Sum of
-% Variance (SV). Optimal sdur(v) will be given when SV will be at the
-% global minimum.
+% SYNTAX
+%         data = FARM_ADD_SLICE_MARKER( data )
 %
+% INPUTS
+%       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%
+% STRATEGY
+%       For each volume marker, we have nSlice. Slice onsets are seperated
+%       by sdur(v) where v is the volume index. Also, the dead time before
+%       the next volume marker is writen dtime(v). Slice markers will be
+%       equaly spaced at using diffrent sdur(v), and the best sdur(v) will
+%       be evaluated using "cost function" called Sum of Variance (SV).
+%       Optimal sdur(v) will be given when SV will be at the global
+%       minimum.
+%
+%
+%**************************************************************************
 % Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
 %       Robust EMG–fMRI artifact reduction for motion (FARM).
 %       Clinical Neurophysiology, 121(5), 766–776.
@@ -25,7 +34,7 @@ function data = farm_add_slice_marker( data )
 %       https://doi.org/10.1016/j.neuroimage.2005.06.067
 %
 
-if nargin==0, help(mfilename); return; end
+if nargin==0, help(mfilename('fullpath')); return; end
 
 
 %% Check input arguments

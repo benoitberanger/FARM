@@ -1,7 +1,21 @@
-function data = farm_optimize_sdur_dtime( data )
+function data = farm_optimize_sdur_dtime( data, interpfactor, hpf )
 % FARM_OPTIMIZE_SDUR_DTIME will use the previously computed sdur_v & dtime_v,
 % as initializing point to optimize the final sdur & dtime
 %
+% SYNTAX
+%       data = FARM_OPTIMIZE_SDUR_DTIME( data, interpfactor, hpf )
+%
+% INPUTS
+%       - data         : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%       - interpfactor : interpolation cator factor for upsampling
+%       - hpf          : high pass filter (Hz), remove EMG and only keep MRI gradients artifacts for the optimization
+%
+% DEFAULTS
+%       - interpfactor :  10
+%       - hpd          : 250 Hz
+%
+%
+%**************************************************************************
 % Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
 %       Robust EMG–fMRI artifact reduction for motion (FARM).
 %       Clinical Neurophysiology, 121(5), 766–776.
@@ -11,17 +25,23 @@ function data = farm_optimize_sdur_dtime( data )
 %       Convergence Properties of the Nelder--Mead Simplex Method in Low Dimensions
 %       December 1998 SIAM Journal on Optimization 9(1):112-147
 %       https://doi.org/10.1137/S1052623496303470
+%
 
-if nargin==0, help(mfilename); return; end
+if nargin==0, help(mfilename('fullpath')); return; end
 
 
 %% Paramters
 
-hpf          = 250; % hertz
-interpfactor = 10;  % interpolation factor : upsampling
+if ~exist('interpfactor','var')
+    interpfactor = 10;  % interpolation factor : upsampling
+end
+
+if ~exist('hpf'         ,'var')
+    hpf          = 250; % Hz
+end
 
 % Shortcuts
-sequence           = data.sequence;
+sequence = data.sequence;
 
 
 %% Retrive some variables already computed

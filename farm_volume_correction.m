@@ -2,13 +2,22 @@ function data = farm_volume_correction( data )
 % FARM_VOLUME_CORRECTION will replace the datapoints corresponding to dtime
 % with interpolated data from the neighboring slice-segments
 %
+% SYNTAX
+%       data = FARM_VOLUME_CORRECTION( data )
+%
+% INPUTS
+%       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%
+%
+%**************************************************************************
 % Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
 %       Robust EMG–fMRI artifact reduction for motion (FARM).
 %       Clinical Neurophysiology, 121(5), 766–776.
 %       https://doi.org/10.1016/j.clinph.2009.12.035
 %
 
-if nargin==0, help(mfilename); return; end
+if nargin==0, help(mfilename('fullpath')); return; end
+
 
 %% Paramters
 

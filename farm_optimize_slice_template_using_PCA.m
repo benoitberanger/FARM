@@ -1,7 +1,19 @@
-function data = farm_optimize_slice_template_using_PCA( data )
+function data = farm_optimize_slice_template_using_PCA( data, time_section )
 % FARM_OPTIMIZE_SLICE_TEMPLATE_USING_PCA
 %
+% SYNTAX
+%       FARM_OPTIMIZE_SLICE_TEMPLATE_USING_PCA( data, time_section )
 %
+% INPUTS
+%       - data         : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%       - time_section : timeseries will be splitted in sections where the PCA will be computed
+%                        this strategy increases the PCA adapatabilty
+%
+% DEFAULTS
+%       - time_section : 60 seconds
+%
+%
+%**************************************************************************
 % Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
 %       Robust EMG–fMRI artifact reduction for motion (FARM).
 %       Clinical Neurophysiology, 121(5), 766–776.
@@ -13,6 +25,21 @@ function data = farm_optimize_slice_template_using_PCA( data )
 %       https://doi.org/10.1016/j.neuroimage.2005.06.067
 %
 
+if nargin==0, help(mfilename('fullpath')); return; end
+
+
+%% Parameters
+
+% Time section for the PCA computation.
+% PCA will be computed over 'time_section', for adaptability
+if ~exist('time_section','var')
+    time_section = 60; % in seconds
+end
+
+padding = 10; % samples, only useful for the phase-shift
+
+marker_vector = data.slice_info.marker_vector; % use all slices
+
 
 %% Retrive some variables already computed
 
@@ -22,17 +49,6 @@ sdur           = data.sdur;
 dtime          = data.dtime;
 slice_onset    = round(data.slice_onset * interpfactor); % phase-shift will be applied to conpensate the rounding error
 round_error    = data.round_error;
-
-
-%% Parameters
-
-% Time section for the PCA computation.
-% PCA will be computed over 'time_section', for adaptability
-time_section = 60; % in seconds
-
-padding = 10; % samples, only useful for the phase-shift
-
-marker_vector = data.slice_info.marker_vector; % use all slices
 
 
 %% Prepare sections : ~1min of data where we performe the PCA residuals removal

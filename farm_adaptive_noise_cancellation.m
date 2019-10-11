@@ -1,6 +1,17 @@
-function data = farm_adaptive_noise_cancellation( data )
+function data = farm_adaptive_noise_cancellation( data, lpf )
 % FARM_ADAPTIVE_NOISE_CANCELLATION
 %
+% SYNTAX
+%         data = FARM_ADAPTIVE_NOISE_CANCELLATION( data, lpf )
+%
+% INPUTS
+%       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%
+% DEFAULTS
+%       - lpf  : 250 Hz;
+%
+%
+%**************************************************************************
 % Ref : Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).
 %       Robust EMG–fMRI artifact reduction for motion (FARM).
 %       Clinical Neurophysiology, 121(5), 766–776.
@@ -17,11 +28,14 @@ function data = farm_adaptive_noise_cancellation( data )
 %       https://doi.org/10.1006/nimg.2000.0599
 %
 
+if nargin==0, help(mfilename('fullpath')); return; end
 
 
 %% Parameters
 
-lpf = 250; % Hertz
+if ~exist('lpf', 'var')
+    lpf = 250; % Hz
+end
 
 
 %% Retrive some variables already computed

@@ -1,23 +1,34 @@
 function correlation = correlation( vector , matrix )
-% CORRELATION
+% GET_VOLUME_EVENT will fetch volume events, according to data.volume_marker_name
 %
-% maths : correlation(x,y) = covariance(x,y) / (var(x) * var(y))
+% SYNTAX
+%       correlation = FARM.CORRELATION( vector , matrix )
 %
-%           n : samples
-%           m : variables
+% INPUTS
+%       - vector      : vector (1 x n)
+%       - matrix      : matrix (m x n)
 %
-% vector      : vector (1 x n)
-% matrix      : matrix (m x n)
-% correlation : vector (1 x n)
+% OUTPUTS
+%       - correlation : vector (1 x n)
 %
+% NOTES
+%       - n           : samples
+%       - m           : variables
+%
+
+if nargin==0, help(mfilename('fullpath')); return; end
+
+
+%% correlation(x,y) = covariance(x,y) / (var(x) * var(y))
+
 % I choose to restrict this correlation computations in terms of input.
 % This is not intended for general purpose, but for FARM specific usage.
 
-x        = vector; 
+x        = vector;
 x_demean = x - mean(x,2); % remove mean
 var_x    = sqrt(sum( x_demean.^2 ,2));
 
-y        = matrix; 
+y        = matrix;
 y_demean = y - mean(y,2); % remove mean
 var_y    = sqrt(sum( y_demean.^2 ,2));
 
@@ -32,5 +43,6 @@ correlation = sum( y_demean .* x_demean ,2) ./ (var_x .* var_y );
 
 % Note : here the swap between x & y, and the transpose (') do NOT change the "result",
 % and are only here for matrix dimensions agreements.
+
 
 end % function

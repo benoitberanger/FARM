@@ -1,11 +1,28 @@
-function farm_databrowser( data, filter )
+function farm_databrowser( data, filter, order )
 % FARM_DATABROWSER will use ft_databrowser on the most recent *_clean field
 %
-% Syntax : FARM_DATABROWSER( data, filter )
+% SYNTAX
+%       FARM_DATABROWSER( data, filter )
 %
-% See also ft_databrowser farm_filter
+% INPUTS
+%       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%       - processing_stage : regex for field in data, exept for 'raw' which means data.trial{1}
+%       - filter & order : see <a href="matlab:help farm.filter">farm.filter</a>
+%
+% See also ft_databrowser
 
-if nargin==0, help(mfilename); return; end
+if nargin==0, help(mfilename('fullpath')); return; end
+
+
+%% Input parsing
+
+if ~exist('filter','var')
+    filter = [];
+end
+
+if ~exist('order','var')
+    order = [];
+end
 
 
 %% Prepare data
@@ -20,8 +37,8 @@ if ~isempty(clean_idx)
 end
 
 % Filter
-if nargin > 1
-    data.trial{1} = farm_filter(data.trial{1}, data.fsample, filter);
+if ~isempty(filter)
+    data.trial{1} = farm_filter(data.trial{1}, data.fsample, filter, order);
 end
 
 

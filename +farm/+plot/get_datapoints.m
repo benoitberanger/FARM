@@ -1,12 +1,17 @@
 function [ datapoints, channel_idx, channel_name, stage ] = get_datapoints( data, channel_description, processing_stage )
-% GET_DATAPOINTS
+% GET_DATAPOINTS will fetch datapoints according the channel_description and processing_stage
 %
-% Syntax : [ datapoints, channel_idx, channel_name, stage ] = GET_DATAPOINTS( data, channel_description, processing_stage )
+% SYNTAX
+%       [ datapoints, channel_idx, channel_name, stage ] = FARM.PLOT.GET_DATAPOINTS( data, channel_description, processing_stage )
 %
-% channel_description : <double> or 'regex'
-% processing_stage    : 'regex'
+% INPUTS
+%       - data                : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%       - channel_description : <double> or 'regex'
+%       - processing_stage    : 'regex'
 %
-%
+
+if nargin==0, help(mfilename('fullpath')); return; end
+
 
 %% Input parsing
 
