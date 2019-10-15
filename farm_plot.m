@@ -1,6 +1,5 @@
 function farm_plot( data, channel_description, processing_stage, filter, order )
 % FARM_PLOT will plot the data inside the volume markers
-% The volume markers will be 'data.volume_marker_name'
 %
 % SYNTAX
 %       FARM_PLOT( data, channel_description, processing_stage, filter, order )
@@ -10,6 +9,9 @@ function farm_plot( data, channel_description, processing_stage, filter, order )
 %       - channel_description : can be channel index [1 2 ...] or a regex for data.label
 %       - processing_stage    : regex for field in data, exept for 'raw' which means data.trial{1}
 %       - filter & order      : see <a href="matlab: help farm.filter">farm.filter</a>
+%
+% NOTES
+% The volume markers will be 'data.volume_marker_name'
 %
 
 if nargin==0, help(mfilename('fullpath')); return; end

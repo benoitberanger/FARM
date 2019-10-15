@@ -51,18 +51,22 @@ if nargin==0, help(mfilename('fullpath')); return; end
 %% Basics
 
 % Input
-assert( isstruct(data), '[%s]: "data" must be a structure ', mfilename)
+assert( ...
+    isstruct(data)              & ...
+    numel   (data)==1           & ...
+    ~isempty(fieldnames(data))   ,...
+    '[%s]: "data" must be a non-empty (1x1) structure with fields, see <a href="matlab: help farm_check_data">help farm_check_data</a>', mfilename)
 
 % Basic fields in fieldtrip data structure
 fields = {'hdr', 'label', 'time', 'trial', 'fsample', 'sampleinfo', 'cfg'};
 for f = fields
-    assert( isfield(data,f), '[%s]: data must have a field "%s"', f, mfilename)
+    assert( isfield(data,char(f)), '[%s]: data must have a field "%s", see <a href="matlab: help farm_check_data">help farm_check_data</a>', char(f), mfilename)
 end
 
 
 %% Events
 
-assert( isfield(data.cfg,'event'), '[%s]: data.cfg must have a field "event"', mfilename)
+assert( isfield(data.cfg,'event'), '[%s]: data.cfg must have a field "event", see <a href="matlab: help farm_check_data">help farm_check_data</a>', mfilename)
 
 
 %% Sequence
