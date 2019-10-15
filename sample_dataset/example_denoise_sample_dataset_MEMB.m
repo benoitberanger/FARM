@@ -92,7 +92,7 @@ data = farm_volume_correction( data );
 data = farm_optimize_slice_template_using_PCA( data );
 
 
-%% Revove noise residuals using PCA
+%% Revove noise residuals using ANC
 % ANC will remove the last residuals not fitted by the PCs
 
 % Don't know why ANC diverges in this dataset
@@ -110,4 +110,9 @@ data = farm_remove_slice_marker( data );
 
 %% Plot
 
-farm_plotFFT(data, 1, 'pca_clean', +[30 250])
+farm_carpet_plot     (data, 1, 'raw'      , +[30 250])
+farm_plotFFT         (data, 1, 'raw'      , +[30 250])
+farm_plot_spectrogram(data, 1, 'raw'      , +[30 250])
+farm_carpet_plot     (data, 1, 'pca_clean', +[30 250])
+farm_plotFFT         (data, 1, 'pca_clean', +[30 250])
+farm_plot_spectrogram(data, 1, 'pca_clean', +[30 250])
