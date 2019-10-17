@@ -18,7 +18,7 @@ fname_mrk = fullfile(sampledata_path, [fname '.vmrk']);
 sequence.TR     = 1.6; % in seconds
 sequence.nSlice = 54;
 sequence.MB     = 3;   % multiband factor
-sequence.nVol   = []; % integer or NaN
+sequence.nVol   = [];  % integer or NaN, if [] it means use all volumes
 
 
 %% Load data
@@ -48,7 +48,7 @@ data.volume_marker_name = 'V';                   % name of the volume event in d
 % Main FARM functions are below.
 
 
-%% Check input data, detrend, HPF @ 30Hz
+%% Check input data, HPF @ 30Hz
 % HPF @ 30 Hz removes the artifact due to electrode movement inside the static magnetic field B0
 % This filtering step is MANDATORY for EMG, or any electrode with movements in B0
 % I have to test/develop to check if FARM actual pipeline is feasable for EEG
@@ -80,7 +80,7 @@ data = farm_compute_slice_template( data );
 
 %% Volume correction : replace volume-segment (dtime) by 0
 % In the FARM article, this method is more advanced, and overwrite less points
-% But I didn't succed to code it properly
+% But I didn't succed to code it properly, so I used a "zero filling"
 
 data = farm_volume_correction( data );
 
@@ -103,16 +103,20 @@ data = farm_optimize_slice_template_using_PCA( data );
 
 
 %% Remove slice markers
-% More convinient
+% More convenient
 
 data = farm_remove_slice_marker( data );
 
 
 %% Plot
 
+% Raw
 farm_carpet_plot     (data, 1, 'raw'      , +[30 250])
 farm_plotFFT         (data, 1, 'raw'      , +[30 250])
 farm_plot_spectrogram(data, 1, 'raw'      , +[30 250])
+
+% After processing
 farm_carpet_plot     (data, 1, 'pca_clean', +[30 250])
 farm_plotFFT         (data, 1, 'pca_clean', +[30 250])
 farm_plot_spectrogram(data, 1, 'pca_clean', +[30 250])
+
