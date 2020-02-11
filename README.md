@@ -1,6 +1,18 @@
 # FARM
 This repository is a MATLAB implementation of FARM processing, for removing fMRI artifacts from EMG recordings.
 
+# Citation
+Please cite :
+- _The original article_ :  
+  Van der Meer, J. N., Tijssen, M. A. J., Bour, L. J., van Rootselaar, A. F., & Nederveen, A. J. (2010).  
+  **Robust EMG–fMRI artifact reduction for motion (FARM)**.  
+  Clinical Neurophysiology, 121(5), 766–776.  
+  https://doi.org/10.1016/j.clinph.2009.12.035
+- _The GitHub page of the first author_ :  
+  https://github.com/jnvandermeer
+- _This GitHub repository_ :  
+  https://github.com/benoitberanger/FARM
+
 # Requirements
 - MATLAB : https://www.mathworks.com/. Tested version : R2017b
 - FieldTrip, a MATLAB tooblox : https://github.com/fieldtrip/fieldtrip
@@ -11,7 +23,7 @@ Open and run [sample_dataset/example_denoise_sample_dataset_MEMB.m](sample_datas
 
 # Tips
 All functions you need to use are in the _root_ directory.  
-The **+farm** directory is a package (MATLAB behavour) that contains all subfonctions. You probably don't need to use the functions in the package.  
+The **+farm** directory is a package (MATLAB behaviour) that contains all subfonctions. You probably don't need to use the functions in the package.  
 **src** directory contains all un-modified original functions, that have been modified later for FARM purpose.
 
 # Based on
