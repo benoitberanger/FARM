@@ -1,5 +1,5 @@
 function farm_plot_FFT( data, channel_description, processing_stage, filter, order )
-% FARM_PLOT_FFT will plot 
+% FARM_PLOT_FFT will plot
 % (1) the data inside the volume markers
 % (2) it's FFT
 %
@@ -57,36 +57,41 @@ end
 volume_event = farm.sequence.get_volume_event( data );
 nVol         = farm.sequence.get_nVol        ( data );
 volume_event = volume_event(1:nVol);
-datapoints = datapoints(volume_event(1).sample : volume_event(end).sample);
+datapoints = datapoints( : , volume_event(1).sample : volume_event(end).sample);
 
 
 %% Plot
 
-fig_name = sprintf('Plot ''%s'' @ channel %d / %s', stage,channel_idx, channel_name);
-figure('Name',fig_name,'NumberTitle','off');
-
-if rem(length(datapoints),2)
-    datapoints(end) = []; % to avoid a warning
-end
-
-L = length(datapoints);
-
-subplot(2,1,1)
-plot( (0:(L-1))/data.fsample , datapoints )
-xlabel('time (s)')
-ylabel('Signal')
-
-Y = fft(datapoints);
-P2 = abs(Y/L);
-P1 = P2(1:L/2+1);
-P1(2:end-1) = 2*P1(2:end-1);
-f = data.fsample*(0:(L/2))/L;
-
-subplot(2,1,2)
-plot(f,P1)
-
-xlabel('Frequency (Hz)')
-ylabel('|Y(channel)|')
+for chan = 1 : length(channel_name)
+    
+    set(0,'DefaultFigureWindowStyle','docked')
+    fig_name = sprintf('Plot ''%s'' @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
+    figure('Name',fig_name,'NumberTitle','off');
+    
+    if rem(size(datapoints,2),2)
+        datapoints(:,end) = []; % to avoid a warning
+    end
+    
+    L = size(datapoints,2);
+    
+    subplot(2,1,1)
+    plot( (0:(L-1))/data.fsample , datapoints(chan,:) )
+    xlabel('time (s)')
+    ylabel('Signal')
+    
+    Y = fft(datapoints(chan,:));
+    P2 = abs(Y/L);
+    P1 = P2(1:L/2+1);
+    P1(2:end-1) = 2*P1(2:end-1);
+    f = data.fsample*(0:(L/2))/L;
+    
+    subplot(2,1,2)
+    plot(f,P1)
+    
+    xlabel('Frequency (Hz)')
+    ylabel('|Y(channel)|')
+    
+end % chan
 
 
 end % function

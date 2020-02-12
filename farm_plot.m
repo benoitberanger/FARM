@@ -55,16 +55,21 @@ end
 volume_event = farm.sequence.get_volume_event( data );
 nVol         = farm.sequence.get_nVol        ( data );
 volume_event = volume_event(1:nVol);
-datapoints = datapoints(volume_event(1).sample : volume_event(end).sample);
+datapoints = datapoints( : , volume_event(1).sample : volume_event(end).sample);
 
 
 %% Plot
 
-fig_name = sprintf('Plot ''%s'' @ channel %d / %s', stage,channel_idx, channel_name);
-figure('Name',fig_name,'NumberTitle','off');
-plot( (0:length(datapoints)-1)/data.fsample , datapoints )
-xlabel('time (s)')
-ylabel('Signal')
+for chan = 1 : length(channel_name)
+    
+    set(0,'DefaultFigureWindowStyle','docked')
+    fig_name = sprintf('Plot ''%s'' @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
+    figure('Name',fig_name,'NumberTitle','off');
+    plot( (0:size(datapoints,2)-1)/data.fsample , datapoints(chan,:) )
+    xlabel('time (s)')
+    ylabel('Signal')
+    
+end % chan
 
 
 end % function

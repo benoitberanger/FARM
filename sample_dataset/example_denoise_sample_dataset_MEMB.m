@@ -111,12 +111,12 @@ data = farm_remove_slice_marker( data );
 %% Plot
 
 % Raw
-farm_carpet_plot     (data, 1, 'raw'      , +[30 250])
-farm_plotFFT         (data, 1, 'raw'      , +[30 250])
+farm_plot_carpet     (data, 1, 'raw'      , +[30 250])
+farm_plot_FFT        (data, 1, 'raw'      , +[30 250])
 farm_plot_spectrogram(data, 1, 'raw'      , +[30 250])
 
 % After processing
-farm_carpet_plot     (data, 1, 'pca_clean', +[30 250])
-farm_plotFFT         (data, 1, 'pca_clean', +[30 250])
+farm_plot_carpet     (data, 1, 'pca_clean', +[30 250])
+farm_plot_FFT        (data, 1, 'pca_clean', +[30 250])
 farm_plot_spectrogram(data, 1, 'pca_clean', +[30 250])
 

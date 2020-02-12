@@ -58,24 +58,27 @@ nVol         = farm.sequence.get_nVol        ( data );
 volume_event = volume_event(1:nVol);
 
 
-%% Prepare the carpet
+%% For each channel found
 
-volume_segment = zeros(length(volume_event), data.sequence.TR * data.fsample);
-
-for iVol = 1 : length(volume_event)
-    volume_segment( iVol, : ) = datapoints( volume_event(iVol).sample : volume_event(iVol).sample + data.sequence.TR * data.fsample -1 );
-end
-
-
-%% Plot
-
-fig_name = sprintf('Carpet plot ''%s'' @ channel %d / %s', stage,channel_idx, channel_name);
-figure('Name',fig_name,'NumberTitle','off');
-image(volume_segment,'CDataMapping','scaled')
-colormap(gray(256))
-colorbar
-xlabel('samples in TR')
-ylabel('TR index')
+for chan = 1 : length(channel_name)
+    
+    % Prepare the carpet
+    volume_segment = zeros(length(volume_event), data.sequence.TR * data.fsample);
+    for iVol = 1 : length(volume_event)
+        volume_segment( iVol, : ) = datapoints( chan, volume_event(iVol).sample : volume_event(iVol).sample + data.sequence.TR * data.fsample -1 );
+    end
+    
+    % Plot
+    set(0,'DefaultFigureWindowStyle','docked')
+    fig_name = sprintf('Carpet plot ''%s'' @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
+    figure('Name',fig_name,'NumberTitle','off');
+    image(volume_segment,'CDataMapping','scaled')
+    colormap(gray(256))
+    colorbar
+    xlabel('samples in TR')
+    ylabel('TR index')
+    
+end % chan
 
 
 end % function

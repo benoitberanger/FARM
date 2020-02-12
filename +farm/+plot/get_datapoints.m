@@ -6,9 +6,10 @@ function [ datapoints, channel_idx, channel_name, stage ] = get_datapoints( data
 %
 % INPUTS
 %       - data                : see <a href="matlab: help farm_check_data">farm_check_data</a>
-%       - channel_description : <double> or 'regex'
+%       - channel_description : <double> or 'regex' or {'regex1', 'regex12', ...}
 %       - processing_stage    : 'regex'
 %
+% See also farm.cellstr2regex
 
 if nargin==0, help(mfilename('fullpath')); return; end
 
@@ -33,9 +34,17 @@ switch class(channel_description)
     case 'char'
         res = regexp( data.label, channel_description );
         res = ~cellfun(@isempty,res);
-        channel_idx = find(res,1,'first');
+        channel_idx = find(res);
+    case 'cell'
+        assert( iscellstr(channel_description), 'when "channel_description" is a cell, it must be cellstr')
+        res = regexp( data.label, farm.cellstr2regex(channel_description) );
+        res = ~cellfun(@isempty,res);
+        channel_idx = find(res);
+    otherwise
+        error('[%s]: unrecognized nature of "channel_description"', mfilename)
 end
-channel_name = data.label{channel_idx};
+
+channel_name = data.label(channel_idx);
 
 
 %% processing_stage
@@ -62,7 +71,7 @@ else
         stage      = 'raw';
         datapoints = data.trial{1}(channel_idx,:);
     else
-        stage_idx = find(~cellfun(@isempty, strfind(field_name,processing_stage)), 1, 'last'); %#ok<STRCLFH>
+        stage_idx  = find(~cellfun(@isempty, strfind(field_name,processing_stage)), 1, 'last'); %#ok<STRCLFH>
         stage      = field_name{stage_idx};
         datapoints = data.(stage)(channel_idx,:);
     end

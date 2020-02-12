@@ -55,35 +55,40 @@ end
 volume_event = farm.sequence.get_volume_event( data );
 nVol         = farm.sequence.get_nVol        ( data );
 volume_event = volume_event(1:nVol);
-datapoints = datapoints(volume_event(1).sample : volume_event(end).sample);
+datapoints = datapoints( : , volume_event(1).sample : volume_event(end).sample);
 
 
 %% Plot
 
 % Prepare some time-frequency stuff
-nrPoints   = length(datapoints);
+nrPoints   = size(datapoints,2);
 nrSections = floor(nrPoints/1e3); % 1000 points window
 nrOverlap  = floor(nrSections/2); % 50% overlap
 nfft       = max(256,2^nextpow2(nrSections)); % ?
 
-fig_name = sprintf('Plot ''%s'' @ channel %d / %s', stage,channel_idx, channel_name);
-figure('Name',fig_name,'NumberTitle','off');
-
-ax(1) = subplot(4,1,1:3);
-[S,F,T,P,Fc,Tc] = spectrogram(datapoints,hann(nrSections),nrOverlap,nfft,data.fsample,'yaxis','MinThreshold',-3); % all power below -3dB is discarded
-[nTime,nFrequency] = size(S);
-time      = (0:nTime-1)/nTime*nrPoints/data.fsample;
-frequency = (0:nFrequency-1)/nFrequency*data.fsample/2;
-imagesc(time,frequency,10*log10(abs(P)));
-ylabel('Power dB/Hz')
-set(ax(1), 'YDir', 'normal')
-
-ax(2) = subplot(4,1,4);
-plot( (0:length(datapoints)-1)/data.fsample , datapoints )
-xlabel('time (s)')
-ylabel('Signal')
-
-linkaxes(ax,'x');
+for chan = 1 : length(channel_name)
+    
+    set(0,'DefaultFigureWindowStyle','docked')
+    fig_name = sprintf('Plot ''%s'' @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
+    figure('Name',fig_name,'NumberTitle','off');
+    
+    ax(1) = subplot(4,1,1:3);
+    [S,F,T,P,Fc,Tc] = spectrogram(datapoints(chan,:),hann(nrSections),nrOverlap,nfft,data.fsample,'yaxis','MinThreshold',-3); % all power below -3dB is discarded
+    [nTime,nFrequency] = size(S);
+    time      = (0:nTime-1)/nTime*nrPoints/data.fsample;
+    frequency = (0:nFrequency-1)/nFrequency*data.fsample/2;
+    imagesc(time,frequency,10*log10(abs(P)));
+    ylabel('Power dB/Hz')
+    set(ax(1), 'YDir', 'normal')
+    
+    ax(2) = subplot(4,1,4);
+    plot( (0:size(datapoints,2)-1)/data.fsample , datapoints(chan,:) )
+    xlabel('time (s)')
+    ylabel('Signal')
+    
+    linkaxes(ax,'x');
+    
+end % chan
 
 
 end % function
