@@ -26,25 +26,9 @@ if ~exist('channel_description','var') || isempty(channel_description)
 end
 
 
-%% channel_description
+%% Get channel name & number
 
-switch class(channel_description)
-    case 'double'
-        channel_idx = channel_description;
-    case 'char'
-        res = regexp( data.label, channel_description );
-        res = ~cellfun(@isempty,res);
-        channel_idx = find(res);
-    case 'cell'
-        assert( iscellstr(channel_description), 'when "channel_description" is a cell, it must be cellstr')
-        res = regexp( data.label, farm.cellstr2regex(channel_description) );
-        res = ~cellfun(@isempty,res);
-        channel_idx = find(res);
-    otherwise
-        error('[%s]: unrecognized nature of "channel_description"', mfilename)
-end
-
-channel_name = data.label(channel_idx);
+[ channel_idx, channel_name ] = farm.get_channel( data, channel_description );
 
 
 %% processing_stage
