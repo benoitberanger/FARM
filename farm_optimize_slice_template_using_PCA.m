@@ -74,9 +74,14 @@ stop_onset  = round(slice_onset(end) + 1*sdur*fsample);
 
 sdur_sample = round(sdur * fsample * interpfactor);
 
+% Pre-allocate output
+data.sub_template = zeros( size(data.trial{1}) );
+data.pca_clean    = zeros( size(data.trial{1}) );
+data.pca_noise    = zeros( size(data.trial{1}) );
+    
 nChannel = length(data.cfg.channel);
 
-for iChannel = 1 : nChannel
+for iChannel = data.selected_channels_idx'
     
     fprintf('[%s]: Computing PCA on channel %d/%d - using matlab built-in svd() function... \n', mfilename, iChannel, nChannel)
     

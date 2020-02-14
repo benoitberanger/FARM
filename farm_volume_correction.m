@@ -39,9 +39,13 @@ round_error    = data.round_error;
 sdur_sample  = round(sdur  * fsample * interpfactor);
 dtime_sample = round(dtime * fsample * interpfactor);
 
+% Pre-allocate output
+data.vol_clean = zeros( size(data.trial{1}) );
+data.vol_noise = zeros( size(data.trial{1}) );
+    
 nChannel = length(data.cfg.channel);
 
-for iChannel = 1 : nChannel
+for iChannel = data.selected_channels_idx'
     
     fprintf('[%s]: Performing volume correction on channel %d/%d \n', mfilename, iChannel, nChannel)
     
