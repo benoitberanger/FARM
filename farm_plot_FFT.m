@@ -62,11 +62,14 @@ datapoints = datapoints( : , volume_event(1).sample : volume_event(end).sample);
 
 %% Plot
 
+f = figure('Name',mfilename,'NumberTitle','off');
+tg = uitabgroup(f);
+
 for chan = 1 : length(channel_name)
     
-    set(0,'DefaultFigureWindowStyle','docked')
-    fig_name = sprintf('Plot ''%s'' @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
-    figure('Name',fig_name,'NumberTitle','off');
+    fig_name = sprintf('%s @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
+    t = uitab(tg,'Title',fig_name);
+    axes(t); %#ok<LAXES>
     
     if rem(size(datapoints,2),2)
         datapoints(:,end) = []; % to avoid a warning
@@ -74,8 +77,8 @@ for chan = 1 : length(channel_name)
     
     L = size(datapoints,2);
     
-    subplot(2,1,1)
-    plot( (0:(L-1))/data.fsample , datapoints(chan,:) )
+    ax(1) = subplot(2,1,1);
+    plot(ax, (0:(L-1))/data.fsample , datapoints(chan,:) )
     xlabel('time (s)')
     ylabel('Signal')
     
@@ -85,11 +88,11 @@ for chan = 1 : length(channel_name)
     P1(2:end-1) = 2*P1(2:end-1);
     f = data.fsample*(0:(L/2))/L;
     
-    subplot(2,1,2)
-    plot(f,P1)
+    ax(1) = subplot(2,1,2);
+    plot(ax, f,P1)
     
     xlabel('Frequency (Hz)')
-    ylabel('|Y(channel)|')
+    ylabel('Power')
     
 end % chan
 

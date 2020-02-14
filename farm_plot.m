@@ -60,12 +60,14 @@ datapoints = datapoints( : , volume_event(1).sample : volume_event(end).sample);
 
 %% Plot
 
+f = figure('Name',mfilename,'NumberTitle','off');
+tg = uitabgroup(f);
+
 for chan = 1 : length(channel_name)
-    
-    set(0,'DefaultFigureWindowStyle','docked')
-    fig_name = sprintf('Plot ''%s'' @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
-    figure('Name',fig_name,'NumberTitle','off');
-    plot( (0:size(datapoints,2)-1)/data.fsample , datapoints(chan,:) )
+    fig_name = sprintf('%s @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
+    t = uitab(tg,'Title',fig_name);
+    ax = axes(t); %#ok<LAXES>
+    plot( ax, (0:size(datapoints,2)-1)/data.fsample , datapoints(chan,:) )
     xlabel('time (s)')
     ylabel('Signal')
     

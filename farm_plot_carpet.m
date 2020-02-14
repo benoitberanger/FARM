@@ -60,6 +60,9 @@ volume_event = volume_event(1:nVol);
 
 %% For each channel found
 
+f = figure('Name',mfilename,'NumberTitle','off');
+tg = uitabgroup(f);
+
 for chan = 1 : length(channel_name)
     
     % Prepare the carpet
@@ -69,10 +72,10 @@ for chan = 1 : length(channel_name)
     end
     
     % Plot
-    set(0,'DefaultFigureWindowStyle','docked')
-    fig_name = sprintf('Carpet plot ''%s'' @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
-    figure('Name',fig_name,'NumberTitle','off');
-    image(volume_segment,'CDataMapping','scaled')
+    fig_name = sprintf('%s @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
+    t = uitab(tg,'Title',fig_name);
+    ax = axes(t); %#ok<LAXES>
+    image(ax,volume_segment,'CDataMapping','scaled')
     colormap(gray(256))
     colorbar
     xlabel('samples in TR')

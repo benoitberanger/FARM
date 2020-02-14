@@ -66,11 +66,14 @@ nrSections = floor(nrPoints/1e3); % 1000 points window
 nrOverlap  = floor(nrSections/2); % 50% overlap
 nfft       = max(256,2^nextpow2(nrSections)); % ?
 
+f = figure('Name',mfilename,'NumberTitle','off');
+tg = uitabgroup(f);
+
 for chan = 1 : length(channel_name)
     
-    set(0,'DefaultFigureWindowStyle','docked')
-    fig_name = sprintf('Plot ''%s'' @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
-    figure('Name',fig_name,'NumberTitle','off');
+    fig_name = sprintf('%s @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
+    t = uitab(tg,'Title',fig_name);
+    axes(t); %#ok<LAXES>
     
     ax(1) = subplot(4,1,1:3);
     [S,F,T,P,Fc,Tc] = spectrogram(datapoints(chan,:),hann(nrSections),nrOverlap,nfft,data.fsample,'yaxis','MinThreshold',-3); % all power below -3dB is discarded
