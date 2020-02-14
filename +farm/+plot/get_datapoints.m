@@ -21,8 +21,7 @@ if ~exist('processing_stage','var') || isempty(processing_stage)
 end
 
 if ~exist('channel_description','var') || isempty(channel_description)
-    data = farm.detect_channel_with_greater_artifact( data );
-    channel_description = data.target_channel;
+    channel_description = [];
 end
 
 

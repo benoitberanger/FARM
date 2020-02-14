@@ -44,11 +44,8 @@ narginchk(1,1)
 farm_check_data( data )
 
 
-%% Detect the channel with higher "amplitude"
+%% Remove low frequencies, including EMG, we only need the gradients to compute slice markers
 
-data = farm.detect_channel_with_greater_artifact( data ); % simple routine, defines data.target_channel
-
-% Remove low frequencies, including EMG, we only need the gradients to compute slice markers
 hpf_target_channel = ft_preproc_highpassfilter( ...
     data.trial{1}(data.target_channel,:)      , ...
     data.fsample                              , ...

@@ -58,11 +58,8 @@ volume_event = farm.sequence.get_volume_event( data );
 onset_first_volume = volume_event(1).sample;
 
 
-%% Prepare time serie we will be working on
+%% Remove low frequencies, including EMG, we only need the gradients
 
-data = farm.detect_channel_with_greater_artifact( data ); % simple routine, defines data.target_channel
-
-% Remove low frequencies, including EMG, we only need the gradients
 hpf_target_channel = ft_preproc_highpassfilter(...
     data.trial{1}(data.target_channel,:)     , ...
     data.fsample                             , ...

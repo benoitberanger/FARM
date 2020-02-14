@@ -42,8 +42,6 @@ end
 
 farm_check_data( data )
 
-data = farm.detect_channel_with_greater_artifact( data );
-
 
 %% Prepare data
 

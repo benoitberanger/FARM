@@ -8,20 +8,22 @@ function data = detect_channel_with_greater_artifact( data )
 % INPUTS
 %       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
 %
+% See also farm_select_channel
 
 if nargin==0, help(mfilename('fullpath')); return; end
 
 
+%% Check
+
+assert( isfield(data,'selected_channels_idx') , '[%s]: First, select channels with farm_select_channel', mfilename )
+
+
 %% Main
 
-if ~isfield( data, 'target_channel' )
-    
-    max_all_channels = max( abs(data.trial{1}), [], 2 );
-    [ ~, target_channel ] = max(max_all_channels); % index of the channel we use to perform all computations related to sdur & dtime
-    
-    data.target_channel = target_channel; % save this channel index, we will use latter
-    
-end
+max_all_channels = max( abs(data.trial{1}(data.selected_channels_idx,:)), [], 2 );
+[ ~, target_channel ] = max(max_all_channels); % index of the channel we use to perform all computations related to sdur & dtime
+
+data.target_channel = target_channel; % save this channel index, we will use latter
 
 
 end % function
