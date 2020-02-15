@@ -44,16 +44,7 @@ farm_check_data( data )
 
 %% Prepare data
 
-[ datapoints, channel_idx, channel_name, stage ] = farm.plot.get_datapoints( data, channel_description, processing_stage );
-
-% Filter
-if ~isempty(filter)
-    datapoints = farm.filter(datapoints, data.fsample, filter, order);
-end
-
-volume_event = farm.sequence.get_volume_event( data );
-nVol         = farm.sequence.get_nVol        ( data );
-volume_event = volume_event(1:nVol);
+[ timeseries, channel_idx, channel_name, stage ] = farm_get_timeseries( data, channel_description, processing_stage, filter, order);
 
 
 %% For each channel found
@@ -66,7 +57,7 @@ for chan = 1 : length(channel_name)
     % Prepare the carpet
     volume_segment = zeros(length(volume_event), data.sequence.TR * data.fsample);
     for iVol = 1 : length(volume_event)
-        volume_segment( iVol, : ) = datapoints( chan, volume_event(iVol).sample : volume_event(iVol).sample + data.sequence.TR * data.fsample -1 );
+        volume_segment( iVol, : ) = timeseries( chan, volume_event(iVol).sample : volume_event(iVol).sample + data.sequence.TR * data.fsample -1 );
     end
     
     % Plot

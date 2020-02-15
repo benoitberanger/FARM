@@ -43,23 +43,13 @@ farm_check_data( data )
 
 %% Prepare data
 
-[ datapoints, channel_idx, channel_name, stage ] = farm.plot.get_datapoints( data, channel_description, processing_stage );
-
-% Filter
-if nargin > 1
-    datapoints = farm.filter(datapoints, data.fsample, filter, order);
-end
-
-volume_event = farm.sequence.get_volume_event( data );
-nVol         = farm.sequence.get_nVol        ( data );
-volume_event = volume_event(1:nVol);
-datapoints = datapoints( : , volume_event(1).sample : volume_event(end).sample);
+[ timeseries, channel_idx, channel_name, stage ] = farm_get_timeseries( data, channel_description, processing_stage, filter, order);
 
 
 %% Plot
 
 % Prepare some time-frequency stuff
-nrPoints   = size(datapoints,2);
+nrPoints   = size(timeseries,2);
 nrSections = floor(nrPoints/1e3); % 1000 points window
 nrOverlap  = floor(nrSections/2); % 50% overlap
 nfft       = max(256,2^nextpow2(nrSections)); % ?
@@ -74,7 +64,7 @@ for chan = 1 : length(channel_name)
     axes(t); %#ok<LAXES>
     
     ax(1) = subplot(4,1,1:3);
-    [S,F,T,P,Fc,Tc] = spectrogram(datapoints(chan,:),hann(nrSections),nrOverlap,nfft,data.fsample,'yaxis','MinThreshold',-3); % all power below -3dB is discarded
+    [S,F,T,P,Fc,Tc] = spectrogram(timeseries(chan,:),hann(nrSections),nrOverlap,nfft,data.fsample,'yaxis','MinThreshold',-3); % all power below -3dB is discarded
     [nTime,nFrequency] = size(S);
     time      = (0:nTime-1)/nTime*nrPoints/data.fsample;
     frequency = (0:nFrequency-1)/nFrequency*data.fsample/2;
@@ -83,7 +73,7 @@ for chan = 1 : length(channel_name)
     set(ax(1), 'YDir', 'normal')
     
     ax(2) = subplot(4,1,4);
-    plot( (0:size(datapoints,2)-1)/data.fsample , datapoints(chan,:) )
+    plot( (0:size(timeseries,2)-1)/data.fsample , timeseries(chan,:) )
     xlabel('time (s)')
     ylabel('Signal')
     

@@ -43,17 +43,7 @@ farm_check_data( data )
 
 %% Prepare data
 
-[ datapoints, channel_idx, channel_name, stage ] = farm.plot.get_datapoints( data, channel_description, processing_stage );
-
-% Filter
-if nargin > 1
-    datapoints = farm.filter(datapoints, data.fsample, filter, order);
-end
-
-volume_event = farm.sequence.get_volume_event( data );
-nVol         = farm.sequence.get_nVol        ( data );
-volume_event = volume_event(1:nVol);
-datapoints = datapoints( : , volume_event(1).sample : volume_event(end).sample);
+[ timeseries, channel_idx, channel_name, stage ] = farm_get_timeseries( data, channel_description, processing_stage, filter, order);
 
 
 %% Plot
@@ -65,7 +55,7 @@ for chan = 1 : length(channel_name)
     fig_name = sprintf('%s @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
     t = uitab(tg,'Title',fig_name);
     ax = axes(t); %#ok<LAXES>
-    plot( ax, (0:size(datapoints,2)-1)/data.fsample , datapoints(chan,:) )
+    plot( ax, (0:size(timeseries,2)-1)/data.fsample , timeseries(chan,:) )
     xlabel('time (s)')
     ylabel('Signal')
     
