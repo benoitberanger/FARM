@@ -30,6 +30,19 @@ function data = farm_compute_slice_template( data, nKeep )
 if nargin==0, help(mfilename('fullpath')); return; end
 
 
+%% Checks
+
+narginchk(1,2)
+
+farm_check_data( data )
+
+
+%% Load
+
+[ data, skip ]= farm.io.load(data,mfilename);
+if skip, return, end
+
+
 %% Paramters
 
 if ~exist('nKeep','var')
@@ -148,6 +161,11 @@ for iChannel = data.selected_channels_idx'
     
     
 end % iChannel
+
+
+%% Save
+
+farm.io.save(data,mfilename,'artifact_template')
 
 
 end % function

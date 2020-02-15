@@ -28,6 +28,19 @@ function data = farm_optimize_slice_template_using_PCA( data, time_section )
 if nargin==0, help(mfilename('fullpath')); return; end
 
 
+%% Checks
+
+narginchk(1,2)
+
+farm_check_data( data )
+
+
+%% Load
+
+[ data, skip ]= farm.io.load(data,mfilename);
+if skip, return, end
+
+
 %% Parameters
 
 % Time section for the PCA computation.
@@ -273,6 +286,11 @@ for iChannel = data.selected_channels_idx'
     
     
 end % iChannel
+
+
+%% Save
+
+farm.io.save(data,mfilename,'sub_template','pca_clean','pca_noise')
 
 
 end % function

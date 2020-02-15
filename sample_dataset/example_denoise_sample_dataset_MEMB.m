@@ -45,6 +45,11 @@ data.cfg.event          = event;                 % store events
 data.sequence           = sequence;              % store sequence parameters
 data.volume_marker_name = 'V';                   % name of the volume event in data.cfg.event
 
+% Some paramters tuning
+data.cfg.intermediate_results_overwrite = false; % don't overwrite files
+data.cfg.intermediate_results_save      = true;  % write on disk intermediate results
+data.cfg.intermediate_results_load      = true;  % if intermediate result file is detected, to not re-do step and load file
+
 % Plot
 % ft_databrowser(data.cfg, data)
 

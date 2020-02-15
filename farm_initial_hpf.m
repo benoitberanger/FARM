@@ -15,6 +15,7 @@ function data = farm_initial_hpf( data, hpf )
 %       - hpf : 30 Hz
 %
 % NOTES
+%       - of hpf = [], just copy the data and skip filtering
 %       - have to test/develop to check if FARM actual pipeline is feasable for EEG
 %
 %
@@ -33,6 +34,15 @@ narginchk(1,2)
 
 farm_check_data( data )
 
+
+%% Load
+
+[ data, skip ]= farm.io.load(data,mfilename);
+if skip, return, end
+
+
+%% Parameters
+
 if ~exist('hpf','var')
     hpf = 30; % Hz
 end
@@ -44,7 +54,16 @@ end
 data.initial_hpf = data.trial{1};
 
 % Filter the selected channels
-data.initial_hpf(data.selected_channels_idx,:) = farm.filter(data.initial_hpf(data.selected_channels_idx,:), data.fsample, hpf);
+if ~isempty(hpf)
+    data.initial_hpf(data.selected_channels_idx,:) = farm.filter(data.initial_hpf(data.selected_channels_idx,:), data.fsample, hpf);
+end
+
+fprintf('[%s]: initial HPF done \n',mfilename)
+
+
+%% Save
+
+farm.io.save(data,mfilename,'initial_hpf')
 
 
 end % function

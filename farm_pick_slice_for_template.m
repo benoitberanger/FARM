@@ -32,6 +32,19 @@ function data = farm_pick_slice_for_template( data, WindowLength )
 if nargin==0, help(mfilename('fullpath')); return; end
 
 
+%% Checks
+
+narginchk(1,2)
+
+farm_check_data( data )
+
+
+%% Load
+
+[ data, skip ]= farm.io.load(data,mfilename);
+if skip, return, end
+
+
 %% Parameters
 
 if ~exist('WindowLength','var')
@@ -102,6 +115,11 @@ data. slice_info. good_slice_idx         = good_slice_idx;
 data. slice_info. slice_idx_for_template = slice_idx_for_template;
 
 fprintf('done \n')
+
+
+%% Save
+
+farm.io.save(data,mfilename,'slice_info')
 
 
 end % function

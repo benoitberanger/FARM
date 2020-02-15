@@ -31,6 +31,19 @@ function data = farm_adaptive_noise_cancellation( data, lpf )
 if nargin==0, help(mfilename('fullpath')); return; end
 
 
+%% Checks
+
+narginchk(1,2)
+
+farm_check_data( data )
+
+
+%% Load
+
+[ data, skip ]= farm.io.load(data,mfilename);
+if skip, return, end
+
+
 %% Parameters
 
 if ~exist('lpf', 'var')
@@ -94,6 +107,11 @@ for iChannel = 1 : nChannel
     end
     
 end % iChannel
+
+
+%% Save
+
+farm.io.save(data,mfilename,'sub_template','anc_clean','anc_noise')
 
 
 end % function

@@ -19,6 +19,19 @@ function data = farm_volume_correction( data )
 if nargin==0, help(mfilename('fullpath')); return; end
 
 
+%% Checks
+
+narginchk(1,1)
+
+farm_check_data( data )
+
+
+%% Load
+
+[ data, skip ]= farm.io.load(data,mfilename);
+if skip, return, end
+
+
 %% Paramters
 
 padding = 10; % samples, only useful for the phase-shift
@@ -168,6 +181,11 @@ for iChannel = data.selected_channels_idx'
     
     
 end % iChannel
+
+
+%% Save
+
+farm.io.save(data,mfilename,'vol_clean','vol_noise')
 
 
 end % function

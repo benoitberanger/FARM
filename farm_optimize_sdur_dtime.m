@@ -30,6 +30,19 @@ function data = farm_optimize_sdur_dtime( data, interpfactor, hpf )
 if nargin==0, help(mfilename('fullpath')); return; end
 
 
+%% Checks
+
+narginchk(1,3)
+
+farm_check_data( data )
+
+
+%% Load
+
+[ data, skip ]= farm.io.load(data,mfilename);
+if skip, return, end
+
+
 %% Paramters
 
 if ~exist('interpfactor','var')
@@ -40,9 +53,6 @@ if ~exist('hpf'         ,'var')
     hpf          = 250; % Hz
 end
 
-% Shortcuts
-sequence = data.sequence;
-
 
 %% Retrive some variables already computed
 % computed by farm_add_slice_marker
@@ -52,6 +62,9 @@ dtime_v = data.dtime_v;
 
 
 %% Define some other variables
+
+% Shortcuts
+sequence = data.sequence;
 
 volume_event = farm.sequence.get_volume_event( data );
 
@@ -154,6 +167,11 @@ data.slice_onset = slice_onset;
 data.round_error = round_error;
 
 data.interpfactor = interpfactor;
+
+
+%% Save
+
+farm.io.save(data,mfilename,'sdur','dtime','slice_onset','round_error','interpfactor')
 
 
 end % function

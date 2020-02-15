@@ -37,11 +37,20 @@ function data = farm_add_slice_marker( data )
 if nargin==0, help(mfilename('fullpath')); return; end
 
 
-%% Check input arguments
+%% Checks
 
 narginchk(1,1)
 
 farm_check_data( data )
+
+
+%% Load
+
+[ data, skip ]= farm.io.load(data,mfilename);
+if skip
+    data = add_slice_marker(data);
+    return
+end
 
 
 %% Remove low frequencies, including EMG, we only need the gradients to compute slice markers
@@ -109,24 +118,6 @@ for iVol = 1 : nVol
     sdur_v(iVol)    = sdur_possibility(idx_optimal_sdur);
     
     
-    %% Add slice markers
-    
-    for iSlice = 1 : nSlice
-        
-        optimal_slice_onset = volum_onset + round( (iSlice-1) * sdur_v(iVol) );
-        
-        evt          = struct;
-        evt.type     = 'Response';
-        evt.value    = 's';
-        evt.sample   = optimal_slice_onset;
-        evt.duration = 1;
-        evt.offset   = [];
-        
-        data.cfg.event(end+1) = evt;
-        
-    end
-    
-    
 end % iVol
 
 fprintf('done \n')
@@ -137,5 +128,46 @@ fprintf('[%s]: std (sdur_v) = %g samples \n', mfilename, std (sdur_v))
 data.sdur_v  = sdur_v;
 data.dtime_v = nSample_per_TR - sdur_v * nSlice;
 
+data = add_slice_marker(data); % local function, see below
+
+
+%% Save
+
+farm.io.save(data,mfilename,'sdur_v','dtime_v')
+
+
+end % function
+
+%--------------------------------------------------------------------------
+function data = add_slice_marker(data)
+
+% nVol
+volume_event = farm.sequence.get_volume_event( data );
+nVol         = farm.sequence.get_nVol        ( data );
+volume_event = volume_event(1:nVol);
+
+% nSlice
+nSlice       = farm.sequence.get_nSlice      ( data );
+
+for iVol = 1 : nVol
+    
+    volum_onset = volume_event(iVol).sample;
+    
+    for iSlice = 1 : nSlice
+        
+        optimal_slice_onset = volum_onset + round( (iSlice-1) * data.sdur_v(iVol) );
+        
+        evt          = struct;
+        evt.type     = 'Response';
+        evt.value    = 's';
+        evt.sample   = optimal_slice_onset;
+        evt.duration = 1;
+        evt.offset   = [];
+        
+        data.cfg.event(end+1) = evt;
+        
+    end % iSlice
+    
+end % iVol
 
 end % function
