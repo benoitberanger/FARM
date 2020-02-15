@@ -55,7 +55,7 @@ for iChannel = data.selected_channels_idx'
     %----------------------------------------------------------------------
     
     % Get raw data
-    input_channel = data.trial{1}(iChannel, :);
+    input_channel = data.initial_hpf(iChannel, :);
     
     % Upsample
     [ upsampled_channel, upsampled_time ] = farm.resample( input_channel, data.time{1}, fsample, interpfactor );

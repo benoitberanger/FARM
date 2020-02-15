@@ -20,8 +20,11 @@ sequence.nSlice = 54;
 sequence.MB     = 3;   % multiband factor
 sequence.nVol   = [];  % integer or NaN, if [] it means use all volumes
 
-
 MRI_trigger_message = 'R128';
+
+% In this sample dataset, channels are { 'EXT_D' 'FLE_D' 'EXT_G' 'FLE_G' }
+% FARM will be performed on all 4 channels, so I create a regex that will fetch them :
+channel_regex = 'EXT|FLE';
 
 
 %% Load data
@@ -34,7 +37,7 @@ cfg           = [];
 cfg.dataset   = fname_hdr;
 raw_event     = ft_read_event (fname_mrk);
 event         = farm_change_marker_value(raw_event, MRI_trigger_message, 'V'); % rename volume marker, just for comfort
-event         = farm_delete_marker(event, 'Sync On');             % not useful, this marker comes from the clock synchronization device
+event         = farm_delete_marker(event, 'Sync On');                          % not useful for FARM, this marker comes from the clock synchronization device
 
 % Load data
 data                    = ft_preprocessing(cfg); % load data
@@ -58,26 +61,25 @@ data.volume_marker_name = 'V';                   % name of the volume event in d
 farm_check_data( data )
 
 
-%% Some channel selection
+%% Channel selection
 % In your dataset, you might have different nature of signal, for exemple EMG + Accelerometer.
 % To perform FARM pipeline only on EMG, you need to select the corresponding channels.
 
 % Select channel for the next processing steps
-data = farm_select_channel( data, '.*' );
+data = farm_select_channel( data, channel_regex );
 
-% Also the channel with the greater artifact will be detected amongst the selected channels
 fprintf('channel selected : %s \n', data.selected_channels_name{:})
+
+
+%% Initial HPF @ 30Hz
+
+data = farm_initial_hpf( data );
+
+
+%% Which channel with greater artifacts ?
+
+data = farm_detect_channel_with_greater_artifact( data );
 fprintf('channel with grater artifacts : %s \n', data.label{data.target_channel})
-
-EMG_channels_idx = data.selected_channels_idx;
-
-
-%% HPF @ 30Hz
-% HPF @ 30 Hz removes the artifact due to electrode movement inside the static magnetic field B0
-% This filtering step is MANDATORY for EMG, or any electrode with movements in B0
-% I have to test/develop to check if FARM actual pipeline is feasable for EEG
-
-data.trial{1}(EMG_channels_idx,:) = farm.filter(data.trial{1}(EMG_channels_idx,:), data.fsample, +30); % instead of default=6 because unstable
 
 
 %% Add slice markers : initialize sdur & dtime

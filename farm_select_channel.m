@@ -45,9 +45,4 @@ data.selected_channels_idx  = channel_idx;
 data.selected_channels_name = channel_name;
 
 
-%% Which channel with greater artifacts ?
-
-data = farm.detect_channel_with_greater_artifact( data );
-
-
 end % function
