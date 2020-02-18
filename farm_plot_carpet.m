@@ -44,7 +44,17 @@ farm_check_data( data )
 
 %% Prepare data
 
-[ timeseries, channel_idx, channel_name, stage ] = farm_get_timeseries( data, channel_description, processing_stage, filter, order);
+[ datapoints, channel_idx, channel_name, stage ] = farm.plot.get_datapoints( data, channel_description, processing_stage );
+
+% Filter
+if nargin > 1
+    datapoints = farm.filter(datapoints, data.fsample, filter, order);
+end
+
+volume_event = farm.sequence.get_volume_event( data );
+nVol         = farm.sequence.get_nVol        ( data );
+volume_event = volume_event(1:nVol);
+timeseries   = datapoints;
 
 
 %% For each channel found
