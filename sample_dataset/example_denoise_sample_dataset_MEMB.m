@@ -149,3 +149,22 @@ farm_plot_spectrogram(data, 1, 'raw'      , +[30 250])
 farm_plot_carpet     (data, 1, 'pca_clean', +[30 250])
 farm_plot_FFT        (data, 1, 'pca_clean', +[30 250])
 farm_plot_spectrogram(data, 1, 'pca_clean', +[30 250])
+
+
+%% Convert clean EMG to regrssors
+
+% Use 1 channel : EXT_D
+EXT_D         = farm_get_timeseries( data, 'EXT_D', 'pca_clean', +[30 250] );                  % (1 x nSamples)
+EXT_D_reginfo = farm_emg_regressor ( data,  EXT_D );
+farm_plot_regressor(EXT_D_reginfo,'EXT_D')
+
+% Use 1 channel : FLE_D
+FLE_D         = farm_get_timeseries( data, 'FLE_D', 'pca_clean', +[30 250] );                  % (1 x nSamples)
+FLE_D_reginfo = farm_emg_regressor ( data,  FLE_D );
+farm_plot_regressor(FLE_D_reginfo,'FLE_D')
+
+% Use 2 channels and combine them : EXT_D + FLE_D
+EXTFLE_D         = farm_get_timeseries( data, {'EXT_D','FLE_D'}, 'pca_clean', +[30 250] ); % (2 x nSamples)
+EXTFLE_D_reginfo = farm_emg_regressor ( data,  EXTFLE_D, 'mean' );
+farm_plot_regressor(EXTFLE_D_reginfo,'EXTFLE_D')
+
