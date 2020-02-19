@@ -37,13 +37,15 @@ envelope = farm_emg_envelope( timeseries, data.fsample, 8 );
 
 % Combine if necessary
 if size( timeseries, 1 ) > 1
-    envelope = farm_combine_timeseries( envelope, comb_method );
+    comb = farm_combine_timeseries( envelope, comb_method );
+else
+    comb = envelope;
 end
 
 % Downsample for faster convolution
-time           = (0:length(envelope)-1)/data.fsample;
+time           = (0:length(comb)-1)/data.fsample;
 new_fsample    = 500; % Hz
-new_timeseries = farm.resample( envelope, time, data.fsample, new_fsample/data.fsample );
+new_timeseries = farm.resample( comb, time, data.fsample, new_fsample/data.fsample );
 
 % Make regressor
 reginfo = farm_make_regressor( new_timeseries, new_fsample, data.sequence.TR );
