@@ -25,14 +25,14 @@ hold on
 colors = lines(3);
 
 if isfield(reginfo,'raw')
-plot(reginfo.time_raw ,reginfo.raw  ,'LineStyle','-','Color','black'    ,'DisplayName','raw'  )
+plot(reginfo.time_raw ,reginfo.raw  ,'LineStyle','-' ,'Color','black'    ,'DisplayName','raw'  )
 end
-plot(reginfo.time_in  ,reginfo.in   ,'LineStyle','-','Color',colors(1,:),'DisplayName','in'   )
+plot(reginfo.time_in  ,reginfo.in   ,'LineStyle','-' ,'Color',colors(1,:),'DisplayName','in'   )
 
-plot(reginfo.time_conv,reginfo.conv ,'LineStyle','-','Color',colors(2,:),'DisplayName','conv' )
+plot(reginfo.time_conv,reginfo.conv ,'LineStyle','-' ,'Color',colors(2,:),'DisplayName','conv' )
 plot(reginfo.time_reg ,reginfo.reg  ,'LineStyle','-.','Color',colors(2,:),'DisplayName','reg'  )
 
-plot(reginfo.time_conv,reginfo.dconv,'LineStyle','-','Color',colors(3,:),'DisplayName','dconv')
+plot(reginfo.time_conv,reginfo.dconv,'LineStyle','-' ,'Color',colors(3,:),'DisplayName','dconv')
 plot(reginfo.time_reg ,reginfo.dreg ,'LineStyle','-.','Color',colors(3,:),'DisplayName','dreg' )
 
 legend

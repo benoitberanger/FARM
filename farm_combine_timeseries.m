@@ -18,7 +18,7 @@ if nargin==0, help(mfilename('fullpath')); return; end
 
 narginchk(1,2)
 
-if ~exist('comb_method','var')
+if ~exist('combine_method','var')
     combine_method = 'mean';
 end
 
@@ -29,8 +29,11 @@ switch combine_method
     case 'mean'
         comb = mean(timeseries);
     case 'pca'
-        [~, Eload, ~] = farm.pca_calc(timeseries');
+        timeseries = timeseries';
+        timeseries = timeseries - mean(timeseries);
+        [~, Eload, ~] = farm.pca_calc(timeseries);
         comb = Eload(:,1); % take first component
+        comb = comb';
     case []
         assert(size(timeseries,1)==1, 'several channels => need to specify the combine_method')
         comb = datapoints;
