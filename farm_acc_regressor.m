@@ -1,6 +1,9 @@
 function reginfo = farm_acc_regressor( data, timeseries, comb_method )
 % FARM_ACC_REGRESSOR is a wrapper, performing :
-%
+% 0.5) combine if necessary
+% 1) Downsample @ 500Hz for faster convolution
+% 2) Convolve with HRF using SPM toolbox, and compute the first derivative
+% 3) Downsample the convonved signal @ TR
 %
 % SYNTAX
 %       reginfo = FARM_ACC_REGRESSOR( data, timeseries )
