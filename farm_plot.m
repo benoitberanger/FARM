@@ -54,12 +54,14 @@ tg = uitabgroup(f);
 for chan = 1 : length(channel_name)
     fig_name = sprintf('%s @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
     t = uitab(tg,'Title',fig_name);
-    ax = axes(t); %#ok<LAXES>
-    plot( ax, (0:size(timeseries,2)-1)/data.fsample , timeseries(chan,:) )
+    ax(chan) = axes(t); %#ok<AGROW,LAXES>
+    plot( ax(chan), (0:size(timeseries,2)-1)/data.fsample , timeseries(chan,:) )
     xlabel('time (s)')
     ylabel('Signal')
     
 end % chan
+
+linkaxes(ax,'xy')
 
 
 end % function

@@ -73,14 +73,16 @@ for chan = 1 : length(channel_name)
     % Plot
     fig_name = sprintf('%s @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
     t = uitab(tg,'Title',fig_name);
-    ax = axes(t); %#ok<LAXES>
-    image(ax,volume_segment,'CDataMapping','scaled')
+    ax(chan) = axes(t); %#ok<AGROW,LAXES>
+    image(ax(chan),volume_segment,'CDataMapping','scaled')
     colormap(gray(256))
     colorbar
     xlabel('samples in TR')
     ylabel('TR index')
     
 end % chan
+
+linkaxes(ax,'xy')
 
 
 end % function

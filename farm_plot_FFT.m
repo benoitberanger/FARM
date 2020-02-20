@@ -65,8 +65,8 @@ for chan = 1 : length(channel_name)
     
     L = size(timeseries,2);
     
-    ax(1) = subplot(2,1,1);
-    plot(ax, (0:(L-1))/data.fsample , timeseries(chan,:) )
+    ax_time(chan) = subplot(2,1,1); %#ok<AGROW>
+    plot(ax_time(chan), (0:(L-1))/data.fsample , timeseries(chan,:) )
     xlabel('time (s)')
     ylabel('Signal')
     
@@ -76,13 +76,16 @@ for chan = 1 : length(channel_name)
     P1(2:end-1) = 2*P1(2:end-1);
     f = data.fsample*(0:(L/2))/L;
     
-    ax(1) = subplot(2,1,2);
-    plot(ax, f,P1)
+    ax_freq(chan) = subplot(2,1,2); %#ok<AGROW>
+    plot(ax_freq(chan), f,P1)
     
     xlabel('Frequency (Hz)')
     ylabel('Power')
     
 end % chan
+
+linkaxes(ax_time,'xy')
+linkaxes(ax_freq,'xy')
 
 
 end % function

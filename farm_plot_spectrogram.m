@@ -63,23 +63,24 @@ for chan = 1 : length(channel_name)
     t = uitab(tg,'Title',fig_name);
     axes(t); %#ok<LAXES>
     
-    ax(1) = subplot(4,1,1:3);
+    ax_freq(chan) = subplot(4,1,1:3); %#ok<AGROW>
     [S,F,T,P,Fc,Tc] = spectrogram(timeseries(chan,:),hann(nrSections),nrOverlap,nfft,data.fsample,'yaxis','MinThreshold',-3); % all power below -3dB is discarded
     [nTime,nFrequency] = size(S);
     time      = (0:nTime-1)/nTime*nrPoints/data.fsample;
     frequency = (0:nFrequency-1)/nFrequency*data.fsample/2;
     imagesc(time,frequency,10*log10(abs(P)));
     ylabel('Power dB/Hz')
-    set(ax(1), 'YDir', 'normal')
+    set(ax_freq(chan), 'YDir', 'normal')
     
-    ax(2) = subplot(4,1,4);
-    plot( (0:size(timeseries,2)-1)/data.fsample , timeseries(chan,:) )
+    ax_time(chan) = subplot(4,1,4); %#ok<AGROW>
+    plot(ax_time(chan), (0:size(timeseries,2)-1)/data.fsample , timeseries(chan,:) )
     xlabel('time (s)')
     ylabel('Signal')
     
-    linkaxes(ax,'x');
-    
 end % chan
+
+linkaxes(ax_freq,'xy')
+linkaxes(ax_time,'xy')
 
 
 end % function
