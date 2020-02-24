@@ -96,7 +96,7 @@ nChannel = length(data.cfg.channel);
 
 for iChannel = data.selected_channels_idx'
     
-    fprintf('[%s]: Computing PCA on channel %d/%d - using matlab built-in svd() function... \n', mfilename, iChannel, nChannel)
+    fprintf('[%s]: Computing PCA on channel %d - %s - using matlab built-in svd() function... \n', mfilename, iChannel, data.label{iChannel})
     
     slice_list = data.slice_info.marker_vector;
     
@@ -277,7 +277,7 @@ for iChannel = data.selected_channels_idx'
     
     %% Substraction
     
-    fprintf('[%s]: Saving data & noise \n', mfilename)
+    fprintf('[%s]: Saving data & noise on channel %d - %s \n', mfilename, iChannel, data.label{iChannel})
     
     % Downsample and save
     data.sub_template(iChannel, :) = farm.resample( upsampled_substracted, upsampled_time, fsample * interpfactor, 1/interpfactor );

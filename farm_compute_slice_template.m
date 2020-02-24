@@ -107,7 +107,7 @@ for iChannel = data.selected_channels_idx'
     
     slice_template = zeros( size(slice_segment) );
     
-    fprintf('[%s]: Preparing slice template @ channel %d/%d ... \n', mfilename, iChannel, nChannel)
+    fprintf('[%s]: Preparing slice template @ channel %d - %s ... \n', mfilename, iChannel, data.label{iChannel})
     
     % Here the indexes of samples are a bit complicated : the input 'slice_segment' is padded with some extra samples,
     % but only the inner part (when you remove padding) has to be used for the correlation & scaling.
@@ -137,7 +137,7 @@ for iChannel = data.selected_channels_idx'
     
     %% Save the tempalte data
     
-    fprintf('[%s]:    Saving slice template @ channel %d/%d ... \n', mfilename, iChannel, nChannel)
+    fprintf('[%s]:    Saving slice template @ channel %d - %s ... \n', mfilename, iChannel, data.label{iChannel})
     
     % Apply phase-shift to conpensate the rounding error
     delta_t          = -round_error(slice_list) / sdur / (fsample*interpfactor);

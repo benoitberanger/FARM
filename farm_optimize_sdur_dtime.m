@@ -94,7 +94,7 @@ signal = [ signal zeros(1, length(signal)) ]; % double the length, like a paddin
 % to the Sum of Variance SV ( eq(2) ), but computed for all volumes, not volume-per-volume.
 
 % Initialization of parameters to optimize
-init_param    = [mean(sdur_v) mean(dtime_v)] / data.fsample; % we need a vector of paramters in order to use 'fminsearch'
+init_param    = [mean(sdur_v) mean(dtime_v)] / data.fsample; % we need a vector of paramters, as initial points
 % sdur & dtime are expressed in seconds, to avoid sampling mismatch
 
 % cost function constant variables
@@ -167,6 +167,8 @@ data.slice_onset = slice_onset;
 data.round_error = round_error;
 
 data.interpfactor = interpfactor;
+
+fprintf('[%s]: Optimization sdur & dtime done \n', mfilename)
 
 
 %% Save

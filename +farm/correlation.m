@@ -36,7 +36,7 @@ var_y    = sqrt(sum( y_demean.^2 ,2));
 % is much faster due to MATLAB nice parallisation for built-in functions.
 %
 % benchmark :
-% >> x=rand(1,10000); y=rand(10000,10000); tic, correlation = farm_correlation( x , y ); toc
+% >> x=rand(1,10000); y=rand(10000,10000); tic, correlation = farm.correlation( x , y ); toc
 % Elapsed time is 0.418498 seconds.
 
 correlation = sum( y_demean .* x_demean ,2) ./ (var_x .* var_y );

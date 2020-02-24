@@ -60,7 +60,7 @@ nChannel = length(data.cfg.channel);
 
 for iChannel = data.selected_channels_idx'
     
-    fprintf('[%s]: Performing volume correction on channel %d/%d \n', mfilename, iChannel, nChannel)
+    fprintf('[%s]: Performing volume correction on channel %d - %s \n', mfilename, iChannel, data.label{iChannel})
     
     slice_list = data.slice_info.marker_vector;
     
@@ -154,7 +154,7 @@ for iChannel = data.selected_channels_idx'
     
     %% Save
     
-    fprintf('[%s]:     Saving volume correction on channel %d/%d \n', mfilename, iChannel, nChannel)
+    fprintf('[%s]:     Saving volume correction on channel %d - %s \n', mfilename, iChannel, data.label{iChannel})
     
     % Apply phase-shift to conpensate the rounding error
     delta_t           = -round_error(slice_list) / sdur / (fsample*interpfactor);

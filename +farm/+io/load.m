@@ -1,11 +1,21 @@
 function [ data , skip ] = load( data, calling_function )
 %
+% EXAMPLE
+%       farm.io.LOAD( data, 'farm_optimize_slice_template_using_PCA' )
+%
 % FLAG
 %       - data.cfg.intermediate_results_overwrite
 %       - data.cfg.intermediate_results_load
 %
+% INPUT
+%       - data             : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%       - calling_function : name of the farm_* function calling
 
 if nargin==0, help(mfilename('fullpath')); return; end
+
+%% Checks
+
+narginchk(2,2)
 
 
 %% Main

@@ -19,6 +19,8 @@ sequence.TR     = 1.6; % in seconds
 sequence.nSlice = 54;
 sequence.MB     = 3;   % multiband factor
 sequence.nVol   = [];  % integer or NaN, if [] it means use all volumes
+% Side note : if the fMRI sequence has been manually stopped, the last volume will probably be incomplete.
+% But this incomplete volume will stil generate a marker. In this case, you need to define sequence.nVol
 
 MRI_trigger_message = 'R128';
 

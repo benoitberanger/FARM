@@ -50,6 +50,8 @@ end
 
 %% Main
 
+fprintf('[%s]: initial HPF... ',mfilename)
+
 % Make a copy
 data.initial_hpf = data.trial{1};
 
@@ -58,7 +60,7 @@ if ~isempty(hpf)
     data.initial_hpf(data.selected_channels_idx,:) = farm.filter(data.initial_hpf(data.selected_channels_idx,:), data.fsample, hpf);
 end
 
-fprintf('[%s]: initial HPF done \n',mfilename)
+fprintf('done \n')
 
 
 %% Save

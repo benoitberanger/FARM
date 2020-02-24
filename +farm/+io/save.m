@@ -15,6 +15,11 @@ function save( data, calling_function, varargin )
 if nargin==0, help(mfilename('fullpath')); return; end
 
 
+%% Checks
+
+narginchk(3,Inf)
+
+
 %% Main
 
 if data.cfg.intermediate_results_save
