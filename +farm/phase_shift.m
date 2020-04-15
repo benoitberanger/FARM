@@ -16,7 +16,7 @@ if ~rem(size(in,2),2)
     adjustment(length(adjustment)/2 + 1) = 0;
 end
 
-adjusted_Y = Y .* exp( 1i*2*pi* delta_t .* adjustment );
+adjusted_Y = Y .* exp( 1i*2*pi* delta_t * adjustment );
 
 out = real( ifft( adjusted_Y , [], 2 ) );
 

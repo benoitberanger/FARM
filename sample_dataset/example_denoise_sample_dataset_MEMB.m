@@ -6,7 +6,6 @@ clc
 assert( ~isempty(which('ft_preprocessing')), 'FieldTrip library not detected. Check your MATLAB paths, or get : https://github.com/fieldtrip/fieldtrip' )
 assert( ~isempty(which('farm_rootdir'))    ,      'FARM library not detected. Check your MATLAB paths, or get : https://github.com/benoitberanger/FARM' )
 
-
 %% Get file & sequence paramters
 
 sampledata_path = fullfile(farm_rootdir,'sample_dataset');
@@ -139,7 +138,6 @@ data = farm_optimize_slice_template_using_PCA( data );
 
 data = farm_remove_slice_marker( data );
 
-
 %% Plot
 
 % % Raw
@@ -153,7 +151,7 @@ farm_plot_FFT        (data, 'EXT_D', 'pca_clean', +[30 250])
 farm_plot_spectrogram(data, 'EXT_D', 'pca_clean', +[30 250])
 
 
-%% Convert clean EMG to regrssors
+%% Convert clean EMG to regressors
 
 % Use 1 channel : EXT_D
 EXT_D         = farm_get_timeseries( data, 'EXT_D', 'pca_clean', +[30 250] );              % (1 x nSamples)
