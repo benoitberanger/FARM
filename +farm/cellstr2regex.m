@@ -8,12 +8,20 @@ function [ regex ] = cellstr2regex( inputCELLSTR, exactly )
 % Syntax  : [ regex ]     = cellstr2regex( inputCELLSTR, 1 )
 % Exemple : '(^a$)|(^b$)|(^c$)' = cellstr2regex( {'a' ; 'b' ; 'c'} , 1 )
 
-AssertIsCharOrCellstr(inputCELLSTR);
+if nargin==0, help(mfilename('fullpath')); return; end
+
+
+%% Checks
+
+assert( ( ischar(inputCELLSTR) || iscellstr(inputCELLSTR) ) && ~isempty(inputCELLSTR) , 'inputCELLSTR must be a non-empty char or cellstr' )
 inputCELLSTR = cellstr(inputCELLSTR); % force cellstr
 
 if nargin < 2
     exactly = 0;
 end
+
+
+%% Main
 
 if numel(inputCELLSTR)==1 % str
     
@@ -38,5 +46,6 @@ else
     error('[%s] : WTF ??', mfilename)
     
 end
+
 
 end % function
