@@ -89,7 +89,7 @@ data = farm_initial_hpf( data );
 %% Which channel with greater artifacts ?
 
 data = farm_detect_channel_with_greater_artifact( data );
-fprintf('channel with grater artifacts : %s \n', data.label{data.target_channel})
+fprintf('channel with greater artifacts : %s \n', data.label{data.target_channel})
 
 
 %% Add slice markers : initialize sdur & dtime
