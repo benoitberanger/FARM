@@ -6,6 +6,10 @@ clc
 assert( ~isempty(which('ft_preprocessing')), 'FieldTrip library not detected. Check your MATLAB paths, or get : https://github.com/fieldtrip/fieldtrip' )
 assert( ~isempty(which('farm_rootdir'))    ,      'FARM library not detected. Check your MATLAB paths, or get : https://github.com/benoitberanger/FARM' )
 
+% Initialize FieldTrip
+ft_defaults
+
+
 %% Get file & sequence paramters
 
 sampledata_path = fullfile(farm_rootdir,'sample_dataset');
