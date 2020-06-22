@@ -94,7 +94,7 @@ signal = [ signal zeros(1, length(signal)) ]; % double the length, like a paddin
 % to the Sum of Variance SV ( eq(2) ), but computed for all volumes, not volume-per-volume.
 
 % Initialization of parameters to optimize
-init_param    = [mean(sdur_v) mean(dtime_v)] / data.fsample; % we need a vector of paramters, as initial points
+init_param    = [mean(sdur_v) mean(dtime_v)] / data.fsample; % we need a vector of paramters, as initial point
 % sdur & dtime are expressed in seconds, to avoid sampling mismatch
 
 % cost function constant variables
@@ -116,20 +116,21 @@ fprintf('[%s]: Starting sdur & dtime optimization \n', mfilename)
 % In our case, we have a vector of 2 paramters x0 = [ sdur dtime ],
 % but for the algorithm, we need to create 3 starting point [sdur1 dtime1; sdur2 dtime2; sdur3 dtime3],
 % and the algorithm will start to look around this values.
-% I choose to start with points that are a few ms next to sdur (and follow the rule dtime = TR - nSlice x sdur)
+% I choose to start with points that are a few µs next to sdur (and follow the rule dtime = TR - nSlice x sdur)
 sdur  = init_param(1);
 % dtime = init_param(2);
 
+% move from starting point x0 = [ sdur dtime ] by a small bit of time (in seconds)
+delta = 1e-5; % 10 µs
+
 x_init = [
-    sdur+1e-4 , sequence.TR-const.nSlice*(sdur+1e-4) % sdur & dtime + 0.1ms
-    sdur-1e-4 , sequence.TR-const.nSlice*(sdur-1e-4) % sdur & dtime - 0.1ms
-    sdur+1e-4 , sequence.TR-const.nSlice*(sdur-1e-4) % sdur & dtime +-0.1ms
+    sdur+delta , sequence.TR-const.nSlice*(sdur+delta) % sdur & dtime + delta
+    sdur-delta , sequence.TR-const.nSlice*(sdur-delta) % sdur & dtime - delta
+    sdur+delta , sequence.TR-const.nSlice*(sdur-delta) % sdur & dtime +-delta
     ];
 
 % Go !
-tic
 x_opt = farm.optimization.nelder_mead ( x_init,  @(param,speed) farm.optimization.cost_function(param, speed, const) );
-toc
 final_param = x_opt;
 
 fprintf('initial   sdur | dtime : %fµs %fµs - initial TR : %fs \n',  init_param(1)*1e6,  init_param(2)*1e6, const.nSlice* init_param(1) +  init_param(2) )
