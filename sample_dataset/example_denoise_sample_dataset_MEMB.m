@@ -55,6 +55,13 @@ data.cfg.intermediate_results_overwrite = false; % don't overwrite files
 data.cfg.intermediate_results_save      = true;  % write on disk intermediate results
 data.cfg.intermediate_results_load      = true;  % if intermediate result file is detected, to not re-do step and load file
 
+% Output directory
+% If no outdir is defined, use the same as inputdir
+outdir = tempdir(); % tempdir() is a matlab built-in function to get the temporary directory, which is emptied at each reboot
+data.cfg.outdir.intermediate = fullfile( outdir, 'FARM_intermediate'); % intermediate results
+% data.cfg.outdir.BVAexport    = fullfile( outdir, 'FARM_BVAexport'   ); % export final results in {.eeg, .vhdr, .vmrk}
+% data.cfg.outdir.png          = fullfile( outdir, 'FARM_png'         ); % write PNG here, for visual quick check
+
 % Plot
 % ft_databrowser(data.cfg, data)
 

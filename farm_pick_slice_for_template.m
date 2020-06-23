@@ -41,7 +41,7 @@ farm_check_data( data )
 
 %% Load
 
-[ data, skip ]= farm.io.load(data,mfilename);
+[ data, skip ]= farm.io.intermediate.load(data,mfilename);
 if skip, return, end
 
 
@@ -119,7 +119,7 @@ fprintf('done \n')
 
 %% Save
 
-farm.io.save(data,mfilename,'slice_info')
+farm.io.intermediate.save(data,mfilename,'slice_info')
 
 
 end % function

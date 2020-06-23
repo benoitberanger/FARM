@@ -46,7 +46,7 @@ farm_check_data( data )
 
 %% Load
 
-[ data, skip ]= farm.io.load(data,mfilename);
+[ data, skip ]= farm.io.intermediate.load(data,mfilename);
 if skip
     data = add_slice_marker(data);
     return
@@ -133,7 +133,7 @@ data = add_slice_marker(data); % local function, see below
 
 %% Save
 
-farm.io.save(data,mfilename,'sdur_v','dtime_v')
+farm.io.intermediate.save(data,mfilename,'sdur_v','dtime_v')
 
 
 end % function

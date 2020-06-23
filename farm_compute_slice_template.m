@@ -39,7 +39,7 @@ farm_check_data( data )
 
 %% Load
 
-[ data, skip ]= farm.io.load(data,mfilename);
+[ data, skip ]= farm.io.intermediate.load(data,mfilename);
 if skip, return, end
 
 
@@ -165,7 +165,7 @@ end % iChannel
 
 %% Save
 
-farm.io.save(data,mfilename,'artifact_template')
+farm.io.intermediate.save(data,mfilename,'artifact_template')
 
 
 end % function

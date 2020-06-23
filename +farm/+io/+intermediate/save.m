@@ -1,7 +1,7 @@
 function save( data, calling_function, varargin )
 %
 % EXAMPLE
-%       farm.io.SAVE( data, 'farm_optimize_slice_template_using_PCA', 'sub_template','pca_clean','pca_noise' )
+%       farm.io.intermediate.SAVE( data, 'farm_optimize_slice_template_using_PCA', 'sub_template','pca_clean','pca_noise' )
 %
 % FLAG
 %       - data.cfg.intermediate_results_save
@@ -24,7 +24,7 @@ narginchk(3,Inf)
 
 if data.cfg.intermediate_results_save
     
-    fname = farm.io.get_fname( data, calling_function );
+    fname = farm.io.intermediate.get_fname( data, calling_function );
     
     if ~exist(fname,'file') || data.cfg.intermediate_results_overwrite
         
@@ -35,8 +35,10 @@ if data.cfg.intermediate_results_save
         end
         
         % Save the fields of a structure as individual variables
+        outdir = fileparts(fname);
+        if ~exist( outdir, 'dir' )==7, mkdir(outdir); end
         save(fname, '-struct', 'to_save')
-        fprintf('[farm.io.save]: saved %s \n', fname )
+        fprintf('[farm.io.intermediate.save]: saved %s \n', fname )
         
     end
     

@@ -28,7 +28,7 @@ farm_check_data( data )
 
 %% Load
 
-[ data, skip ]= farm.io.load(data,mfilename);
+[ data, skip ]= farm.io.intermediate.load(data,mfilename);
 if skip, return, end
 
 
@@ -185,7 +185,7 @@ end % iChannel
 
 %% Save
 
-farm.io.save(data,mfilename,'vol_clean','vol_noise')
+farm.io.intermediate.save(data,mfilename,'vol_clean','vol_noise')
 
 
 end % function

@@ -39,7 +39,7 @@ farm_check_data( data )
 
 %% Load
 
-[ data, skip ]= farm.io.load(data,mfilename);
+[ data, skip ]= farm.io.intermediate.load(data,mfilename);
 if skip, return, end
 
 
@@ -174,7 +174,7 @@ fprintf('[%s]: Optimization sdur & dtime done \n', mfilename)
 
 %% Save
 
-farm.io.save(data,mfilename,'sdur','dtime','slice_onset','round_error','interpfactor')
+farm.io.intermediate.save(data,mfilename,'sdur','dtime','slice_onset','round_error','interpfactor')
 
 
 end % function

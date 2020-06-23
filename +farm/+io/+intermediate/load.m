@@ -1,7 +1,7 @@
 function [ data , skip ] = load( data, calling_function )
 %
 % EXAMPLE
-%       farm.io.LOAD( data, 'farm_optimize_slice_template_using_PCA' )
+%       farm.io.intermediate.LOAD( data, 'farm_optimize_slice_template_using_PCA' )
 %
 % FLAG
 %       - data.cfg.intermediate_results_overwrite
@@ -13,6 +13,7 @@ function [ data , skip ] = load( data, calling_function )
 
 if nargin==0, help(mfilename('fullpath')); return; end
 
+
 %% Checks
 
 narginchk(2,2)
@@ -22,7 +23,7 @@ narginchk(2,2)
 
 skip = false;
 
-fname = farm.io.get_fname( data, calling_function );
+fname = farm.io.intermediate.get_fname( data, calling_function );
 
 if data.cfg.intermediate_results_load && ~data.cfg.intermediate_results_overwrite % don't need to load file if we overwrite anyway
     
@@ -35,7 +36,7 @@ if data.cfg.intermediate_results_load && ~data.cfg.intermediate_results_overwrit
         for f = 1 : length(fields)
             data.(fields{f}) = content.(fields{f});
         end
-        fprintf('[farm.io.load]: load %s \n', fname )
+        fprintf('[farm.io.intermediate.load]: load %s \n', fname )
         
         skip = true;
         
