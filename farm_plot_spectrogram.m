@@ -79,8 +79,9 @@ for chan = 1 : length(channel_name)
     
 end % chan
 
-linkaxes(ax_freq,'xy')
-linkaxes(ax_time,'xy')
+linkaxes(ax_freq,'xy'   )
+axis    (ax_time,'tight')
+linkaxes(ax_time,'xy'   )
 
 
 end % function

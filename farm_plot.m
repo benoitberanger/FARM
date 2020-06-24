@@ -61,7 +61,8 @@ for chan = 1 : length(channel_name)
     
 end % chan
 
-linkaxes(ax,'xy')
+axis    (ax,'tight')
+linkaxes(ax,'xy'   )
 
 
 end % function
