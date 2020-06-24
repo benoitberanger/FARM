@@ -59,7 +59,7 @@ data.cfg.intermediate_results_load      = true;  % if intermediate result file i
 % If no outdir is defined, use the same as inputdir
 outdir = tempdir(); % tempdir() is a matlab built-in function to get the temporary directory, which is emptied at each reboot
 data.cfg.outdir.intermediate = fullfile( outdir, 'FARM_intermediate'); % intermediate results
-% data.cfg.outdir.BVAexport    = fullfile( outdir, 'FARM_BVAexport'   ); % export final results in {.eeg, .vhdr, .vmrk}
+data.cfg.outdir.BVAexport    = fullfile( outdir, 'FARM_BVAexport'   ); % export final results in {.eeg, .vhdr, .vmrk}
 % data.cfg.outdir.png          = fullfile( outdir, 'FARM_png'         ); % write PNG here, for visual quick check
 
 % Plot
@@ -112,4 +112,9 @@ farm_plot_regressor(EXTFLE_D_reginfo,'EXTFLE_D')
 farm_save_regressor( data, EXT_D_reginfo,   'EXT_D' )
 outname = fullfile(sampledata_path, [fname '_FLE_D']);
 farm_save_regressor( data, FLE_D_reginfo,  outname)
+
+
+%% Export to BrainVisionAnalyzer format
+
+farm_export_BVA( data )
 

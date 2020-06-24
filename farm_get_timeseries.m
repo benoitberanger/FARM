@@ -45,6 +45,7 @@ farm_check_data( data )
 
 %% Prepare data
 
+% Get the all datapoints
 [ datapoints, channel_idx, channel_name, stage ] = farm.plot.get_datapoints( data, channel_description, processing_stage );
 
 % Filter
@@ -52,6 +53,7 @@ if nargin > 1
     datapoints = farm.filter(datapoints, data.fsample, filter, order);
 end
 
+% Only keep datapoints within the volume markers
 volume_event = farm.sequence.get_volume_event( data );
 nVol         = farm.sequence.get_nVol        ( data );
 volume_event = volume_event(1:nVol);
