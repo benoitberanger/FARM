@@ -54,7 +54,7 @@ nrSections = floor(nrPoints/1e3); % 1000 points window
 nrOverlap  = floor(nrSections/2); % 50% overlap
 nfft       = max(256,2^nextpow2(nrSections)); % ?
 
-f = figure('Name',mfilename,'NumberTitle','off');
+f = figure('Name',data.cfg.datafile,'NumberTitle','off');
 tg = uitabgroup(f);
 
 for chan = 1 : length(channel_name)

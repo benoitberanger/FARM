@@ -59,7 +59,7 @@ timeseries   = datapoints;
 
 %% For each channel found
 
-f = figure('Name',mfilename,'NumberTitle','off');
+f = figure('Name',data.cfg.datafile,'NumberTitle','off');
 tg = uitabgroup(f);
 
 for chan = 1 : length(channel_name)
