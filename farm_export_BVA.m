@@ -12,8 +12,8 @@ function farm_export_BVA( data, processing_stage )
 %
 %
 % NOTES
-%       - if no "processing_stage" is defined, use "pca_clean" because its the last one in <a href="matlab: help farm_main_workflow">farm_main_workflow</a>
-%       - 
+%       - if no "processing_stage" is defined, use last "*_clean"
+%
 
 if nargin==0, help(mfilename('fullpath')); return; end
 
@@ -29,7 +29,7 @@ end
 
 [ datapoints, ~, ~, stage ] = farm.plot.get_datapoints( data, [], processing_stage );
 
-fname = farm.io.final.get_fname(data, stage);
+fname = farm.io.bva.get_fname(data, stage);
 
 % Make sure to never overwrite the input
 assert( strcmp( fname, data.cfg.datafile ) == 0, 'BVAexport filename and input filename are the same ! Nerver overwrite the input.')
