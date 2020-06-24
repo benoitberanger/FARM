@@ -57,7 +57,7 @@ end
 volume_event = farm.sequence.get_volume_event( data );
 nVol         = farm.sequence.get_nVol        ( data );
 volume_event = volume_event(1:nVol);
-timeseries   = datapoints( : , volume_event(1).sample : volume_event(end).sample);
+timeseries   = datapoints( : , volume_event(1).sample+1 : volume_event(end).sample); % disard first sample
 
 
 end % function
