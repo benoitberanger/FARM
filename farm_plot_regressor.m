@@ -1,8 +1,9 @@
-function farm_plot_regressor( reginfo, label )
+function varargout = farm_plot_regressor( reginfo, label )
 % FARM_PLOT_REGRESSOR will plot the input and output of farm_make_regressor()
 %
 % SYNTAX
-%       FARM_PLOT_REGRESSOR( reginfo, label )
+%              FARM_PLOT_REGRESSOR( reginfo, label )
+%       figH = FARM_PLOT_REGRESSOR( reginfo, label )
 %
 % INPUT
 %       - reginfo : see <a href="matlab: help farm_make_regressor">farm_make_regressor</a>
@@ -15,7 +16,9 @@ if nargin==0, help(mfilename('fullpath')); return; end
 
 %% Main
 
-figure
+figH = figure;
+figH.UserData = mfilename;
+
 if exist('label','var')
     set(gcf,'Name',label,'NumberTitle','off');
 end
@@ -37,6 +40,13 @@ plot(reginfo.time_reg ,reginfo.dreg ,'LineStyle','-.','Color',colors(3,:),'Displ
 
 legend
 xlabel('time (s)')
+
+
+%% Output ?
+
+if nargout
+    varargout{1} = figH;
+end
 
 
 end % function

@@ -119,3 +119,10 @@ farm_save_regressor( data, FLE_D_reginfo,  outname)
 
 farm_export_BVA( data ) % BrainVisionAnalyzer ( .eeg, .vhdr, .vmrk )
 farm_export_mat( data ) % MATLAB ( .mat )
+
+
+%% Print figures
+
+figH = farm_plot_FFT(data, [], 'pca_clean', +[30 250]);
+farm_print_figure( data, figH ); % close(figH)
+

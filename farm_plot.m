@@ -1,8 +1,9 @@
-function farm_plot( data, channel_description, processing_stage, filter, order )
+function varargout = farm_plot( data, channel_description, processing_stage, filter, order )
 % FARM_PLOT will plot the data inside the volume markers
 %
 % SYNTAX
-%       FARM_PLOT( data, channel_description, processing_stage, filter, order )
+%              FARM_PLOT( data, channel_description, processing_stage, filter, order )
+%       figH = FARM_PLOT( data, channel_description, processing_stage, filter, order )
 %
 % INPUTS
 %       - data                : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -48,8 +49,10 @@ farm_check_data( data )
 
 %% Plot
 
-f = figure('Name',data.cfg.datafile,'NumberTitle','off');
-tg = uitabgroup(f);
+figH = figure('Name',data.cfg.datafile,'NumberTitle','off');
+figH.UserData = mfilename;
+
+tg = uitabgroup(figH);
 
 for chan = 1 : length(channel_name)
     fig_name = sprintf('%s @ channel %d / %s', stage,channel_idx(chan), channel_name{chan});
@@ -63,6 +66,13 @@ end % chan
 
 axis    (ax,'tight')
 linkaxes(ax,'xy'   )
+
+
+%% Output ?
+
+if nargout
+    varargout{1} = figH;
+end
 
 
 end % function

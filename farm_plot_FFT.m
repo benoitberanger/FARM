@@ -1,10 +1,11 @@
-function farm_plot_FFT( data, channel_description, processing_stage, filter, order )
+function varargout = farm_plot_FFT( data, channel_description, processing_stage, filter, order )
 % FARM_PLOT_FFT will plot
 % (1) the data inside the volume markers
 % (2) it's FFT
 %
 % SYNTAX
-%       FARM_PLOT_FFT( data, channel_description, processing_stage, filter, order )
+%              FARM_PLOT_FFT( data, channel_description, processing_stage, filter, order )
+%       figH = FARM_PLOT_FFT( data, channel_description, processing_stage, filter, order )
 %
 % INPUTS
 %       - data                : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -50,8 +51,10 @@ farm_check_data( data )
 
 %% Plot
 
-f = figure('Name',data.cfg.datafile,'NumberTitle','off');
-tg = uitabgroup(f);
+figH = figure('Name',data.cfg.datafile,'NumberTitle','off');
+figH.UserData = mfilename;
+
+tg = uitabgroup(figH);
 
 for chan = 1 : length(channel_name)
     
@@ -74,10 +77,10 @@ for chan = 1 : length(channel_name)
     P2 = abs(Y/L);
     P1 = P2(1:L/2+1);
     P1(2:end-1) = 2*P1(2:end-1);
-    f = data.fsample*(0:(L/2))/L;
+    freq = data.fsample*(0:(L/2))/L;
     
     ax_freq(chan) = subplot(2,1,2); %#ok<AGROW>
-    plot(ax_freq(chan), f,P1)
+    plot(ax_freq(chan), freq,P1)
     
     xlabel('Frequency (Hz)')
     ylabel('Power')
@@ -88,6 +91,27 @@ axis    (ax_time,'tight')
 linkaxes(ax_time,'xy'   )
 axis    (ax_freq,'tight')
 linkaxes(ax_freq,'xy'   )
+
+% Adapt view of the FFT when filter is lpf or bpf
+switch length(filter)
+    case 1
+        if filter > 0
+        elseif filter < 0
+            ylim( ax_freq, [0                 -filter*1.5] )
+        end
+    case 2
+        if all(filter > 0)
+            xlim( ax_freq, [filter(1)*0.5   filter(2)*1.5] )
+        elseif all(filter < 0)
+        end
+end
+
+
+%% Output ?
+
+if nargout
+    varargout{1} = figH;
+end
 
 
 end % function

@@ -1,9 +1,10 @@
-function farm_plot_carpet( data, channel_description, processing_stage, filter, order )
+function varargout = farm_plot_carpet( data, channel_description, processing_stage, filter, order )
 % FARM_PLOT_CARPET will plot the data in 2D such as each line is one TR, and columns are samples.
 % This is a nice way to see the periodicty of the MRI artifact, and to check the effect of the denoising.
 %
 % SYNTAX
-%       FARM_PLOT_CARPET( data, channel_description, processing_stage, filter, order )
+%              FARM_PLOT_CARPET( data, channel_description, processing_stage, filter, order )
+%       figH = FARM_PLOT_CARPET( data, channel_description, processing_stage, filter, order )
 %
 % INPUTS
 %       - data                : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -59,8 +60,10 @@ timeseries   = datapoints;
 
 %% For each channel found
 
-f = figure('Name',data.cfg.datafile,'NumberTitle','off');
-tg = uitabgroup(f);
+figH = figure('Name',data.cfg.datafile,'NumberTitle','off');
+figH.UserData = mfilename;
+
+tg = uitabgroup(figH);
 
 for chan = 1 : length(channel_name)
     
@@ -83,6 +86,13 @@ for chan = 1 : length(channel_name)
 end % chan
 
 linkaxes(ax,'xy')
+
+
+%% Output ?
+
+if nargout
+    varargout{1} = figH;
+end
 
 
 end % function
