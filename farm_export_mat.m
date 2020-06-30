@@ -1,5 +1,7 @@
 function farm_export_mat( data, processing_stage )
 % FARM_EXPORT_MAT will write on disk the desired processing step in MATLAB .mat
+% Output directory is -> data.cfg.outdir.MATexport
+%                  or -> same dir as input .eeg file
 %
 % SYNTAX
 %       FARM_EXPORT_MAT( data                   )

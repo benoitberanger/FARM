@@ -1,4 +1,4 @@
-function reginfo = farm_emg_regressor( data, timeseries, comb_method )
+function reginfo = farm_emg_regressor( data, timeseries, name, comb_method )
 % FARM_EMG_REGRESSOR is a wrapper, performing :
 % 1) EMG envelope : abs() then LPF @ 8Hz
 % 1.5) combine if necessary
@@ -8,12 +8,13 @@ function reginfo = farm_emg_regressor( data, timeseries, comb_method )
 %
 %
 % SYNTAX
-%       reginfo = FARM_EMG_REGRESSOR( data, timeseries )
-%       reginfo = FARM_EMG_REGRESSOR( data, timeseries, combine_method )
+%       reginfo = FARM_EMG_REGRESSOR( data, timeseries, name )
+%       reginfo = FARM_EMG_REGRESSOR( data, timeseries, name, combine_method )
 %
 % INPUT
 %       - data           : see <a href="matlab: help farm_check_data">farm_check_data</a>
 %       - timeseries     : see <a href="matlab: help farm_get_timeseries">farm_get_timeseries</a>
+%       - name           : name of the regressor, it will be used for the output file name, and in SPM regressor name
 %       - combine_method : (optional) see <a href="matlab: help farm_combine_timeseries">farm_combine_timeseries</a>
 %
 % See also farm_get_timeseries farm_plot_regressor farm_combine_timeseries farm_emg_envelope farm.resample farm_make_regressor
@@ -23,7 +24,7 @@ if nargin==0, help(mfilename('fullpath')); return; end
 
 %% Checks
 
-narginchk(2,3)
+narginchk(3,4)
 
 if ~exist('comb_method','var')
     comb_method = 'mean';
@@ -49,6 +50,9 @@ new_timeseries = farm.resample( comb, time, data.fsample, new_fsample/data.fsamp
 
 % Make regressor
 reginfo = farm_make_regressor( new_timeseries, new_fsample, data.sequence.TR );
+
+% Save name in reginfo
+reginfo.name = name;
 
 % (this is for the plot)
 reginfo.raw      = abs(farm.normalize_range(timeseries));

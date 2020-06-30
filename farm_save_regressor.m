@@ -1,5 +1,7 @@
-function farm_save_regressor( data, reginfo, outputname )
+function farm_save_regressor( data, reginfo )
 % FARM_SAVE_REGRESSOR will save regressor on disk
+% Output directory is -> data.cfg.outdir.regressor
+%                  or -> same dir as input .eeg file
 %
 % SYNTAX
 %       FARM_SAVE_REGRESSOR( data, reginfo, outputname )
@@ -7,8 +9,6 @@ function farm_save_regressor( data, reginfo, outputname )
 % INPUT
 %       - data       : see <a href="matlab: help farm_check_data">farm_check_data</a>
 %       - reginfo    : see <a href="matlab: help farm_make_regressor">farm_make_regressor</a>
-%       - outputname : 'char' 1) if outname is a "normal" char like 'EXT_D', the file will be /path/to/dataset/EXT_D.mat
-%                             2) is outname is a "fullpath" like /path/to/whatever/myRegressor, this fullpath will be used
 %                       
 %
 % See also farm_make_regressor farm_emg_regressor farm_acc_regressor farm_plot_regressor
@@ -18,20 +18,17 @@ if nargin==0, help(mfilename('fullpath')); return; end
 
 %% Check
 
-narginchk(3,3)
+narginchk(2,2)
 
 
-%% fname
+%% Fetch data & prepare output name
 
-[pathstr1, name, ~] = fileparts(outputname);
-if isempty(pathstr1)
-    [pathstr2, ~, ~] = fileparts(data.cfg.dataset);
-    pathstr = pathstr2;
-else
-    pathstr = pathstr1;
-end
+path = farm.io.regressor.get_path(data);
+if ~exist(path, 'dir'), mkdir(path), end
+[~, dataset_name, ~] = fileparts(data.cfg.dataset);
 
-fname = fullfile(pathstr,name);
+fname = [dataset_name '__' reginfo.name];
+fpath = fullfile(path,[fname '.mat']);
 
 
 %% Perpare what to save
@@ -46,8 +43,8 @@ R(:,1) = reginfo. reg;
 R(:,2) = reginfo.dreg;
 
 names    = cell(2,1);
-names{1} =      name ;
-names{2} = ['d' name];
+names{1} =      reginfo.name ;
+names{2} = ['d' reginfo.name];
 
 tosave.R     = R;
 tosave.names = names; %#ok<*STRNU>
@@ -58,7 +55,8 @@ tosave.names = names; %#ok<*STRNU>
 
 %% Save
 
-save(fname,'-struct','tosave')
+fprintf('[%s]: writing file : %s \n', mfilename, fpath)
+save(fpath,'-struct','tosave')
 
 
 end % function

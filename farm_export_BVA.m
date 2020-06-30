@@ -1,6 +1,8 @@
 function farm_export_BVA( data, processing_stage )
 % FARM_EXPORT_BVA will write on disk the desired processing step in BrainVision Analyzer format
 % 3 files will be created : .eeg, .vhdr, .vmrk
+% Output directory is -> data.cfg.outdir.BVAexport
+%                  or -> same dir as input .eeg file
 %
 % SYNTAX
 %       FARM_EXPORT_BVA( data                   )

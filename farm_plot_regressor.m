@@ -1,13 +1,12 @@
-function varargout = farm_plot_regressor( reginfo, label )
+function varargout = farm_plot_regressor( reginfo )
 % FARM_PLOT_REGRESSOR will plot the input and output of farm_make_regressor()
 %
 % SYNTAX
-%              FARM_PLOT_REGRESSOR( reginfo, label )
-%       figH = FARM_PLOT_REGRESSOR( reginfo, label )
+%              FARM_PLOT_REGRESSOR( reginfo )
+%       figH = FARM_PLOT_REGRESSOR( reginfo )
 %
 % INPUT
 %       - reginfo : see <a href="matlab: help farm_make_regressor">farm_make_regressor</a>
-%       - label   : (optional) name of the figure created
 %
 % See also farm_make_regressor farm_emg_regressor
 
@@ -16,12 +15,8 @@ if nargin==0, help(mfilename('fullpath')); return; end
 
 %% Main
 
-figH = figure;
+figH = figure('Name',reginfo.name,'NumberTitle','off');
 figH.UserData = mfilename;
-
-if exist('label','var')
-    set(gcf,'Name',label,'NumberTitle','off');
-end
 
 hold on
 

@@ -62,6 +62,7 @@ data.cfg.outdir.intermediate = fullfile( outdir, 'FARM_intermediate'); % interme
 data.cfg.outdir.BVAexport    = fullfile( outdir, 'FARM_BVAexport'   ); % export final results in {.eeg, .vhdr, .vmrk}
 data.cfg.outdir.MATexport    = fullfile( outdir, 'FARM_MATexport'   ); % export final results in .mat
 data.cfg.outdir.png          = fullfile( outdir, 'FARM_png'         ); % write PNG here, for visual quick check
+data.cfg.outdir.regressor    = fullfile( outdir, 'FARM_regressor'   ); % write regressor here, in .mat
 
 % Plot
 % ft_databrowser(data.cfg, data)
@@ -90,29 +91,25 @@ farm_plot_spectrogram(data, 'EXT_D', 'pca_clean', +[30 250])
 farm_plot_FFT  (data, channel_regex, 'pca_clean', +[30 250])
 
 
-%% Convert clean EMG to regressors
+%% Convert clean EMG to regressors & save them
 
 % Use 1 channel : EXT_D
-EXT_D         = farm_get_timeseries( data, 'EXT_D', 'pca_clean', +[30 250] );              % (1 x nSamples)
-EXT_D_reginfo = farm_emg_regressor ( data,  EXT_D );
-farm_plot_regressor(EXT_D_reginfo,'EXT_D')
+ts      = farm_get_timeseries( data, 'EXT_D', 'pca_clean', +[30 250] );              % (1 x nSamples)
+reginfo = farm_emg_regressor ( data, ts, 'EXT_D' );
+farm_plot_regressor(reginfo)
+farm_save_regressor( data, reginfo)
 
 % Use 1 channel : FLE_D
-FLE_D         = farm_get_timeseries( data, 'FLE_D', 'pca_clean', +[30 250] );              % (1 x nSamples)
-FLE_D_reginfo = farm_emg_regressor ( data,  FLE_D );
-farm_plot_regressor(FLE_D_reginfo,'FLE_D')
+ts      = farm_get_timeseries( data, 'FLE_D', 'pca_clean', +[30 250] );              % (1 x nSamples)
+reginfo = farm_emg_regressor ( data, ts, 'FLE_D' );
+farm_plot_regressor(reginfo)
+farm_save_regressor( data, reginfo)
 
 % Use 2 channels and combine them : EXT_D + FLE_D
-EXTFLE_D         = farm_get_timeseries( data, {'EXT_D','FLE_D'}, 'pca_clean', +[30 250] ); % (2 x nSamples)
-EXTFLE_D_reginfo = farm_emg_regressor ( data,  EXTFLE_D, 'mean' );
-farm_plot_regressor(EXTFLE_D_reginfo,'EXTFLE_D')
-
-
-%% Save regressors on disk
-
-farm_save_regressor( data, EXT_D_reginfo,   'EXT_D' )
-outname = fullfile(sampledata_path, [fname '_FLE_D']);
-farm_save_regressor( data, FLE_D_reginfo,  outname)
+ts      = farm_get_timeseries( data, {'EXT_D','FLE_D'}, 'pca_clean', +[30 250] ); % (2 x nSamples)
+reginfo = farm_emg_regressor ( data, ts, 'EXTFLE_D', 'mean' );
+farm_plot_regressor(reginfo)
+farm_save_regressor( data, reginfo)
 
 
 %% Export final results to different formats
