@@ -1,6 +1,6 @@
 function reginfo = farm_emg_regressor( data, timeseries, name, comb_method )
 % FARM_EMG_REGRESSOR is a wrapper, performing :
-% 1) EMG envelope : abs() then LPF @ 8Hz
+% 1) EMG envelope : Hilbter transform, using <a href="matlab: help ft_preproc_hilbert">ft_preproc_hilbert</a>
 % 1.5) combine if necessary
 % 2) Downsample @ 500Hz for faster convolution
 % 3) Convolve with HRF using SPM toolbox, and compute the first derivative
@@ -45,7 +45,7 @@ end
 
 % Downsample for faster convolution
 time           = (0:length(comb)-1)/data.fsample;
-new_fsample    = 500; % Hz
+new_fsample    = 1000; % Hz
 new_timeseries = farm.resample( comb, time, data.fsample, new_fsample/data.fsample );
 
 % Make regressor
