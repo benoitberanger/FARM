@@ -38,6 +38,9 @@ assert( ...
 U(1).u    = timeseries(:);
 U(1).name = {'reg'};
 
+U(2).u    = farm.log_transform(timeseries)';
+U(2).name = {'log'};
+
 fMRI_T     = spm_get_defaults('stats.fmri.t');
 fMRI_T0    = spm_get_defaults('stats.fmri.t0');
 xBF.T      = fMRI_T;
@@ -47,22 +50,31 @@ xBF.name   = 'hrf';
 
 xBF        = spm_get_bf(xBF); % get HRF
 
-conv       = spm_Volterra(U, xBF.bf, 1); % convolution
+X          = spm_Volterra(U, xBF.bf, 1); % convolution
 
 
 %% Some other prepartions
 
-conv    = conv(:)';       % keep line, such as  (1 x nSample)
-conv    = farm.normalize_range( conv);
+conv      = X(:,1)';       % keep line, such as  (1 x nSample)
+conv      = farm.normalize_range( conv);
 
-dconv   = [0 diff(conv)]; % first derivative
-dconv   = farm.normalize_range(dconv);
+dconv     = [0 diff(conv)]; % first derivative
+dconv     = farm.normalize_range(dconv);
+
+log_conv  = X(:,2)';       % keep line, such as  (1 x nSample)
+log_conv  = farm.normalize_range(log_conv);
+
+dlog_conv = [0 diff(log_conv)]; % first derivative
+dlog_conv = farm.normalize_range(dlog_conv);
 
 
 %% downsample @ TR
 
-reg  =  conv( 1 : round(TR*fsample) : end );
-dreg = dconv( 1 : round(TR*fsample) : end );
+reg      =      conv( 1 : round(TR*fsample) : end );
+dreg     =     dconv( 1 : round(TR*fsample) : end );
+
+log_reg  =  log_conv( 1 : round(TR*fsample) : end );
+dlog_reg = dlog_conv( 1 : round(TR*fsample) : end );
 
 
 %% Save
@@ -75,10 +87,15 @@ reginfo.time_in   = (0:length(timeseries)-1)/fsample;
 reginfo. conv     =  conv;
 reginfo.dconv     = dconv;
 reginfo.time_conv = (0:length(conv)-1)/fsample;
+reginfo.log_conv  =  log_conv;
+reginfo.dlog_conv = dlog_conv;
 
 reginfo. reg      =  reg;
 reginfo.dreg      = dreg;
 reginfo.time_reg  = (0:length(reg)-1)*TR;
+
+reginfo. log_reg  = log_reg;
+reginfo.dlog_reg  = dlog_reg;
 
 
 end % function
