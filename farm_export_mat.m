@@ -51,7 +51,7 @@ to_save.trial{1} = datapoints; %#ok<STRNU>
 
 % Save the fields of a structure as individual variables
 outdir = fileparts(fname);
-if ~exist( outdir, 'dir' )==7, mkdir(outdir); end
+if exist( outdir, 'dir' )~=7, mkdir(outdir); end
 fprintf('[%s]: writing file : %s \n', mfilename, fname)
 save(fname, '-struct', 'to_save')
 
