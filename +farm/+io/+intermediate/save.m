@@ -36,7 +36,7 @@ if data.cfg.intermediate_results_save
         
         % Save the fields of a structure as individual variables
         outdir = fileparts(fname);
-        if ~exist( outdir, 'dir' )==7, mkdir(outdir); end
+        if exist( outdir, 'dir' )~=7, mkdir(outdir); end
         save(fname, '-struct', 'to_save')
         fprintf('[farm.io.intermediate.save]: saved %s \n', fname )
         
