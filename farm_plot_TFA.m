@@ -6,7 +6,8 @@ function varargout = farm_plot_TFA( data, TFA )
 %       figH = FARM_PLOT( TFA )
 %
 % INPUTS
-%       - TFA
+%       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%       - TFA  : output of <a href="matlab: help farm_time_frequency_analysis_emg_acc">farm_time_frequency_analysis_emg_acc</a>
 %
 % NOTES
 %
@@ -54,7 +55,7 @@ title(title_str)
 % Fmean(powerspectrum)
 ax_Fmean(1) = subplot('Position',pos_Fmean);
 hold on
-plot(TFA.time, TFA.power_Fmean_avg, 'Color','black','LineWidth',1   )
+plot(TFA.time, TFA.power_Fmean_avg, 'Color','black','LineWidth',2.0 )
 plot(TFA.time, TFA.peakpower_avg  , 'Color','blue' ,'LineWidth',0.5 )
 l = legend('mean(power)','power@peakfreq');
 l.Interpreter = 'None';
@@ -87,13 +88,13 @@ for chan = 1 : length(TFA.label)
     view( ax_3d(chan+1) , 2 )
     xlabel('time (s)')
     ylabel('Frequency (Hz)')
-    title_str = sprintf('powerspectrums @ %s', TFA.label{chan});
+    title_str = sprintf('powerspectrum @ %s', TFA.label{chan});
     title(title_str)
     
     % Fmean(powerspectrum)
     ax_Fmean(chan+1) = subplot('Position',pos_Fmean);
     hold on
-    plot(TFA.time, TFA.power_Fmean(chan,:), 'Color','black','LineWidth',1   )
+    plot(TFA.time, TFA.power_Fmean(chan,:), 'Color','black','LineWidth',2.0 )
     plot(TFA.time, TFA.peakpower  (chan,:), 'Color','blue' ,'LineWidth',0.5 )
     l = legend('mean(power)','power@peakfreq');
     l.Interpreter = 'None';

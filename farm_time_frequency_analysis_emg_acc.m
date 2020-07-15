@@ -1,18 +1,26 @@
 function TFA = farm_time_frequency_analysis_emg_acc( data, cfg )
-% FARM_GET_TIMESERIES will fetch datapoints within the fMRI sequence, according the channel_description and processing_stage
+% FARM_TIME_FREQUENCY_ANALYSIS_EMG_ACC
+% 1)   get filtered EMG timeseries
+% 1.5) get filtered ACC timeseries ("cfg.acc_regex" is required)
+% 2)   get EMG envelope, so the low (<30Hz) frequency can be captured
+% 3)   downsample @ 500Hz for faster computation
+% 4)   use ft_freqanalysis() using "multi-taper method"
+% 5)   post-processing : for each channels & averaged channels
+%   a) power average across frequency
+%   b) power average across time
+%   c) power @ peak frequency
 %
 % SYNTAX
-%
+%       TFA = FARM_TIME_FREQUENCY_ANALYSIS_EMG_ACC( data, cfg )
 %
 % INPUTS
-%       - data                : see <a href="matlab: help farm_check_data">farm_check_data</a>
-%       - cfg
+%       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%       - cfg  : check in the code of the function
 %
 % NOTES
 %
 %
-%
-% See also
+% See also ft_freqanalysis
 
 if nargin==0, help(mfilename('fullpath')); return; end
 
@@ -94,12 +102,13 @@ cfg_TFA.method      = 'mtmconvol'; % time-frequency analysis on any time series 
 cfg_TFA.output      = 'pow';       % power-spectra
 cfg_TFA.taper       = 'hanning';   % hanning window
 cfg_TFA.pad         = 'maxperlen'; % (default)
-cfg_TFA.foi         = minmax_foi(1) : dF : minmax_foi(2); % frequency of interest
+cfg_TFA.toi         = (new_time(1) : dT : new_time(end)); % timepoints of interest
+cfg_TFA.foi         = minmax_foi(1) : dF : minmax_foi(2); % frequency  of interest
 cfg_TFA.t_ftimwin   = nCycle ./cfg_TFA.foi;               % taper size for each foi // here we use nCycle/foi, so there is constant amoung of datapoints per foi
-cfg_TFA.toi         = (new_time(1) : dT : new_time(end));
 
 TFA = ft_freqanalysis(cfg_TFA, data_TFA);
-TFA.powspctrm(isnan(TFA.powspctrm)) = 0;
+
+TFA.powspctrm(isnan(TFA.powspctrm)) = 0; % for convinience
 
 
 %% Post-processing
@@ -109,11 +118,11 @@ dN = rangeF / dF / 2; % We take rangeF (Hz) around the peak frequency
 
 for chan = 1 : length(channel_name)
     
-    TFA.power_Tmean(chan,:)  = nanmean( TFA.powspctrm(chan,:,:), 3);                    % (nChan x nFreq   )
-    TFA.power_Fmean(chan,:)  = nanmean( TFA.powspctrm(chan,:,:), 2);                    % (nChan x nSample )
+    TFA.power_Tmean(chan,:)  = mean( TFA.powspctrm(chan,:,:), 3);                    % (nChan x nFreq   )
+    TFA.power_Fmean(chan,:)  = mean( TFA.powspctrm(chan,:,:), 2);                    % (nChan x nSample )
     [~,I] = max(TFA.power_Tmean(chan,:));
-    TFA.peakfreq (chan)    = TFA.freq(I);                                               % (nChan x 1       )
-    TFA.peakpower(chan,:)  = nanmean( squeeze( TFA.powspctrm(chan, I-dN:I+dN,:) ) , 1); % (nChan x nSamples)
+    TFA.peakfreq (chan)    = TFA.freq(I);                                            % (nChan x 1       )
+    TFA.peakpower(chan,:)  = mean( squeeze( TFA.powspctrm(chan, I-dN:I+dN,:) ) , 1); % (nChan x nSamples)
     
 end % chan
 
