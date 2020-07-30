@@ -1,9 +1,9 @@
 function varargout = farm_plot_TFA( data, TFA )
-% FARM_PLOT will plot the data inside the volume markers
+% FARM_PLOT_TFA will plot the result of the farm_time_frequency_analysis_emg_acc
 %
 % SYNTAX
-%              FARM_PLOT( TFA )
-%       figH = FARM_PLOT( TFA )
+%              FARM_PLOT_TFA( data, TFA )
+%       figH = FARM_PLOT_TFA( data, TFA )
 %
 % INPUTS
 %       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -11,6 +11,8 @@ function varargout = farm_plot_TFA( data, TFA )
 %
 % NOTES
 %
+%
+% See also farm_time_frequency_analysis_emg_acc
 
 if nargin==0, help(mfilename('fullpath')); return; end
 
@@ -112,7 +114,7 @@ for chan = 1 : length(TFA.label)
 
 end % chan
 
-axis (ax_3d,'tight')
+axis(ax_3d,'tight')
 
 % Link_3d = linkprop(ax_3d,{'CameraUpVector', 'CameraPosition', 'CameraTarget', 'XLim', 'YLim'});
 % setappdata(figH, 'StoreTheLink_3d', Link_3d);

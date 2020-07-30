@@ -35,6 +35,8 @@ acc_filter = ft_getopt(cfg, 'acc_filter', +[ 2  15] ); % (Hz)
 acc_order  = ft_getopt(cfg, 'acc_order' , 2         ); % int
 acc_regex  = ft_getopt(cfg, 'acc_regex'             ); % NOT required
 
+% Other options
+new_fsample = ft_getopt(cfg, 'new_fsample',      500); % (Hz)
 
 if ~isempty(acc_regex)
     use_ACC = 1;
@@ -60,7 +62,6 @@ end
 %% Downsample
 
 time           = (0:size(timeseries,2)-1)/data.fsample;
-new_fsample    = 500; % Hz
 [ new_timeseries, new_time ] = farm.resample( timeseries, time, data.fsample, new_fsample/data.fsample );
 
 % Normalize because EMG & ACC do not have the same range of values
