@@ -100,7 +100,7 @@ for chan = 1 : length(TFA.label)
     plot(TFA.time, TFA.peakpower  (chan,:), 'Color','blue' ,'LineWidth',0.5 )
     l = legend('mean(power)','power@peakfreq');
     l.Interpreter = 'None';
-    xlabel('Frequency (Hz)')
+    xlabel('Time (s)')
     ylabel('Power')
     axis tight
     

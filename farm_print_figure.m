@@ -33,13 +33,19 @@ if ~exist(path, 'dir'), mkdir(path), end
 
 figH.Position = [0 0 1200 800]; % Bigger figure so the saved PNG is not too small
 
-for tab = 1 : numel(figH.Children.Children)
+for idx = 1 : numel(figH.Children.Children)
     
-    % Switch tab
-    figH.Children.SelectedTab = figH.Children.Children(tab);
+    switch class(figH.Children.Children)
+        case 'matlab.ui.container.Tab'
+            figH.Children.SelectedTab = figH.Children.Children(idx);     % Switch tab
+            figTitle                  = figH.Children.SelectedTab.Title; % Get title
+        case 'matlab.graphics.primitive.Image'
+            figTitle                  = figH.Children.Title.String;      % Get title
+        otherwise
+            error('this figure type is not coded')
+    end
     
     % Transform title to valid file name
-    figTitle = figH.Children.SelectedTab.Title;
     validName = matlab.lang.makeValidName(figTitle);
     
     fname = [dataset_name '__' type '__' validName];
@@ -48,7 +54,7 @@ for tab = 1 : numel(figH.Children.Children)
     fprintf('[%s]: writing file : %s \n', mfilename, fpath)
     saveas(figH, fpath)
     
-end % tab
+end % idx
 
 
 end % function
