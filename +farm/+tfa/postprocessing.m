@@ -41,7 +41,8 @@ for chan = 1 : length(TFA.label)
     TFA.power_Fmean(chan,:)  = mean( powspctrm(chan,:,:), 2);                    % (nChan x nSample )
     [~,I] = max(TFA.power_Tmean(chan,:));
     TFA.peakfreq (chan)    = TFA.freq(I);                                        % (nChan x 1       )
-    TFA.peakpower(chan,:)  = mean( squeeze( powspctrm(chan, I-dN:I+dN,:) ) , 1); % (nChan x nSamples)
+    idx = intersect(I-dN:I+dN, 1:size(powspctrm,2));
+    TFA.peakpower(chan,:)  = mean( squeeze( powspctrm(chan, idx,:) ) , 1);       % (nChan x nSamples)
     
 end % chan
 
@@ -49,8 +50,9 @@ TFA.  powspctrm_avg = squeeze( mean( powspctrm      , 1 ) );
 TFA.power_Tmean_avg =          mean( TFA.power_Tmean, 1 )  ;
 TFA.power_Fmean_avg =          mean( TFA.power_Fmean, 1 )  ;
 [~,I]               = max(TFA.power_Tmean_avg);
+idx                 = intersect(I-dN:I+dN, 1:size(powspctrm,2));
 TFA.peakfreq_avg    = TFA.freq(I);
-TFA.peakpower_avg   = mean(TFA.powspctrm_avg(I-dN:I+dN,:) , 1 );
+TFA.peakpower_avg   = mean(TFA.powspctrm_avg(idx,:) , 1 );
 
 
 end % function
