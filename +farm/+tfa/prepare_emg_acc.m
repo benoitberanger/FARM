@@ -61,9 +61,10 @@ end
 
 info.channel_idx_emg  = channel_idx_emg;
 info.channel_name_emg = channel_name_emg;
-info.channel_idx_acc  = channel_idx_acc;
-info.channel_name_acc = channel_name_acc;
-
+if use_ACC
+    info.channel_idx_acc  = channel_idx_acc;
+    info.channel_name_acc = channel_name_acc;
+end
 
 %% Downsample
 
