@@ -33,28 +33,43 @@ if ~exist(path, 'dir'), mkdir(path), end
 
 figH.Position = [0 0 1200 800]; % Bigger figure so the saved PNG is not too small
 
-for idx = 1 : numel(figH.Children.Children)
+switch class(figH.Children(end))
     
-    switch class(figH.Children.Children)
-        case 'matlab.ui.container.Tab'
+    case 'matlab.ui.container.TabGroup'
+        
+        for idx = 1 : numel(figH.Children.Children)
+            
             figH.Children.SelectedTab = figH.Children.Children(idx);     % Switch tab
             figTitle                  = figH.Children.SelectedTab.Title; % Get title
-        case 'matlab.graphics.primitive.Image'
-            figTitle                  = figH.Children.Title.String;      % Get title
-        otherwise
-            error('this figure type is not coded')
-    end
-    
-    % Transform title to valid file name
-    validName = matlab.lang.makeValidName(figTitle);
-    
-    fname = [dataset_name '__' type '__' validName];
-    fpath = fullfile(path,[fname '.png']);
-    
-    fprintf('[%s]: writing file : %s \n', mfilename, fpath)
-    saveas(figH, fpath)
-    
-end % idx
+            
+            % Transform title to valid file name
+            validName = matlab.lang.makeValidName(figTitle);
+            
+            fname = [dataset_name '__' type '__' validName];
+            fpath = fullfile(path,[fname '.png']);
+            
+            fprintf('[%s]: writing file : %s \n', mfilename, fpath)
+            saveas(figH, fpath)
+            
+        end % idx
+        
+    case 'matlab.graphics.axis.Axes'
+        
+        figTitle = figH.Children(end).Title.String; % Get title
+        
+        % Transform title to valid file name
+        validName = matlab.lang.makeValidName(figTitle);
+        
+        fname = [dataset_name '__' type '__' validName];
+        fpath = fullfile(path,[fname '.png']);
+        
+        fprintf('[%s]: writing file : %s \n', mfilename, fpath)
+        saveas(figH, fpath)
+        
+    otherwise
+        error('this figure type is not coded')
+end
+
 
 
 end % function
