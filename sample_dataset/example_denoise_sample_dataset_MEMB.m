@@ -23,7 +23,7 @@ sequence.nSlice = 54;
 sequence.MB     = 3;   % multiband factor
 sequence.nVol   = [];  % integer or NaN, if [] it means use all volumes
 % Side note : if the fMRI sequence has been manually stopped, the last volume will probably be incomplete.
-% But this incomplete volume will stil generate a marker. In this case, you need to define sequence.nVol
+% But this incomplete volume will stil generate a marker. In this case, you need to define sequence.nVol or use farm_remove_last_volume_event()
 
 MRI_trigger_message = 'R128';
 
@@ -43,6 +43,7 @@ cfg.dataset   = fname_hdr;
 raw_event     = ft_read_event (fname_mrk);
 event         = farm_change_marker_value(raw_event, MRI_trigger_message, 'V'); % rename volume marker, just for comfort
 event         = farm_delete_marker(event, 'Sync On');                          % not useful for FARM, this marker comes from the clock synchronization device
+event         = farm_remove_last_volume_event( event, 'V' );                   % remove last incomplete volume, becasue of manually stopped sequence
 
 % Load data
 data                    = ft_preprocessing(cfg); % load data
@@ -77,18 +78,15 @@ data = farm_main_workflow( data, channel_regex );
 %% ------------------------------------------------------------------------
 %% Plot
 
-% % Raw
-farm_plot_carpet     (data, 'EXT_D', 'raw'      , +[30 250])
-farm_plot_FFT        (data, 'EXT_D', 'raw'      , +[30 250])
-farm_plot_spectrogram(data, 'EXT_D', 'raw'      , +[30 250])
+% Raw
+farm_plot_carpet     (data, channel_regex, 'raw'      , +[30 250])
+farm_plot_FFT        (data, channel_regex, 'raw'      , +[30 250])
+farm_plot_spectrogram(data, channel_regex, 'raw'      , +[30 250])
 
 % After processing
-farm_plot_carpet     (data, 'EXT_D', 'pca_clean', +[30 250])
-farm_plot_FFT        (data, 'EXT_D', 'pca_clean', +[30 250])
-farm_plot_spectrogram(data, 'EXT_D', 'pca_clean', +[30 250])
-
-% Several channels can be plotted at the same time :
-farm_plot_FFT  (data, channel_regex, 'pca_clean', +[30 250])
+farm_plot_carpet     (data, channel_regex, 'pca_clean', +[30 250])
+farm_plot_FFT        (data, channel_regex, 'pca_clean', +[30 250])
+farm_plot_spectrogram(data, channel_regex, 'pca_clean', +[30 250])
 
 
 %% Convert clean EMG to regressors & save them
