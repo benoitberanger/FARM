@@ -4,7 +4,7 @@ function best = farm_select_best_emg_using_acc_coherence( data, cfg )
 
 %% Input parsing
 
-foi = ft_getopt(cfg, 'foi', [4 6]); %  (Hz) frequency of interest
+% foi = ft_getopt(cfg, 'foi', [4 6]); %  (Hz) frequency of interest
 
 
 %% Get EMG/ACC prepared data
@@ -19,8 +19,9 @@ coh = farm.tfa.perform_coherence_analysis( data_emg_acc, cfg );
 
 %% Select best candidate
 
-foi_idx = coh.freq >= foi(1) & coh.freq <= foi(2); % Get frequency of interest
-img = mean(coh.cohspctrm(:,:,foi_idx),3);          % average Fourier coefficients @ frequency of interest
+% foi_idx = coh.freq >= foi(1) & coh.freq <= foi(2); % Get frequency of interest
+% img = mean(coh.cohspctrm(:,:,foi_idx),3);          % average Fourier coefficients @ frequency of interest
+img = mean(coh.cohspctrm,3);                        % average Fourier coefficients
 
 acc_idx_in_img = contains( coh.label, info.channel_name_acc); % Fetch ACC channel index
 
