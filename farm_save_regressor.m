@@ -4,12 +4,12 @@ function farm_save_regressor( data, reginfo )
 %                  or -> same dir as input .eeg file
 %
 % SYNTAX
-%       FARM_SAVE_REGRESSOR( data, reginfo, outputname )
+%       FARM_SAVE_REGRESSOR( data, reginfo )
 %
 % INPUT
 %       - data       : see <a href="matlab: help farm_check_data">farm_check_data</a>
 %       - reginfo    : see <a href="matlab: help farm_make_regressor">farm_make_regressor</a>
-%                       
+%
 %
 % See also farm_make_regressor farm_emg_regressor farm_acc_regressor farm_plot_regressor
 
@@ -21,42 +21,51 @@ if nargin==0, help(mfilename('fullpath')); return; end
 narginchk(2,2)
 
 
-%% Fetch data & prepare output name
+%% Fetch data prepare output dir
 
 path = farm.io.regressor.get_path(data);
 if ~exist(path, 'dir'), mkdir(path), end
 [~, dataset_name, ~] = fileparts(data.cfg.dataset);
 
-fname = [dataset_name '__' reginfo.name];
-fpath = fullfile(path,[fname '.mat']);
 
+%% Loop for all kind of regressors/modulators to save
 
-%% Perpare what to save
+list = {'reg', 'dreg', 'log_reg', 'dlog_reg', 'mod', 'log_mod'};
 
-tosave = struct;
-
-%--------------------------------------------------------------------------
-% For SPM
-
-R      = [];
-R(:,1) = reginfo. reg;
-R(:,2) = reginfo.dreg;
-
-names    = cell(2,1);
-names{1} =      reginfo.name ;
-names{2} = ['d' reginfo.name];
-
-tosave.R     = R;
-tosave.names = names; %#ok<*STRNU>
-
-%--------------------------------------------------------------------------
-% Other things to save
-
-
-%% Save
-
-fprintf('[%s]: writing file : %s \n', mfilename, fpath)
-save(fpath,'-struct','tosave')
+for regname = list
+    %% Prepare output name
+    
+    fname = [dataset_name '__' reginfo.name '__' char(regname)];
+    fpath = fullfile(path,[fname '.mat']);
+    
+    
+    %% Perpare what to save
+    
+    tosave = struct;
+    
+    %--------------------------------------------------------------------------
+    % For SPM
+    
+    R      = [];
+    R(:,1) = reginfo.(char(regname));
+    
+    names    = cell(1,1);
+    names(1) = regname;
+    
+    tosave.R     = R;
+    tosave.names = names; %#ok<*STRNU>
+    
+    %--------------------------------------------------------------------------
+    % Other things to save
+    
+    
+    %% Save
+    
+    fprintf('[%s]: writing file : %s \n', mfilename, fpath)
+    save(fpath,'-struct','tosave')
+    
+    
+end % regname
 
 
 end % function
