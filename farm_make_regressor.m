@@ -76,6 +76,9 @@ dreg     =     dconv( 1 : round(TR*fsample) : end );
 log_reg  =  log_conv( 1 : round(TR*fsample) : end );
 dlog_reg = dlog_conv( 1 : round(TR*fsample) : end );
 
+mod      =    U(1).u(1 : round(TR*fsample) : end);
+log_mod  =    U(2).u(1 : round(TR*fsample) : end);
+
 
 %% Save
 
@@ -84,18 +87,21 @@ reginfo           = struct;
 reginfo.in        = farm.normalize_range(timeseries);
 reginfo.time_in   = (0:length(timeseries)-1)/fsample;
 
-reginfo. conv     =  conv;
-reginfo.dconv     = dconv;
+reginfo.     conv =      conv;
+reginfo.    dconv =     dconv;
 reginfo.time_conv = (0:length(conv)-1)/fsample;
-reginfo.log_conv  =  log_conv;
+reginfo. log_conv =  log_conv;
 reginfo.dlog_conv = dlog_conv;
 
-reginfo. reg      =  reg;
-reginfo.dreg      = dreg;
+reginfo.     reg  =  reg;
+reginfo.    dreg  = dreg;
 reginfo.time_reg  = (0:length(reg)-1)*TR;
 
-reginfo. log_reg  = log_reg;
+reginfo. log_reg  =  log_reg;
 reginfo.dlog_reg  = dlog_reg;
+
+reginfo.     mod  =  log_reg;
+reginfo. log_mod  = dlog_reg;
 
 
 end % function
