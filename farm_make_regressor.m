@@ -1,13 +1,13 @@
-function reginfo = farm_make_regressor( timeseries, fsample, TR )
+function reginfo = farm_make_regressor( data, timeseries, fsample )
 % FARM_MAKE_REGRESSOR will convolve with HRF from SPM toolbox, compute first derivative, and downsample at TR
 %
 % SYNTAX
-%       reginfo = FARM_MAKE_REGRESSOR( in, fsample, TR )
+%       reginfo = FARM_MAKE_REGRESSOR( data, timeseries, fsample )
 %
 % INPUT
+%       - data       : see <a href="matlab: help farm_check_data">farm_check_data</a>
 %       - timeseries : see <a href="matlab: help farm_get_timeseries">farm_get_timeseries</a>
 %       - fsample    : sampling frequency of the timeseries, in Hertz (Hz)
-%       - TR         : RepetitionTime of the fMRI sequence, in seconds (s)
 %
 %
 % See also farm_plot_regressor farm_emg_regressor
@@ -17,6 +17,8 @@ if nargin==0, help(mfilename('fullpath')); return; end
 
 %% Checks
 
+farm_check_data( data )
+
 assert( ~isempty(which('spm_Volterra')), 'SPM library not detected. Check your MATLAB paths, or get : https://www.fil.ion.ucl.ac.uk/spm/' )
 
 assert( size(timeseries,1)==1,  '[%s]: timeseries must be (1 x nSamples)', mfilename )
@@ -25,10 +27,6 @@ assert( ...
     isscalar        (fsample) &...
     fsample == abs  (fsample) &...
     fsample == round(fsample) , '[%s]: fsample must be positive integer' , mfilename)
-
-assert( ...
-    isscalar   (TR) &...
-    TR == abs  (TR) , '[%s]: TR must be positive' , mfilename)
 
 
 %% convolve with HRF
@@ -70,14 +68,19 @@ dlog_conv = farm.normalize_range(dlog_conv);
 
 %% downsample @ TR
 
-reg      =      conv( 1 : round(TR*fsample) : end );
-dreg     =     dconv( 1 : round(TR*fsample) : end );
+nVol         = farm.sequence.get_nVol(data);
+time_conv    = (0:length(conv)-1)/fsample;                  % build time of high temporal resolution
+idx_time_reg = round(linspace(1, length(time_conv), nVol)); % build list of indexs that corresponds to the TR temporal resolution
+time_reg     = time_conv(idx_time_reg);                     % build time of TR temporal resolution
 
-log_reg  =  log_conv( 1 : round(TR*fsample) : end );
-dlog_reg = dlog_conv( 1 : round(TR*fsample) : end );
+reg      =      conv( idx_time_reg );
+dreg     =     dconv( idx_time_reg );
 
-mod      =    U(1).u(1 : round(TR*fsample) : end);
-log_mod  =    U(2).u(1 : round(TR*fsample) : end);
+log_reg  =  log_conv( idx_time_reg );
+dlog_reg = dlog_conv( idx_time_reg );
+
+mod      =    U(1).u( idx_time_reg );
+log_mod  =    U(2).u( idx_time_reg );
 
 
 %% Save
@@ -89,20 +92,19 @@ reginfo.time_in   = (0:length(timeseries)-1)/fsample;
 
 reginfo.     conv =      conv;
 reginfo.    dconv =     dconv;
-reginfo.time_conv = (0:length(conv)-1)/fsample;
+reginfo.time_conv = time_conv;
 reginfo. log_conv =  log_conv;
 reginfo.dlog_conv = dlog_conv;
 
-reginfo.     reg  =  reg;
-reginfo.    dreg  = dreg;
-reginfo.time_reg  = (0:length(reg)-1)*TR;
+reginfo.     reg  =      reg;
+reginfo.    dreg  =     dreg;
+reginfo.time_reg  = time_reg;
 
 reginfo. log_reg  =  log_reg;
 reginfo.dlog_reg  = dlog_reg;
 
-reginfo.     mod  =  log_reg;
-reginfo. log_mod  = dlog_reg;
+reginfo.     mod  =     mod;
+reginfo. log_mod  = log_mod;
 
 
 end % function
-

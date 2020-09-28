@@ -49,7 +49,7 @@ new_fsample    = 1000; % Hz
 new_timeseries = farm.resample( comb, time, data.fsample, new_fsample/data.fsample );
 
 % Make regressor
-reginfo = farm_make_regressor( new_timeseries, new_fsample, data.sequence.TR );
+reginfo = farm_make_regressor( data, new_timeseries, new_fsample );
 
 % Save name in reginfo
 reginfo.name = name;

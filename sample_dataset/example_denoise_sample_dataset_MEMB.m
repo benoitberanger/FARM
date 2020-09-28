@@ -94,19 +94,19 @@ farm_plot_spectrogram(data, channel_regex, 'pca_clean', +[30 250])
 % Use 1 channel : EXT_D
 ts      = farm_get_timeseries( data, 'EXT_D', 'pca_clean', +[30 250] );              % (1 x nSamples)
 reginfo = farm_emg_regressor ( data, ts, 'EXT_D' );
-farm_plot_regressor(reginfo)
+farm_plot_regressor( data, reginfo)
 farm_save_regressor( data, reginfo)
 
 % Use 1 channel : FLE_D
 ts      = farm_get_timeseries( data, 'FLE_D', 'pca_clean', +[30 250] );              % (1 x nSamples)
 reginfo = farm_emg_regressor ( data, ts, 'FLE_D' );
-farm_plot_regressor(reginfo)
+farm_plot_regressor( data, reginfo)
 farm_save_regressor( data, reginfo)
 
 % Use 2 channels and combine them : EXT_D + FLE_D
 ts      = farm_get_timeseries( data, {'EXT_D','FLE_D'}, 'pca_clean', +[30 250] ); % (2 x nSamples)
 reginfo = farm_emg_regressor ( data, ts, 'EXTFLE_D', 'mean' );
-farm_plot_regressor(reginfo)
+farm_plot_regressor( data, reginfo)
 farm_save_regressor( data, reginfo)
 
 

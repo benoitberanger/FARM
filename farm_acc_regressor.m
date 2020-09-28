@@ -46,7 +46,7 @@ new_timeseries = farm.resample( comb, time, data.fsample, new_fsample/data.fsamp
 new_timeseries = abs(new_timeseries);
 
 % Make regressor
-reginfo = farm_make_regressor( new_timeseries, new_fsample, data.sequence.TR );
+reginfo = farm_make_regressor( data, new_timeseries, new_fsample );
 
 
 end % function
