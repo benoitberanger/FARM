@@ -24,7 +24,7 @@ if nargin==0, help(mfilename('fullpath')); return; end
 narginchk(2,3)
 
 if ~exist('comb_method','var')
-    comb_method = 'mean';
+    comb_method = 'euclidian_norm';
 end
 
 
@@ -41,9 +41,6 @@ end
 time           = (0:length(comb)-1)/data.fsample;
 new_fsample    = 500; % Hz
 new_timeseries = farm.resample( comb, time, data.fsample, new_fsample/data.fsample );
-
-% Absolute value
-new_timeseries = abs(new_timeseries);
 
 % Make regressor
 reginfo = farm_make_regressor( data, new_timeseries, new_fsample );
