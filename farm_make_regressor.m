@@ -65,6 +65,15 @@ log_conv  = farm.normalize_range(log_conv);
 dlog_conv = [0 diff(log_conv)]; % first derivative
 dlog_conv = farm.normalize_range(dlog_conv);
 
+mod       =  U(1).u';
+log_mod   =  U(2).u';
+
+dmod      = [0 diff(mod)]; % first derivative
+dmod      = farm.normalize_range(dmod);
+
+dlog_mod  = [0 diff(log_mod)]; % first derivative
+dlog_mod  = farm.normalize_range(dlog_mod);
+
 
 %% downsample @ TR
 
@@ -79,8 +88,11 @@ dreg     =     dconv( idx_time_reg );
 log_reg  =  log_conv( idx_time_reg );
 dlog_reg = dlog_conv( idx_time_reg );
 
-mod      =    U(1).u( idx_time_reg );
-log_mod  =    U(2).u( idx_time_reg );
+mod      =       mod( idx_time_reg );
+log_mod  =   log_mod( idx_time_reg );
+
+dmod      =     dmod( idx_time_reg );
+dlog_mod  = dlog_mod( idx_time_reg );
 
 
 %% Save
@@ -103,8 +115,11 @@ reginfo.time_reg  = time_reg;
 reginfo. log_reg  =  log_reg;
 reginfo.dlog_reg  = dlog_reg;
 
-reginfo.     mod  =     mod;
-reginfo. log_mod  = log_mod;
+reginfo.     mod  =      mod;
+reginfo. log_mod  =  log_mod;
+
+reginfo.    dmod  =     dmod;
+reginfo.dlog_mod  = dlog_mod;
 
 
 end % function

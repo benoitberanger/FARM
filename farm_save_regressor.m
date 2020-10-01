@@ -30,7 +30,7 @@ if ~exist(path, 'dir'), mkdir(path), end
 
 %% Loop for all kind of regressors/modulators to save
 
-list = {'reg', 'dreg', 'log_reg', 'dlog_reg', 'mod', 'log_mod'};
+list = {'reg', 'dreg', 'log_reg', 'dlog_reg', 'mod', 'log_mod', 'dmod', 'dlog_mod'};
 
 for regname = list
     %% Prepare output name
