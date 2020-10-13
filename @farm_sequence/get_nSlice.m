@@ -1,4 +1,4 @@
-function nSlice = get_nSlice( data )
+function nSlice = get_nSlice( self )
 % GET_NSLICE will fetch the number of slices, according to data.sequence
 %
 % SYNTAX
@@ -13,10 +13,10 @@ if nargin==0, help(mfilename('fullpath')); return; end
 
 %% Main
 
-if isfield(data.sequence,'MB')
-    nSlice = data.sequence.nSlice / data.sequence.MB;
+if isfield(self.data.sequence,'MB')
+    nSlice = self.data.sequence.nSlice / self.data.sequence.MB;
 else
-    nSlice = data.sequence.nSlice;
+    nSlice = self.data.sequence.nSlice;
 end
 
 

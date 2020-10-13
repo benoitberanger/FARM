@@ -10,26 +10,28 @@ assert( ~isempty(which('farm_rootdir'))    ,      'FARM library not detected. Ch
 ft_defaults
 
 
+%% Initialize object
+
+data = farm_data();
+
+
 %% Get file & sequence paramters
 
-sampledata_path = fullfile(farm_rootdir,'sample_dataset');
-fname     = 'me3mb3_tr1600_sl54';
-fname_eeg = fullfile(sampledata_path, [fname '.eeg' ]);
-fname_hdr = fullfile(sampledata_path, [fname '.vhdr']);
-fname_mrk = fullfile(sampledata_path, [fname '.vmrk']);
+data.dirpath = fullfile(farm_rootdir,'sample_dataset');
+data.fname   = 'me3mb3_tr1600_sl54';
 
-sequence.TR     = 1.6; % in seconds
-sequence.nSlice = 54;
-sequence.MB     = 3;   % multiband factor
-sequence.nVol   = [];  % integer or NaN, if [] it means use all volumes
+data.sequence.TR     = 1.6; % in seconds
+data.sequence.nSlice = 54;
+data.sequence.MB     = 3;   % multiband factor
+data.sequence.nVol   = [];  % integer or NaN, if [] it means use all volumes
 % Side note : if the fMRI sequence has been manually stopped, the last volume will probably be incomplete.
 % But this incomplete volume will stil generate a marker. In this case, you need to define sequence.nVol or use farm_remove_last_volume_event()
 
-MRI_trigger_message = 'R128';
+data.marker.MRI_trigger_message = 'R128';
 
 % In this sample dataset, channels are { 'EXT_D' 'FLE_D' 'EXT_G' 'FLE_G' }
 % FARM will be performed on all 4 channels, so I create a regex that will fetch them :
-channel_regex = 'EXT|FLE';
+data.channel_regex = 'EXT|FLE';
 
 
 %% Load data
@@ -37,20 +39,10 @@ channel_regex = 'EXT|FLE';
 % the fmri sequence, and a bunch of seconds after the end of the fmri
 % sequence, before any other sequence.
 
-% Read header & events
-cfg           = [];
-cfg.dataset   = fname_hdr;
-raw_event     = ft_read_event (fname_mrk);
-event         = farm_change_marker_value(raw_event, MRI_trigger_message, 'V'); % rename volume marker, just for comfort
-event         = farm_delete_marker(event, 'Sync On');                          % not useful for FARM, this marker comes from the clock synchronization device
-event         = farm_remove_last_volume_event( event, 'V' );                   % remove last incomplete volume, becasue of manually stopped sequence
-
-% Load data
-data                    = ft_preprocessing(cfg); % load data
-data.cfg.event          = event;                 % store events
-data.sequence           = sequence;              % store sequence parameters
-data.volume_marker_name = 'V';                   % name of the volume event in data.cfg.event
-
+data.load_eeg_vhdr_vmrk();        % method
+data.marker.remove('Sync On');    % not useful for FARM, this marker comes from the clock synchronization device
+data.marker.remove_last_volume(); % remove last incomplete volume, becasue of manually stopped sequence
+                
 % Some paramters tuning
 data.cfg.intermediate_results_overwrite = false; % don't overwrite files
 data.cfg.intermediate_results_save      = true;  % write on disk intermediate results
@@ -66,8 +58,9 @@ data.cfg.outdir.png          = fullfile( outdir, 'FARM_png'         ); % write P
 data.cfg.outdir.regressor    = fullfile( outdir, 'FARM_regressor'   ); % write regressor here, in .mat
 
 % Plot
-% ft_databrowser(data.cfg, data)
+% ft_databrowser(data.ftdata.cfg, data.ftdata)
 
+return
 
 %% ------------------------------------------------------------------------
 %% FARM main workflow is wrapped in this function:
