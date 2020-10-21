@@ -1,8 +1,8 @@
-function data = farm_adaptive_noise_cancellation( data, lpf )
-% FARM_ADAPTIVE_NOISE_CANCELLATION
+function data = adaptive_noise_cancellation( data, lpf )
+% ADAPTIVE_NOISE_CANCELLATION
 %
 % SYNTAX
-%         data = FARM_ADAPTIVE_NOISE_CANCELLATION( data, lpf )
+%         data = farm.workflow.ADAPTIVE_NOISE_CANCELLATION( data, lpf )
 %
 % INPUTS
 %       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -71,7 +71,7 @@ data.anc_noise = data.pca_noise;
 
 for iChannel = 1 : nChannel
     
-    fprintf('[%s]: ANC on channel %d/%d \n', mfilename, iChannel, nChannel)
+    fprintf('[%s]: ANC on channel %d/%d \n', farm.io.mfilename, iChannel, nChannel)
     
     % Which points to get ?
     start_onset = round(slice_onset(1  )                 );
@@ -100,7 +100,7 @@ for iChannel = 1 : nChannel
     
     % Store
     if max(y) > 1e6 % works better than isinf
-        fprintf('[%s]:ANC Failed for channel %d. Skipping ANC. \n',mfilename,iChannel);
+        fprintf('[%s]:ANC Failed for channel %d. Skipping ANC. \n',farm.io.mfilename,iChannel);
     else
         data.anc_clean(iChannel, start_onset:stop_onset) = lpf_channel - y';
         data.anc_noise(iChannel, start_onset:stop_onset) =               y';

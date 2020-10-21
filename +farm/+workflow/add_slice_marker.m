@@ -1,8 +1,8 @@
-function data = farm_add_slice_marker( data )
-% FARM_ADD_SLICE_MARKERS will generate slice markers using the volume markers
+function data = add_slice_marker( data )
+% ADD_SLICE_MARKER will generate slice markers using the volume markers
 %
 % SYNTAX
-%         data = FARM_ADD_SLICE_MARKER( data )
+%         data = farm.workflow.ADD_SLICE_MARKER( data )
 %
 % INPUTS
 %       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -87,7 +87,7 @@ sdur_possibility = (nSample_per_TR - dtime_possibility) / nSlice;
 
 sdur_v = zeros(nVol,1);
 
-fprintf('[%s]: Initial estimate of sdur & dtime... ', mfilename)
+fprintf('[%s]: Initial estimate of sdur & dtime... ', farm.io.mfilename)
 
 for iVol = 1 : nVol
     %% Evaluate the likelihood of each sdur to be the right one
@@ -122,13 +122,13 @@ end % iVol
 
 fprintf('done \n')
 
-fprintf('[%s]: mean(sdur_v) = %g samples \n', mfilename, mean(sdur_v))
-fprintf('[%s]: std (sdur_v) = %g samples \n', mfilename, std (sdur_v))
+fprintf('[%s]: mean(sdur_v) = %g samples \n', farm.io.mfilename, mean(sdur_v))
+fprintf('[%s]: std (sdur_v) = %g samples \n', farm.io.mfilename, std (sdur_v))
 
 data.sdur_v  = sdur_v;
 data.dtime_v = nSample_per_TR - sdur_v * nSlice;
 
-data = add_slice_marker(data); % local function, see below
+data = add_slice_marker_event(data); % local function, see below
 
 
 %% Save
@@ -139,7 +139,7 @@ farm.io.intermediate.save(data,mfilename,'sdur_v','dtime_v')
 end % function
 
 %--------------------------------------------------------------------------
-function data = add_slice_marker(data)
+function data = add_slice_marker_event(data)
 
 % nVol
 volume_event = farm.sequence.get_volume_event( data );

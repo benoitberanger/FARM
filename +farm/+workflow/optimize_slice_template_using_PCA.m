@@ -1,8 +1,8 @@
-function data = farm_optimize_slice_template_using_PCA( data, time_section )
-% FARM_OPTIMIZE_SLICE_TEMPLATE_USING_PCA
+function data = optimize_slice_template_using_PCA( data, time_section )
+% OPTIMIZE_SLICE_TEMPLATE_USING_PCA
 %
 % SYNTAX
-%       FARM_OPTIMIZE_SLICE_TEMPLATE_USING_PCA( data, time_section )
+%       farm.workflow.OPTIMIZE_SLICE_TEMPLATE_USING_PCA( data, time_section )
 %
 % INPUTS
 %       - data         : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -91,12 +91,10 @@ sdur_sample = round(sdur * fsample * interpfactor);
 data.sub_template = zeros( size(data.trial{1}) );
 data.pca_clean    = zeros( size(data.trial{1}) );
 data.pca_noise    = zeros( size(data.trial{1}) );
-    
-nChannel = length(data.cfg.channel);
 
 for iChannel = data.selected_channels_idx'
     
-    fprintf('[%s]: Computing PCA on channel %d - %s - using matlab built-in svd() function... \n', mfilename, iChannel, data.label{iChannel})
+    fprintf('[%s]: Computing PCA on channel %d - %s - using matlab built-in svd() function... \n', farm.io.mfilename, iChannel, data.label{iChannel})
     
     slice_list = data.slice_info.marker_vector;
     
@@ -214,10 +212,10 @@ for iChannel = data.selected_channels_idx'
         % Visualization : uncomment bellow
         % figure('Name','first 50 PCs','NumberTitle','off'); image(Eload(:,1:50),'CDataMapping','scaled'), colormap(gray(256));
         
-        fprintf('[%s]: Variance explained for the first 20 PCs (%%) : %s \n', mfilename, num2str(vairance_explained(1:20)','%.1f, ') )
+        fprintf('[%s]: Variance explained for the first 20 PCs (%%) : %s \n', farm.io.mfilename, num2str(vairance_explained(1:20)','%.1f, ') )
         
         nComponent = sum(vairance_explained > 5);
-        fprintf('[%s]: Selecting components with more than 5%% of variance : nComponent = %d \n', mfilename, nComponent)
+        fprintf('[%s]: Selecting components with more than 5%% of variance : nComponent = %d \n', farm.io.mfilename, nComponent)
         
         
         %% Scale components to data before substraction
@@ -277,7 +275,7 @@ for iChannel = data.selected_channels_idx'
     
     %% Substraction
     
-    fprintf('[%s]: Saving data & noise on channel %d - %s \n', mfilename, iChannel, data.label{iChannel})
+    fprintf('[%s]: Saving data & noise on channel %d - %s \n', farm.io.mfilename, iChannel, data.label{iChannel})
     
     % Downsample and save
     data.sub_template(iChannel, :) = farm.resample( upsampled_substracted, upsampled_time, fsample * interpfactor, 1/interpfactor );

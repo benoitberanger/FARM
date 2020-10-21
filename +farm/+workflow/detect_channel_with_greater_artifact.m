@@ -1,21 +1,21 @@
-function data = farm_detect_channel_with_greater_artifact( data )
-% FARM_DETECT_CHANNEL_WITH_GREATER_ARTIFACT will detect which channel has the biggest artifact,
+function data = detect_channel_with_greater_artifact( data )
+% DETECT_CHANNEL_WITH_GREATER_ARTIFACT will detect which channel has the biggest artifact,
 % and store the channel index for latter use.
 %
 % SYNTAX
-%       data = FARM_DETECT_CHANNEL_WITH_GREATER_ARTIFACT( data )
+%       data = farm.workflow.DETECT_CHANNEL_WITH_GREATER_ARTIFACT( data )
 %
 % INPUTS
 %       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
 %
-% See also farm_select_channel
+% See also farm.workflow.select_channel
 
 if nargin==0, help(mfilename('fullpath')); return; end
 
 
 %% Check
 
-assert( isfield(data,'selected_channels_idx') , '[%s]: First, select channels with farm_select_channel', mfilename )
+assert( isfield(data,'selected_channels_idx') , '[%s]: First, select channels with farm_select_channel', farm.io.mfilename )
 
 
 %% Main

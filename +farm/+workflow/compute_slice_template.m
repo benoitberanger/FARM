@@ -1,10 +1,10 @@
-function data = farm_compute_slice_template( data, nKeep )
-% FARM_COMPUTE_SLICE_TEMPLATE will use the slices index prepared by farm_pick_slice_for_template,
+function data = compute_slice_template( data, nKeep )
+% COMPUTE_SLICE_TEMPLATE will use the slices index prepared by farm_pick_slice_for_template,
 % and select, for each slice, the surrounding slices with the highest correlation.
 % When the selection is done, prepare the template.
 %
 % SYNTAX
-%       data = FARM_COMPUTE_SLICE_TEMPLATE( data, nkeep )
+%       data = farm.workflow.COMPUTE_SLICE_TEMPLATE( data, nkeep )
 %
 % INPUTS :
 %       - data  : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -107,7 +107,7 @@ for iChannel = data.selected_channels_idx'
     
     slice_template = zeros( size(slice_segment) );
     
-    fprintf('[%s]: Preparing slice template @ channel %d - %s ... \n', mfilename, iChannel, data.label{iChannel})
+    fprintf('[%s]: Preparing slice template @ channel %d - %s ... \n', farm.io.mfilename, iChannel, data.label{iChannel})
     
     % Here the indexes of samples are a bit complicated : the input 'slice_segment' is padded with some extra samples,
     % but only the inner part (when you remove padding) has to be used for the correlation & scaling.
@@ -137,7 +137,7 @@ for iChannel = data.selected_channels_idx'
     
     %% Save the tempalte data
     
-    fprintf('[%s]:    Saving slice template @ channel %d - %s ... \n', mfilename, iChannel, data.label{iChannel})
+    fprintf('[%s]:    Saving slice template @ channel %d - %s ... \n', farm.io.mfilename, iChannel, data.label{iChannel})
     
     % Apply phase-shift to conpensate the rounding error
     delta_t          = -round_error(slice_list) / sdur / (fsample*interpfactor);

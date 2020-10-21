@@ -1,9 +1,9 @@
-function data = farm_optimize_sdur_dtime( data, interpfactor, hpf )
-% FARM_OPTIMIZE_SDUR_DTIME will use the previously computed sdur_v & dtime_v,
+function data = optimize_sdur_dtime( data, interpfactor, hpf )
+% OPTIMIZE_SDUR_DTIME will use the previously computed sdur_v & dtime_v,
 % as initializing point to optimize the final sdur & dtime
 %
 % SYNTAX
-%       data = FARM_OPTIMIZE_SDUR_DTIME( data, interpfactor, hpf )
+%       data = farm.workflow.OPTIMIZE_SDUR_DTIME( data, interpfactor, hpf )
 %
 % INPUTS
 %       - data         : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -108,7 +108,7 @@ const.isvolume           = data.slice_info.isfirstslice;
 const.good_slice_idx     = data.slice_info.good_slice_idx;
 
 % Unconstrained nonlinear optimization using Nelder-Mead algorithm
-fprintf('[%s]: Starting sdur & dtime optimization \n', mfilename)
+fprintf('[%s]: Starting sdur & dtime optimization \n', farm.io.mfilename)
 
 
 % Initializiation points
@@ -169,7 +169,7 @@ data.round_error = round_error;
 
 data.interpfactor = interpfactor;
 
-fprintf('[%s]: Optimization sdur & dtime done \n', mfilename)
+fprintf('[%s]: Optimization sdur & dtime done \n', farm.io.mfilename)
 
 
 %% Save

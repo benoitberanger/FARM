@@ -6,7 +6,7 @@ function [ x_opt, n_feval ] = nelder_mead ( x, function_handle )
 % modifications :
 % - "flag" input deleted
 % - typo / comments refactoring
-% - added a "speed" paramter, accelerating the computation of the heavy cost_function.
+% - added a "speed" parameter, accelerating the computation of the heavy cost_function.
 %   "speed" depends on the current tolerance: tolerance is ABSOLUTE, it scale depends on the cost function
 %
 %

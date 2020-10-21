@@ -1,9 +1,9 @@
-function data = farm_pick_slice_for_template( data, WindowLength )
-% FARM_PICK_SLICE_FOR_TEMPLATE will prepare the slice index used for the
+function data = pick_slice_for_template( data, WindowLength )
+% PICK_SLICE_FOR_TEMPLATE will prepare the slice index used for the
 % later slice artifact correction using slice-templates
 %
 % SYNTAX
-%       data = FARM_PICK_SLICE_FOR_TEMPLATE( data, WindowLength )
+%       data = farm.workflow.PICK_SLICE_FOR_TEMPLATE( data, WindowLength )
 %
 % INPUTS
 %       - data         : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -51,7 +51,7 @@ if ~exist('WindowLength','var')
     WindowLength = 50;
 end
 
-assert( round(WindowLength)==WindowLength & WindowLength>0, 'WindowLength must be positive integer' )
+assert( round(WindowLength)==WindowLength & WindowLength>0, '[%s]: WindowLength must be positive integer', farm.io.mfilename )
 
 
 %% Preparations
@@ -82,7 +82,7 @@ good_slice_idx  = find(good_slice);
 
 %% For each good slice, pick the surrounding
 
-fprintf('[%s]: Preparing slices available as template for the slice-correction... ', mfilename)
+fprintf('[%s]: Preparing slices available as template for the slice-correction... ', farm.io.mfilename)
 
 slice_idx_for_template = nan( nMarker, WindowLength );
 

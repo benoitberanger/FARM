@@ -1,9 +1,9 @@
-function data = farm_volume_correction( data )
-% FARM_VOLUME_CORRECTION will replace the datapoints corresponding to dtime
+function data = volume_correction( data )
+% VOLUME_CORRECTION will replace the datapoints corresponding to dtime
 % with interpolated data from the neighboring slice-segments
 %
 % SYNTAX
-%       data = FARM_VOLUME_CORRECTION( data )
+%       data = farm.workflow.VOLUME_CORRECTION( data )
 %
 % INPUTS
 %       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -56,11 +56,9 @@ dtime_sample = round(dtime * fsample * interpfactor);
 data.vol_clean = zeros( size(data.trial{1}) );
 data.vol_noise = zeros( size(data.trial{1}) );
     
-nChannel = length(data.cfg.channel);
-
-for iChannel = data.selected_channels_idx'
+for iChannel = data.selected_channels_idx(:)'
     
-    fprintf('[%s]: Performing volume correction on channel %d - %s \n', mfilename, iChannel, data.label{iChannel})
+    fprintf('[%s]: Performing volume correction on channel %d - %s \n', farm.io.mfilename, iChannel, data.label{iChannel})
     
     slice_list = data.slice_info.marker_vector;
     
@@ -154,7 +152,7 @@ for iChannel = data.selected_channels_idx'
     
     %% Save
     
-    fprintf('[%s]:     Saving volume correction on channel %d - %s \n', mfilename, iChannel, data.label{iChannel})
+    fprintf('[%s]:     Saving volume correction on channel %d - %s \n', farm.io.mfilename, iChannel, data.label{iChannel})
     
     % Apply phase-shift to conpensate the rounding error
     delta_t           = -round_error(slice_list) / sdur / (fsample*interpfactor);

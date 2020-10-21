@@ -1,8 +1,8 @@
-function data = farm_select_channel( data, channel_description )
-% FARM_SELECT_CHANNEL will save which channels will be used for the next processing steps
+function data = select_channel( data, channel_description )
+% SELECT_CHANNEL will save which channels will be used for the next processing steps
 %
 % SYNTAX
-%         data = FARM_SELECT_CHANNEL( data, channel_description )
+%         data = farm.workflow.SELECT_CHANNEL( data, channel_description )
 %
 % INPUTS
 %       - data                : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -12,9 +12,9 @@ function data = farm_select_channel( data, channel_description )
 %       if "channel_description" is empty or not provided, ALL channels are selected
 %
 % EXAMPLE
-%       data = FARM_SELECT_CHANNEL( data, [1 2   4 5]   ) % use a vector
-%       data = FARM_SELECT_CHANNEL( data, 'FCR'         ) % use a char as regex
-%       data = FARM_SELECT_CHANNEL( data, {'FCR','ECR'} ) % use a cellstr that will be converted to regex with farm.cellstr2regex
+%       data = farm.workflow.SELECT_CHANNEL( data, [1 2   4 5]   ) % use a vector
+%       data = farm.workflow.SELECT_CHANNEL( data, 'FCR'         ) % use a char as regex
+%       data = farm.workflow.SELECT_CHANNEL( data, {'FCR','ECR'} ) % use a cellstr that will be converted to regex with farm.cellstr2regex
 %
 %
 % See also farm.cellstr2regex
