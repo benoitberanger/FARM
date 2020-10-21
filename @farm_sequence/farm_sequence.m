@@ -6,7 +6,7 @@ classdef farm_sequence < farm_abstract
         nSlice % integer
         MB     % multiband factor
         nVol   % integer or NaN, if [] it means use all volumes
-                
+        
     end % properties
     
     methods

@@ -1,16 +1,13 @@
-function [ channel_idx, channel_name ] = get_channel( data, channel_description )
+function [ channel_idx, channel_name ] = get_channel( self, channel_description )
 % GET_CHANNEL will interpret "channel_description" to fetch channel index and name
 %
 % SYNTAX
-%       [ channel_idx, channel_name ] = GET_CHANNEL( data, channel_description )
+%       [ channel_idx, channel_name ] = data.workflow.GET_CHANNEL( channel_description )
 %
 % INPUTS
-%       - data                : see <a href="matlab: help farm_check_data">farm_check_data</a>
 %       - channel_description : <double> or 'regex' or {'regex1', 'regex12', ...}
 %
 % See also farm.cellstr2regex
-
-if nargin==0, help(mfilename('fullpath')); return; end
 
 
 %% Input parsing
@@ -26,19 +23,19 @@ switch class(channel_description)
     case 'double'
         channel_idx = channel_description;
     case 'char'
-        res = regexp( data.label, channel_description );
+        res = regexp( self.data.ftdata.label, channel_description );
         res = ~cellfun(@isempty,res);
         channel_idx = find(res);
     case 'cell'
         assert( iscellstr(channel_description), 'when "channel_description" is a cell, it must be cellstr')
-        res = regexp( data.label, farm.cellstr2regex(channel_description) );
+        res = regexp( self.data.ftdata.label, farm.cellstr2regex(channel_description) );
         res = ~cellfun(@isempty,res);
         channel_idx = find(res);
     otherwise
         error('[%s]: unrecognized nature of "channel_description"', mfilename)
 end
 
-channel_name = data.label(channel_idx);
+channel_name = self.data.ftdata.label(channel_idx);
 
 if isempty(channel_idx)
     warning('[%s]: no channel found',mfilename)

@@ -1,27 +1,13 @@
-function data = farm_main_workflow( data, channel_description )
-% FARM_MAIN_WORKFLOW is a wrapper that will will perform FARM denoisng.
+function main( self )
+% MAIN is a wrapper that will will perform FARM denoisng.
 % VERY IMPORTANT : It is optimized for EMG data.
 %
 % SYNTAX
-%       data = FARM_MAIN_WORKFLOW( data )
+%       data.workflow.main();
 %
 % INPUT
-%       - data                : see <a href="matlab: help farm_check_data">farm_check_data</a>
-%       - channel_description : can be channel index [1 2 ...] or a regex (char or cellstr) for data.label
 %
 %
-%
-% See also farm_check_data
-
-
-if nargin==0, help(mfilename('fullpath')); return; end
-
-
-%% Check input arguments
-
-narginchk(2,2)
-
-farm_check_data( data )
 
 
 %% ------------------------------------------------------------------------
@@ -33,7 +19,8 @@ farm_check_data( data )
 
 
 %% Check input data
-farm_check_data( data )
+
+self.data.check();
 
 
 %% Channel selection
@@ -41,14 +28,14 @@ farm_check_data( data )
 % To perform FARM pipeline only on EMG, you need to select the corresponding channels.
 
 % Select channel for the next processing steps
-data = farm_select_channel( data, channel_description );
+self.select_channel();
 
-fprintf('channel selected : %s \n', data.selected_channels_name{:})
+fprintf('channel selected : %s \n', self.selected_channels_name{:})
 
 
 %% Initial HPF @ 30Hz
 
-data = farm_initial_hpf( data );
+self.initial_hpf();
 
 
 %% Which channel with greater artifacts ?

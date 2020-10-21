@@ -3,20 +3,20 @@ classdef farm_data < handle
     properties
         
         % User defined
-        dirpath
-        fname
-        MRI_trigger_message
-        channel_regex
-        cfg
+        dirpath       % char
+        fname         % char
+        channel_description % char or cellstr (for regex usage) OR scalar OR vector (for direct indexing)
+        cfg           % struct
         
         % Derivatives
-        fname_eeg
-        fname_hdr
-        fname_mrk
-        ftdata    % fieldtrip "data", output of ft_preprocessing(cfg)
+        fname_eeg     % char
+        fname_hdr     % char
+        fname_mrk     % char
+        ftdata        % fieldtrip "data", output of ft_preprocessing(cfg)
         
-        sequence % @farm_sequence
-        marker   % @farm_marker
+        sequence      % @farm_sequence
+        marker        % @farm_marker
+        workflow      % @farm_workflow
         
     end % properties
     
@@ -28,6 +28,7 @@ classdef farm_data < handle
             
             self.sequence = farm_sequence( self );
             self.marker   = farm_marker  ( self );
+            self.workflow = farm_workflow( self );
             
         end % function
         

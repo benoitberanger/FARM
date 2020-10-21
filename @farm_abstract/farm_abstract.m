@@ -1,6 +1,6 @@
 classdef farm_abstract < handle
-
-    properties
+    
+    properties( Hidden = true )
         
         data % @farm_data
         

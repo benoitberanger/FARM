@@ -1,17 +1,15 @@
-classdef farm_marker < farm_abstract
+classdef farm_workflow < farm_abstract
     
     properties
-        
-        MRI_trigger_message % char
-        volume_marker_name  % char
-        
+        selected_channels_idx
+        selected_channels_name
     end % properties
     
     methods
         
         %------------------------------------------------------------------
         % constructor
-        function self = farm_marker( data )
+        function self = farm_workflow( data )
             self = self@farm_abstract( data ); % use constructor from @farm_abstract
         end % function
         

@@ -31,7 +31,7 @@ data.marker.MRI_trigger_message = 'R128';
 
 % In this sample dataset, channels are { 'EXT_D' 'FLE_D' 'EXT_G' 'FLE_G' }
 % FARM will be performed on all 4 channels, so I create a regex that will fetch them :
-data.channel_regex = 'EXT|FLE';
+data.channel_description = 'EXT|FLE';
 
 
 %% Load data
@@ -42,7 +42,13 @@ data.channel_regex = 'EXT|FLE';
 data.load_eeg_vhdr_vmrk();        % method
 data.marker.remove('Sync On');    % not useful for FARM, this marker comes from the clock synchronization device
 data.marker.remove_last_volume(); % remove last incomplete volume, becasue of manually stopped sequence
-                
+
+% Plot
+% ft_databrowser(data.ftdata.cfg, data.ftdata)
+
+
+%% Some parameters
+
 % Some paramters tuning
 data.cfg.intermediate_results_overwrite = false; % don't overwrite files
 data.cfg.intermediate_results_save      = true;  % write on disk intermediate results
@@ -57,29 +63,26 @@ data.cfg.outdir.MATexport    = fullfile( outdir, 'FARM_MATexport'   ); % export 
 data.cfg.outdir.png          = fullfile( outdir, 'FARM_png'         ); % write PNG here, for visual quick check
 data.cfg.outdir.regressor    = fullfile( outdir, 'FARM_regressor'   ); % write regressor here, in .mat
 
-% Plot
-% ft_databrowser(data.ftdata.cfg, data.ftdata)
-
-return
 
 %% ------------------------------------------------------------------------
 %% FARM main workflow is wrapped in this function:
 
-data = farm_main_workflow( data, channel_regex );
+data.workflow.main();
 
+return
 
 %% ------------------------------------------------------------------------
 %% Plot
 
 % Raw
-farm_plot_carpet     (data, channel_regex, 'raw'      , +[30 250])
-farm_plot_FFT        (data, channel_regex, 'raw'      , +[30 250])
-farm_plot_spectrogram(data, channel_regex, 'raw'      , +[30 250])
+farm_plot_carpet     (data, channel_description, 'raw'      , +[30 250])
+farm_plot_FFT        (data, channel_description, 'raw'      , +[30 250])
+farm_plot_spectrogram(data, channel_description, 'raw'      , +[30 250])
 
 % After processing
-farm_plot_carpet     (data, channel_regex, 'pca_clean', +[30 250])
-farm_plot_FFT        (data, channel_regex, 'pca_clean', +[30 250])
-farm_plot_spectrogram(data, channel_regex, 'pca_clean', +[30 250])
+farm_plot_carpet     (data, channel_description, 'pca_clean', +[30 250])
+farm_plot_FFT        (data, channel_description, 'pca_clean', +[30 250])
+farm_plot_spectrogram(data, channel_description, 'pca_clean', +[30 250])
 
 
 %% Convert clean EMG to regressors & save them
