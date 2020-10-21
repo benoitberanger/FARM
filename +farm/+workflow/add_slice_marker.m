@@ -48,7 +48,7 @@ farm_check_data( data )
 
 [ data, skip ]= farm.io.intermediate.load(data,mfilename);
 if skip
-    data = add_slice_marker(data);
+    data = add_slice_marker_event(data);
     return
 end
 
