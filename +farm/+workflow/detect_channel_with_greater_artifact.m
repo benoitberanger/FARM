@@ -20,7 +20,9 @@ assert( isfield(data,'selected_channels_idx') , '[%s]: First, select channels wi
 
 %% Main
 
-max_all_channels = max( abs(data.initial_hpf(data.selected_channels_idx,:)), [], 2 );
+max_all_channels = zeros(size(data.initial_hpf,1),1); % the pre-allocation is necessary to ensure the value is written in the right index
+
+max_all_channels(data.selected_channels_idx) = max( abs(data.initial_hpf(data.selected_channels_idx,:)), [], 2 );
 [ ~, target_channel ] = max(max_all_channels); % index of the channel we use to perform all computations related to sdur & dtime
 
 data.target_channel = target_channel; % save this channel index, we will use latter
