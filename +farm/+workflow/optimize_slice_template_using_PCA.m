@@ -92,7 +92,7 @@ data.sub_template = zeros( size(data.trial{1}) );
 data.pca_clean    = zeros( size(data.trial{1}) );
 data.pca_noise    = zeros( size(data.trial{1}) );
 
-for iChannel = data.selected_channels_idx'
+for iChannel = data.selected_channels_idx(:)'
     
     fprintf('[%s]: Computing PCA on channel %d - %s - using matlab built-in svd() function... \n', farm.io.mfilename, iChannel, data.label{iChannel})
     

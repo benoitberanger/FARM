@@ -68,7 +68,7 @@ dtime_sample = round(dtime * fsample * interpfactor);
 % Pre-allocate output
 data.artifact_template = zeros( size(data.trial{1}) );
 
-for iChannel = data.selected_channels_idx'
+for iChannel = data.selected_channels_idx(:)'
     %% Upsample
     
     % Get initial_hpf data
