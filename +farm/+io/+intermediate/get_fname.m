@@ -7,6 +7,6 @@ function fname = get_fname( data, calling_function )
 intermediate_dir = farm.io.get_subfield( data, 'cfg.outdir.intermediate');
 if ~isempty( intermediate_dir ), pathstr = intermediate_dir; end
 
-fname = fullfile(pathstr, [name calling_function '.mat']);
+fname = fullfile(pathstr, [name '_' calling_function '.mat']);
 
 end % function

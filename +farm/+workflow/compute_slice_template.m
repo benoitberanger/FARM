@@ -68,8 +68,6 @@ dtime_sample = round(dtime * fsample * interpfactor);
 % Pre-allocate output
 data.artifact_template = zeros( size(data.trial{1}) );
 
-nChannel = length(data.cfg.channel);
-
 for iChannel = data.selected_channels_idx'
     %% Upsample
     
