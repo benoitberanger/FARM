@@ -1,4 +1,4 @@
-function [ data_emg_acc, info ] = prepare_emg_acc( data, cfg )
+function [ data_emg_acc ] = prepare_emg_acc( data, cfg )
 % PREPARE_EMG_ACC function will :
 % 1)   get filtered EMG timeseries
 % 1.5) get filtered ACC timeseries ("cfg.acc_regex" is required)
@@ -7,7 +7,6 @@ function [ data_emg_acc, info ] = prepare_emg_acc( data, cfg )
 %
 % SYNTAX
 %        data_emg_acc        = farm.tfa.PREPARE_EMG_ACC( data, cfg )
-%       [data_emg_acc, info] = farm.tfa.PREPARE_EMG_ACC( data, cfg )
 %
 % INPUTS
 %       - data : see <a href="matlab: help farm_check_data">farm_check_data</a>
@@ -52,12 +51,15 @@ envelope_emg = farm_emg_envelope( timeseries_emg, data.fsample );
 
 if use_ACC
     [ timeseries_acc, channel_idx_acc, channel_name_acc, ~ ] = farm_get_timeseries( data, acc_regex, acc_stage, acc_filter, acc_order );
-    timeseries   = [envelope_emg    ; timeseries_acc  ];
-    channel_name = [channel_name_emg; channel_name_acc];
+    timeseries       = [envelope_emg    ; timeseries_acc  ];
+    channel_name     = [channel_name_emg; channel_name_acc];
+    info.channel_idx = [channel_idx_emg ; channel_idx_acc ];
 else
-    timeseries   = envelope_emg    ;
-    channel_name = channel_name_emg;
+    timeseries       = envelope_emg    ;
+    channel_name     = channel_name_emg;
+    info.channel_idx = channel_idx_emg;
 end
+
 
 info.channel_idx_emg  = channel_idx_emg;
 info.channel_name_emg = channel_name_emg;
@@ -65,6 +67,7 @@ if use_ACC
     info.channel_idx_acc  = channel_idx_acc;
     info.channel_name_acc = channel_name_acc;
 end
+
 
 %% Downsample
 
@@ -89,6 +92,7 @@ data_emg_acc.time {1}   = new_time;
 data_emg_acc.fsample    = new_fsample;
 data_emg_acc.label      = channel_name;
 data_emg_acc.sampleinfo = [1 size(data_emg_acc.trial{1},2)];
+data_emg_acc.info       = info;
 
 
 end % function

@@ -38,5 +38,7 @@ cfg_TFA.t_ftimwin   = nCycle ./cfg_TFA.foi;                       % taper size f
 
 TFA = ft_freqanalysis(cfg_TFA, data);
 
+if isfield(data,'info'), TFA.info = data.info; end
+
 
 end % function

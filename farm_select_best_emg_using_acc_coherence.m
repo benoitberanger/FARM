@@ -9,7 +9,7 @@ function best = farm_select_best_emg_using_acc_coherence( data, cfg )
 
 %% Get EMG/ACC prepared data
 
-[data_emg_acc, info] = farm.tfa.prepare_emg_acc( data, cfg );
+data_emg_acc = farm.tfa.prepare_emg_acc( data, cfg );
 
 
 %% Coherence
@@ -23,7 +23,7 @@ coh = farm.tfa.perform_coherence_analysis( data_emg_acc, cfg );
 % img = mean(coh.cohspctrm(:,:,foi_idx),3);          % average Fourier coefficients @ frequency of interest
 img = mean(coh.cohspctrm,3);                        % average Fourier coefficients
 
-acc_idx_in_img = contains( coh.label, info.channel_name_acc); % Fetch ACC channel index
+acc_idx_in_img = contains( coh.label, data_emg_acc.info.channel_name_acc); % Fetch ACC channel index
 
 sum_acc_img = sum( img(:,acc_idx_in_img) , 2 ); % Sum ACC coherence for all channels
 sum_acc_img(acc_idx_in_img) = 0;                % Exlude ACC channels, only keep EMG for the selection

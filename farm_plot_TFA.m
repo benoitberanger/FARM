@@ -52,7 +52,7 @@ surf( ax_3d(1),...
     'EdgeColor', 'none')
 view( ax_3d(1) , 2 )
 title_str = sprintf('average powerspectrum @ {%s}', sprintf('%s,',TFA.label{:}));
-title(title_str)
+title(title_str,'Interpreter','None')
 
 % Fmean(powerspectrum)
 ax_Fmean(1) = subplot('Position',pos_Fmean);
@@ -77,7 +77,8 @@ view([-90 90])
 % Plot all channels
 %------------------
 for chan = 1 : length(TFA.label)
-    t = uitab(tg,'Title',TFA.label{chan});
+    tab_name = sprintf('channel %d / %s', TFA.info.channel_idx(chan), TFA.label{chan});
+    t = uitab(tg,'Title',tab_name);
     axes(t); %#ok<*LAXES>
     
     % 3D plot
@@ -91,7 +92,7 @@ for chan = 1 : length(TFA.label)
     xlabel('time (s)')
     ylabel('Frequency (Hz)')
     title_str = sprintf('powerspectrum @ %s', TFA.label{chan});
-    title(title_str)
+    title(title_str,'Interpreter','None');
     
     % Fmean(powerspectrum)
     ax_Fmean(chan+1) = subplot('Position',pos_Fmean);
