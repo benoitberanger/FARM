@@ -67,6 +67,8 @@ end
 %% Events
 
 assert( isfield(data.cfg,'event'), '[%s]: data.cfg must have a field "event", see <a href="matlab: help farm_check_data">help farm_check_data</a>', mfilename)
+volume_event = farm.sequence.get_volume_event( data );
+assert( numel(volume_event)>0, '[%s]: data.cfg.event does not have volume event, see <a href="matlab: help farm_check_data">help farm_check_data</a>', mfilename)
 
 
 %% Sequence
