@@ -72,7 +72,7 @@ volume_event = volume_event(1:nVol);
 nSlice       = farm.sequence.get_nSlice      ( data );
 
 volume_onset   = [volume_event.sample];
-nSample_per_TR = volume_onset(2) - volume_onset(1);
+nSample_per_TR = median(diff(volume_onset));
 
 % dtime is the preparation-segment duration at the end of the volume
 % dtime_max is the maximum possible value
@@ -98,7 +98,7 @@ for iVol = 1 : nVol
     for idx_sdur = 1 : length(sdur_possibility)
         
         sdur             = sdur_possibility(idx_sdur); % current sdur
-        slice_datapoints = zeros(nSlice,round(sdur));         % slice-segment for all slcies, according to the current sdur
+        slice_datapoints = zeros(nSlice,round(sdur));  % slice-segment for all slcies, according to the current sdur
         
         for iSlice = 1 : nSlice
             
