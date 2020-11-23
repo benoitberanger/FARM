@@ -223,7 +223,7 @@ for iChannel = data.selected_channels_idx(:)'
         fprintf('[%s]: Variance explained for the first 20 PCs (%%) : %s \n', farm.io.mfilename, num2str(vairance_explained(1:20)','%.1f, ') )
         
         nComponent = sum(vairance_explained > variance_threshold);
-        fprintf('[%s]: nComponent = 0 in one  \n', farm.io.mfilename)
+        fprintf('[%s]: Selecting components with more than 5%% of variance : nComponent = %d \n', farm.io.mfilename, nComponent)
         
         
         %% Scale components to data before substraction
@@ -247,8 +247,8 @@ for iChannel = data.selected_channels_idx(:)'
             
         else
             
-            warning('[%s]: Selecting components with more than 5%% of variance : nComponent = %d \n', farm.io.mfilename, nComponent)
-            
+            warning('[%s]: nComponent = 0 in one segment \n', farm.io.mfilename)
+
         end
         
         
