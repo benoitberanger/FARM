@@ -1,16 +1,18 @@
-function data = optimize_slice_template_using_PCA( data, time_section )
+function data = optimize_slice_template_using_PCA( data, time_section, variance_threshold )
 % OPTIMIZE_SLICE_TEMPLATE_USING_PCA
 %
 % SYNTAX
 %       farm.workflow.OPTIMIZE_SLICE_TEMPLATE_USING_PCA( data, time_section )
 %
 % INPUTS
-%       - data         : see <a href="matlab: help farm_check_data">farm_check_data</a>
-%       - time_section : timeseries will be splitted in sections where the PCA will be computed
-%                        this strategy increases the PCA adapatabilty
+%       - data               : see <a href="matlab: help farm_check_data">farm_check_data</a>
+%       - time_section       : timeseries will be splitted in sections where the PCA will be computed
+%                              this strategy increases the PCA adapatabilty
+%       - variance_threshold : PC componenet explaining more than this threshold will be eliminated.
 %
 % DEFAULTS
-%       - time_section : 60 seconds
+%       - time_section       : 60 seconds
+%       - variance_threshold : 5 %
 %
 %
 %**************************************************************************
@@ -47,6 +49,12 @@ if skip, return, end
 % PCA will be computed over 'time_section', for adaptability
 if ~exist('time_section','var')
     time_section = 60; % in seconds
+end
+
+% percentage (%) of variance that remain after PCA.
+% It means all components with vairance_explained > variance_threshold will be removed.
+if ~exist('variance_threshold','var')
+    variance_threshold = 5;
 end
 
 padding = 10; % samples, only useful for the phase-shift
@@ -214,26 +222,34 @@ for iChannel = data.selected_channels_idx(:)'
         
         fprintf('[%s]: Variance explained for the first 20 PCs (%%) : %s \n', farm.io.mfilename, num2str(vairance_explained(1:20)','%.1f, ') )
         
-        nComponent = sum(vairance_explained > 5);
-        fprintf('[%s]: Selecting components with more than 5%% of variance : nComponent = %d \n', farm.io.mfilename, nComponent)
+        nComponent = sum(vairance_explained > variance_threshold);
+        fprintf('[%s]: nComponent = 0 in one  \n', farm.io.mfilename)
         
         
         %% Scale components to data before substraction
         
-        PC = Eload(:,1:nComponent);
-        
-        % Scale all PCs so all of them have the same [min max]
-        PeakToPeak = max(PC) - min(PC);
-        PC         = PC ./ PeakToPeak * PeakToPeak(1); % scaled to the first (1) component
-        
         fitted_residual = zeros(size(substracted_segment_section));
         
-        for iSlice = 1 : length(slice_list)
-            fitted_residual(:,iSlice) = PC * ( PC \ substracted_segment_section(:,iSlice) );
+        if nComponent > 0
+            
+            PC = Eload(:,1:nComponent);
+            
+            % Scale all PCs so all of them have the same [min max]
+            PeakToPeak = max(PC) - min(PC);
+            PC         = PC ./ PeakToPeak * PeakToPeak(1); % scaled to the first (1) component
+            
+            for iSlice = 1 : length(slice_list)
+                fitted_residual(:,iSlice) = PC * ( PC \ substracted_segment_section(:,iSlice) );
+            end
+            
+            % Visualization : uncomment bellow
+            % figure('Name','fitted_residual','NumberTitle','off'); image(fitted_residual,'CDataMapping','scaled'), colormap(gray(256));
+            
+        else
+            
+            warning('[%s]: Selecting components with more than 5%% of variance : nComponent = %d \n', farm.io.mfilename, nComponent)
+            
         end
-        
-        % Visualization : uncomment bellow
-        % figure('Name','fitted_residual','NumberTitle','off'); image(fitted_residual,'CDataMapping','scaled'), colormap(gray(256));
         
         
         %% Substraction
