@@ -45,7 +45,7 @@ l               = legend;
 l.Interpreter   = 'None';
 xlabel('time (s)')
 ax.Title.String = reginfo.name;
-
+ax.Title.Interpreter = 'None';
 
 %% Output ?
 
