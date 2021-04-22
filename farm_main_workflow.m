@@ -1,5 +1,5 @@
 function data = farm_main_workflow( data, channel_description )
-% FARM_MAIN_WORKFLOW is a wrapper that will will perform FARM denoisng.
+% FARM_MAIN_WORKFLOW is a wrapper that will perform FARM denoisng.
 % VERY IMPORTANT : It is optimized for EMG data.
 %
 % SYNTAX

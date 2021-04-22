@@ -29,7 +29,14 @@ end
 
 %% Fetch data & prepare output name
 
-[ datapoints, ~, ~, stage ] = farm.plot.get_datapoints( data, [], processing_stage );
+% Fetch processed channels
+[ datapoints_processed  , ~, ~, stage ] = farm.plot.get_datapoints( data, [], processing_stage );
+
+% Fetch un-processed channels
+[ datapoints_unprocessed, ~, ~, ~     ] = farm.plot.get_datapoints( data, [], 'raw'            );
+datapoints_unprocessed(data.selected_channels_idx,:) = 0; 
+
+datapoints = datapoints_processed + datapoints_unprocessed;
 
 fname = farm.io.bva.get_fname(data, stage);
 
