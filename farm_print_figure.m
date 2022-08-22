@@ -31,7 +31,8 @@ if ~exist(path, 'dir'), mkdir(path), end
 
 %% Write
 
-figH.Position = [0 0 1200 800]; % Bigger figure so the saved PNG is not too small
+figH.Position          = [0 0 1200 800]; % Bigger figure so the saved PNG is not too small
+figH.PaperPositionMode = 'auto';         % This might help accurate figure printing when performed on a cluster
 
 switch class(figH.Children(end))
     
