@@ -48,15 +48,24 @@ farm_check_data( data )
 % Get the all datapoints
 [ datapoints, channel_idx, channel_name, stage ] = farm.plot.get_datapoints( data, channel_description, processing_stage );
 
+% To keep datapoints within the volume markers
+volume_event = farm.sequence.get_volume_event( data );
+nVol         = farm.sequence.get_nVol        ( data );
+volume_event = volume_event(1:nVol);
+
+% Usually, filtering the whole timeseries means filtering also filtering
+% the dummy scans. However the last few seconds of filtered signal from the
+% dummy scans are overflowing on the useful data. So I prefer to replace
+% the timepoints outside the sequence (especially the dummy scans) by
+% zeros.
+datapoints( : , 1                          : volume_event(1).sample) = 0;
+datapoints( : , volume_event(end).sample+1 : end                   ) = 0;
+
 % Filter
 if nargin > 1
     datapoints = farm.filter(datapoints, data.fsample, filter, order);
 end
 
-% Only keep datapoints within the volume markers
-volume_event = farm.sequence.get_volume_event( data );
-nVol         = farm.sequence.get_nVol        ( data );
-volume_event = volume_event(1:nVol);
 timeseries   = datapoints( : , volume_event(1).sample+1 : volume_event(end).sample); % discard first sample
 
 
