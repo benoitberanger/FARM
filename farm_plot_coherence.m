@@ -38,7 +38,7 @@ foi_idx = coh.freq >= foi(1) & coh.freq <= foi(2);
 figH = figure('Name',data.cfg.datafile,'NumberTitle','off');
 figH.UserData = mfilename;
 ax = axes(figH);
-Title = sprintf('mean(coherence@[%d %d])', foi(1), foi(2));
+Title = sprintf('mean(coherence@[%g %g])', foi(1), foi(2));
 
 img = mean(coh.cohspctrm(:,:,foi_idx),3);
 
@@ -51,8 +51,10 @@ end
 
 ax.Title.String         = Title;
 figH.Colormap           = jet();
+ax.XTick                = 1:length(coh.label);
 ax.XTickLabel           = coh.label;
 ax.XTickLabelRotation   = 45;
+ax.YTick                = 1:length(coh.label);
 ax.YTickLabel           = coh.label;
 ax.TickLabelInterpreter = 'none';
 
