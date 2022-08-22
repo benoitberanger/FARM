@@ -162,6 +162,7 @@ for iVol = 1 : nVol
         evt.value    = 's';
         evt.sample   = optimal_slice_onset;
         evt.duration = 1;
+        evt.timestamp= '';
         evt.offset   = [];
         
         data.cfg.event(end+1) = evt;
