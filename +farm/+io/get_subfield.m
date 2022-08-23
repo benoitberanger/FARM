@@ -6,10 +6,10 @@ function subfield_content = get_subfield( data, subfield )
 %
 % INPUTS
 %       - data     : see <a href="matlab: help farm_check_data">farm_check_data</a>
-%       - subfield : char describing subfields, such as 'cfg.outdir.png'
+%       - subfield : char describing subfields, such as 'cfg.outdir.figure'
 %
 % EXAMPLE
-%       png_dir = farm.io.GET_SUBFIELD( data, 'cfg.outdir.png' )
+%       fig_dir = farm.io.GET_SUBFIELD( data, 'cfg.outdir.figure' )
 %
 
 if nargin==0, help(mfilename('fullpath')); return; end

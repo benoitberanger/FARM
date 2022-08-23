@@ -1,6 +1,6 @@
 function farm_print_figure( data, figH )
 % FARM_PRINT_FIGURE will write figures in PNG
-% Output directory is -> data.cfg.outdir.PNGexport
+% Output directory is -> data.cfg.outdir.figure
 %                  or -> same dir as input .eeg file
 %
 % SYNTAX
@@ -23,7 +23,7 @@ if nargin==0, help(mfilename('fullpath')); return; end
 
 type = figH.UserData; % Name of the plot function (like farm_plot_FFT)
 
-path = farm.io.png.get_path(data);
+path = farm.io.figure.get_path(data);
 if ~exist(path, 'dir'), mkdir(path), end
 
 [~, dataset_name, ~] = fileparts(data.cfg.dataset);
@@ -50,7 +50,7 @@ switch class(figH.Children(end))
             fpath = fullfile(path,[fname '.png']);
             
             fprintf('[%s]: writing file : %s \n', mfilename, fpath)
-            saveas(figH, fpath)
+            saveas(figH.Children.SelectedTab, fpath)
             
         end % idx
         
@@ -70,7 +70,6 @@ switch class(figH.Children(end))
     otherwise
         error('this figure type is not coded')
 end
-
 
 
 end % function

@@ -62,7 +62,7 @@ outdir = tempdir(); % tempdir() is a matlab built-in function to get the tempora
 data.cfg.outdir.intermediate = fullfile( outdir, 'FARM_intermediate'); % intermediate results
 data.cfg.outdir.BVAexport    = fullfile( outdir, 'FARM_BVAexport'   ); % export final results in {.eeg, .vhdr, .vmrk}
 data.cfg.outdir.MATexport    = fullfile( outdir, 'FARM_MATexport'   ); % export final results in .mat
-data.cfg.outdir.png          = fullfile( outdir, 'FARM_png'         ); % write PNG here, for visual quick check
+data.cfg.outdir.figure       = fullfile( outdir, 'FARM_figure'      ); % write figure here, for visual quick check
 data.cfg.outdir.regressor    = fullfile( outdir, 'FARM_regressor'   ); % write regressor here, in .mat
 
 % Plot
@@ -94,20 +94,20 @@ farm_plot_spectrogram(data, channel_regex, 'pca_clean', +[30 250])
 % Use 1 channel : EXT_D
 ts      = farm_get_timeseries( data, 'EXT_D', 'pca_clean', +[30 250] );              % (1 x nSamples)
 reginfo = farm_emg_regressor ( data, ts, 'EXT_D' );
-farm_plot_regressor( data, reginfo)
-farm_save_regressor( data, reginfo)
+farm_plot_regressor( data, reginfo )
+farm_save_regressor( data, reginfo )
 
 % Use 1 channel : FLE_D
 ts      = farm_get_timeseries( data, 'FLE_D', 'pca_clean', +[30 250] );              % (1 x nSamples)
 reginfo = farm_emg_regressor ( data, ts, 'FLE_D' );
-farm_plot_regressor( data, reginfo)
-farm_save_regressor( data, reginfo)
+farm_plot_regressor( data, reginfo )
+farm_save_regressor( data, reginfo )
 
 % Use 2 channels and combine them : EXT_D + FLE_D
 ts      = farm_get_timeseries( data, {'EXT_D','FLE_D'}, 'pca_clean', +[30 250] ); % (2 x nSamples)
 reginfo = farm_emg_regressor ( data, ts, 'EXTFLE_D', 'mean' );
-farm_plot_regressor( data, reginfo)
-farm_save_regressor( data, reginfo)
+farm_plot_regressor( data, reginfo )
+farm_save_regressor( data, reginfo )
 
 
 %% Export final results to different formats
@@ -120,4 +120,3 @@ farm_export_mat( data ) % MATLAB ( .mat )
 
 figH = farm_plot_FFT(data, [], 'pca_clean', +[30 250]);
 farm_print_figure( data, figH ); % close(figH)
-

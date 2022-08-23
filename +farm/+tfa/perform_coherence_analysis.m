@@ -22,7 +22,7 @@ if nargin==0, help(mfilename('fullpath')); return; end
 trial_length = ft_getopt(cfg, 'trial_length',   60 ); % seconds // does not effect 'dpss' result, but is mandatory for computation performances
 
 % TFA to prepare coherence analysis
-foilim       = ft_getopt(cfg,       'foilim', [2 8]); % [fmin fmax] (Hz) frequency of interest // [2 8] is a bit larger than [4 6] for tremors, useful for quality check
+foilim       = ft_getopt(cfg,          'foi', [2 8]); % [fmin fmax] (Hz) frequency of interest // [2 8] is a bit larger than [4 6] for tremors, useful for quality check
 taper        = ft_getopt(cfg,        'taper','dpss'); % 'dpss' or 'hanning'
 tapsmofrq    = ft_getopt(cfg,    'tapsmofrq',  0.05); % (Hz) // spectral smoothing, useful only for 'dpss'
 

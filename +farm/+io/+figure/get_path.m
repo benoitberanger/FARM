@@ -4,7 +4,7 @@ function pathstr = get_path( data )
 [pathstr, ~, ~] = fileparts(data.cfg.dataset);
 
 % Use cfg.outdir.figure if defined
-regressor_dir = farm.io.get_subfield( data, 'cfg.outdir.regressor');
-if ~isempty( regressor_dir ), pathstr = regressor_dir; end
+fig_dir = farm.io.get_subfield( data, 'cfg.outdir.figure');
+if ~isempty( fig_dir ), pathstr = fig_dir; end
 
 end % function

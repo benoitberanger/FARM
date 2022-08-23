@@ -19,10 +19,10 @@ if nargin==0, help(mfilename('fullpath')); return; end
 %% Input parsing
 
 % TFA paramters
-minmax_foi = ft_getopt(cfg,'minmax_foi', [2 8] ); % (Hz) [min max] frequency of interest
-dF         = ft_getopt(cfg,        'dF',    0.1); % (Hz) output frequency resolution
-dT         = ft_getopt(cfg,        'dT',    0.1); % (s)  output time resolution
-nCycle     = ft_getopt(cfg,    'nCycle',   10  ); % int  number of cycles per frequency range
+foi    = ft_getopt(cfg,'       foi', [2 8] ); % (Hz) [min max] frequency of interest
+dF     = ft_getopt(cfg,        'dF',    0.1); % (Hz) output frequency resolution
+dT     = ft_getopt(cfg,        'dT',    0.1); % (s)  output time resolution
+nCycle = ft_getopt(cfg,    'nCycle',   10  ); % int  number of cycles per frequency range
 
 
 %% TFA
@@ -33,7 +33,7 @@ cfg_TFA.output      = 'pow';       % power-spectra
 cfg_TFA.taper       = 'hanning';   % hanning window
 cfg_TFA.pad         = 'maxperlen'; % (default)
 cfg_TFA.toi         = (data.time{1}(1) : dT : data.time{1}(end)); % timepoints of interest
-cfg_TFA.foi         =    minmax_foi(1) : dF : minmax_foi(2);      % frequency  of interest
+cfg_TFA.foi         =           foi(1) : dF : foi(2);             % frequency  of interest
 cfg_TFA.t_ftimwin   = nCycle ./cfg_TFA.foi;                       % taper size for each foi // here we use nCycle/foi, so there is constant amoung of datapoints per foi
 
 TFA = ft_freqanalysis(cfg_TFA, data);
