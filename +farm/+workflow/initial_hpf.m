@@ -1,14 +1,16 @@
-function data = initial_hpf( data, hpf )
+function data = initial_hpf( data, hpf, order )
 % INITIAL_HPF will take the raw data, and apply highpass filter on it.
 % HPF @ 30 Hz removes the artifact due to electrode movement inside the static magnetic field B0
 % This filtering step is MANDATORY for EMG, or any electrode with movements in B0
 %
 % SYNTAX
 %       data = farm.wrokflow.INITIAL_HPF( data, hpf )
+%       data = farm.wrokflow.INITIAL_HPF( data, hpf, order )
 %
 % INPUTS
 %       - data         : see <a href="matlab: help farm_check_data">farm_check_data</a>
 %       - hpf          : high pass filter (Hz)
+%       - order        : filter order (in necessary)
 %
 %
 % DEFAULTS
@@ -30,7 +32,7 @@ if nargin==0, help(mfilename('fullpath')); return; end
 
 %% Checks
 
-narginchk(1,2)
+narginchk(1,3)
 
 farm_check_data( data )
 
@@ -47,6 +49,10 @@ if ~exist('hpf','var')
     hpf = 30; % Hz
 end
 
+if ~exist('order','var')
+    order = [];
+end
+
 
 %% Main
 
@@ -57,7 +63,7 @@ data.initial_hpf = data.trial{1};
 
 % Filter the selected channels
 if ~isempty(hpf)
-    data.initial_hpf(data.selected_channels_idx,:) = farm.filter(data.initial_hpf(data.selected_channels_idx,:), data.fsample, hpf);
+    data.initial_hpf(data.selected_channels_idx,:) = farm.filter(data.initial_hpf(data.selected_channels_idx,:), data.fsample, hpf, order);
 end
 
 fprintf('done \n')
